@@ -1,12 +1,13 @@
 import { Router } from "express";
 import { prisma } from "../prisma";
+import { authenticate, requireRole } from "../middlewares/auth";
 
 const router = Router();
 
 // GET /api/buyer/requirements
-router.get("/requirements", async (req, res) => {
+router.get("/requirements", authenticate, requireRole("buyer"), async (req, res, next) => {
   try {
-    const { userId } = req.query;
+    const userId = req.user?.id;
     if (!userId) return res.status(400).json({ error: "userId required" });
 
     const requirements = await prisma.requirement.findMany({
@@ -24,7 +25,7 @@ router.get("/requirements", async (req, res) => {
 });
 
 // GET /api/buyer/requirements/:id/quotes
-router.get("/requirements/:id/quotes", async (req, res) => {
+router.get("/requirements/:id/quotes", authenticate, requireRole("buyer"), async (req, res, next) => {
   try {
     const { id } = req.params;
     
@@ -54,14 +55,16 @@ router.get("/requirements/:id/quotes", async (req, res) => {
 });
 
 // POST /api/buyer/requirements/:id/accept-quote
-router.post("/requirements/:id/accept-quote", async (req, res) => {
+router.post("/requirements/:id/accept-quote", authenticate, requireRole("buyer"), async (req, res, next) => {
   try {
     const { id } = req.params;
     const { quoteId } = req.body;
+    const buyerId = req.user?.id;
 
-    // 1. Find Quote
-    const quote = await prisma.proposal.findUnique({ where: { id: quoteId } });
+    // 1. Find Quote & Verify Requirement belongs to buyer
+    const quote = await prisma.proposal.findUnique({ where: { id: quoteId }, include: { requirement: true } });
     if (!quote) return res.status(404).json({ error: "Quote not found" });
+    if (quote.requirement.buyerId !== buyerId) return res.status(403).json({ error: "Forbidden" });
 
     // 2. Update Requirement to Awarded
     await prisma.requirement.update({
@@ -90,9 +93,9 @@ router.post("/requirements/:id/accept-quote", async (req, res) => {
 });
 
 // GET /api/buyer/projects
-router.get("/projects", async (req, res) => {
+router.get("/projects", authenticate, requireRole("buyer"), async (req, res, next) => {
   try {
-    const { userId } = req.query;
+    const userId = req.user?.id;
     if (!userId) return res.status(400).json({ error: "userId required" });
 
     const projects = await prisma.requirement.findMany({
@@ -111,9 +114,12 @@ router.get("/projects", async (req, res) => {
 });
 
 // POST /api/buyer/tracking/view
-router.post("/tracking/view", async (req, res) => {
+router.post("/tracking/view", authenticate, requireRole("buyer"), async (req, res, next) => {
   try {
-    const { buyerId, vendorId, requirementId } = req.body;
+    const { vendorId, requirementId } = req.body;
+    const buyerId = req.user?.id;
+    
+    if (!buyerId) return res.status(400).json({ error: "buyerId missing" });
     
     // MVP: Storing view tracking events into AuditLog for Contextual Bandit
     // (In production, this streams to BigQuery or a Feature Store)
@@ -137,8 +143,9 @@ router.post("/tracking/view", async (req, res) => {
 });
 
 // POST /api/buyer/projects/:projectId/generate-milestones
-router.post("/projects/:projectId/generate-milestones", async (req, res) => {
+router.post("/projects/:projectId/generate-milestones", authenticate, requireRole("buyer"), async (req, res, next) => {
   const { projectId } = req.params;
+  const buyerId = req.user?.id;
   
   try {
     const project = await prisma.requirement.findUnique({
@@ -147,6 +154,7 @@ router.post("/projects/:projectId/generate-milestones", async (req, res) => {
     });
 
     if (!project) return res.status(404).json({ error: 'Project not found' });
+    if (project.buyerId !== buyerId) return res.status(403).json({ error: 'Forbidden' });
 
     // Check if milestones already exist to prevent duplication
     const existing = await prisma.projectMilestone.count({ where: { projectId } });

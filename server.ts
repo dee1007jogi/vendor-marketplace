@@ -45,6 +45,8 @@ app.use(express.json());
 // Attach io to express app to emit events from routes
 app.set("io", io);
 
+import { errorHandler } from "./src/backend/middlewares/errorHandler";
+
 // Mount Modular API Routes
 app.use("/api/state", stateRouter);
 app.use("/api/auth", authRouter);
@@ -60,7 +62,8 @@ app.use("/api/dashboards", dashboardsRouter);
 app.use("/api/buyer", buyerRouter);
 app.use("/api/user/verification", verificationRouter);
 
-
+// Global Error Handler
+app.use(errorHandler as express.ErrorRequestHandler);
 
 // Integrate Vite Middleware for asset piping during development, static serve for prod
 async function startServer() {
