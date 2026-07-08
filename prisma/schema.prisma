@@ -1,0 +1,456 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String         @id @default(uuid())
+  name           String
+  email          String         @unique
+  phone          String?
+  passwordHash   String?        // Added for admin auth
+  role           String         // "buyer" | "vendor" | "admin" | "super_admin" | "moderator"
+  avatar         String?
+  verified       Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+
+  // Admin Specific
+  mfaEnabled     Boolean        @default(false)
+  mfaSecret      String?
+  lastLoginAt    DateTime?
+  adminNotes     String?
+  isNew          Boolean        @default(true)
+  deviceTokens   String?        @default("[]") // JSON array of push tokens
+
+  // Relations
+  vendorProfile  VendorProfile?
+  requirements   Requirement[]  @relation("BuyerRequirements")
+  sentMessages   Message[]      @relation("SentMessages")
+  notifications  Notification[]
+  reviewsGiven   Review[]       @relation("BuyerReviews")
+  savedVendors   SavedVendor[]  @relation("BuyerSavedVendors")
+
+  // Analytics
+  profileViews    ProfileView[] @relation("Target")
+  viewedProfiles  ProfileView[] @relation("Viewer")
+
+  // Admin Relations
+  reviewedVerifications VerificationQueue[] @relation("VerificationReviewer")
+  assignedDisputes      Dispute[]           @relation("DisputeAssignee")
+  resolvedFraudAlerts   FraudAlert[]        @relation("FraudResolver")
+  auditLogs             AuditLog[]          @relation("AdminAuditLogs")
+  
+  // Auth
+  sessions              UserSession[]       @relation("UserSessions")
+  verificationQueue     VerificationQueue?
+}
+
+model VendorProfile {
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  businessName     String
+  gstNumber        String?
+  panNumber        String?
+  category         String
+  pricingModel     String
+  pricingMin       Float
+  responseTime     String?
+  availability     String?
+  subscriptionPlan String   @default("free")
+  location         String
+  verificationStatus String @default("pending")
+  
+  // Stored as JSON strings
+  categoriesJson   String   // Array of strings
+  servicesJson     String   // Array of strings
+  portfolioJson    String   // Array of objects
+  ratingsJson      String   // Object { avg, count, quality, timeliness, communication }
+  coordinatesJson  String?  // Array [lat, lng]
+
+  // Business Model / Monetization
+  leadCredits           Int      @default(0)
+  isFeatured            Boolean  @default(false)
+  verificationFeePaid   Boolean  @default(false)
+  hasSaaSAddons         Boolean  @default(false)
+  
+  // Relations
+  leads            Lead[]
+  proposals        Proposal[]
+  reviews          Review[]
+  savedByBuyers    SavedVendor[]
+
+  // Indexes for high-performance querying
+  @@index([category])
+  @@index([location])
+  @@index([pricingMin])
+}
+
+model Requirement {
+  id                 String   @id @default(uuid())
+  buyerId            String
+  buyerName          String
+  buyer              User     @relation("BuyerRequirements", fields: [buyerId], references: [id], onDelete: Cascade)
+  
+  title              String
+  description        String
+  category           String
+  budgetMin          Float
+  budgetMax          Float
+  timelineWeeks      Int
+  locationPreference String
+  status             String   @default("open") // open, closed
+  
+  // Stored as JSON strings
+  attachmentsJson    String   @default("[]")
+  aiMetadataJson     String?
+  
+  awardedVendorId    String?  // Null until a proposal is accepted
+  
+  createdAt          DateTime @default(now())
+  
+  // Relations
+  leads              Lead[]
+  proposals          Proposal[]
+  conversations      Conversation[]
+  disputes           Dispute[]
+  ProjectMilestone   ProjectMilestone[]
+}
+
+model Lead {
+  id               String   @id @default(uuid())
+  requirementId    String
+  requirement      Requirement @relation(fields: [requirementId], references: [id], onDelete: Cascade)
+  vendorId         String
+  vendorProfile    VendorProfile @relation(fields: [vendorId], references: [userId], onDelete: Cascade)
+  
+  matchingScore    Float
+  scoreBreakdown   String   // JSON string
+  status           String   @default("new")
+}
+
+model Proposal {
+  id                      String   @id @default(uuid())
+  leadId                  String
+  requirementId           String
+  requirement             Requirement @relation(fields: [requirementId], references: [id], onDelete: Cascade)
+  vendorId                String
+  vendorProfile           VendorProfile @relation(fields: [vendorId], references: [userId], onDelete: Cascade)
+  
+  vendorBusinessName      String
+  vendorAvatar            String?
+  vendorRating            Float
+  
+  bidAmount               Float
+  timelineWeeks           Int
+  coverLetter             String
+  aiOptimizedProposalText String?
+  attachmentsJson         String?  @default("[]") // Using String to match existing schema conventions (or Json if using Postgres, but SQLite uses String for JSON usually, wait the user asked for Json?)
+  // Actually, since this is SQLite, prisma supports Json type? No, SQLite in Prisma uses String for JSON. I will keep it as String? @default("[]") as already exists in my schema! Wait, it already exists!
+  status                  String   @default("pending") // pending, shortlisted, accepted, declined
+  
+  createdAt               DateTime @default(now())
+}
+
+model Conversation {
+  id              String   @id @default(uuid())
+  buyerId         String
+  vendorId        String
+  requirementId   String?
+  requirement     Requirement? @relation(fields: [requirementId], references: [id], onDelete: Cascade)
+  disputeId       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  messages        Message[]
+}
+
+model Message {
+  id              String   @id @default(uuid())
+  conversationId  String
+  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId        String
+  sender          User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  
+  messageType     String   @default("text") // text, image, file, voice
+  content         String?
+  fileUrl         String?
+  isRead          Boolean  @default(false)
+  isInternal      Boolean  @default(false)
+  createdAt       DateTime @default(now())
+}
+
+// ----------------------------------------------------
+// NEW ADMIN TABLES
+// ----------------------------------------------------
+
+model VerificationQueue {
+  id                 String   @id @default(uuid())
+  userId             String   @unique
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  submittedAt        DateTime @default(now())
+  
+  businessName       String?
+  registrationNumber String?
+
+  cosFileName        String?
+  cosFileUrl         String?
+  cosStatus          String?
+
+  gstNumber          String?
+  gstFileName        String?
+  gstFileUrl         String?
+  gstStatus          String?
+
+  panNumber          String?
+  panFileName        String?
+  panFileUrl         String?
+  panStatus          String?
+
+  aadhaarNumber      String?
+  aadhaarFileName    String?
+  aadhaarFileUrl     String?
+  aadhaarStatus      String?
+  
+  autoChecksPassed   String?  // JSON string
+  status             String   @default("pending") // pending, approved, rejected, more_info
+  
+  reviewedById       String?
+  reviewer           User?    @relation("VerificationReviewer", fields: [reviewedById], references: [id])
+  reviewedAt         DateTime?
+  
+  rejectionReason    String?
+  adminNotes         String?
+}
+
+model Dispute {
+  id                     String   @id @default(uuid())
+  projectId              String   // Mapped to Requirement ID for MVP
+  project                Requirement @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  raisedById             String
+  // We won't strictly tie it to User relation to avoid multiple cyclic paths, just store string or use generic relation
+  
+  reason                 String
+  evidenceUrlsJson       String?  // JSON array
+  status                 String   @default("pending") // pending, investigating, resolved, appealed
+  
+  assignedToId           String?
+  assignedAdmin          User?    @relation("DisputeAssignee", fields: [assignedToId], references: [id])
+  
+  adminNotes             String?
+  ruling                 String?  // buyer_wins, vendor_wins, partial_refund
+  partialRefundPercent   Int?
+  
+  resolvedAt             DateTime?
+  appealDeadline         DateTime?
+  createdAt              DateTime @default(now())
+}
+
+model FraudAlert {
+  id               String   @id @default(uuid())
+  alertType        String   // fake_review, duplicate_vendor, lead_spam, bot_activity, payment_fraud
+  severity         String   // low, medium, high
+  
+  entityType       String?  // review, vendor, user, payment
+  entityId         String?
+  
+  detailsJson      String   // JSON string
+  status           String   @default("open") // open, investigating, resolved, false_positive
+  
+  resolvedById     String?
+  resolvedBy       User?    @relation("FraudResolver", fields: [resolvedById], references: [id])
+  
+  resolutionNote   String?
+  createdAt        DateTime @default(now())
+  resolvedAt       DateTime?
+}
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  adminId      String
+  admin        User     @relation("AdminAuditLogs", fields: [adminId], references: [id], onDelete: Cascade)
+  
+  action       String
+  targetType   String?
+  targetId     String?
+  
+  oldValueJson String?  // JSON string
+  newValueJson String?  // JSON string
+  
+  ipAddress    String
+  userAgent    String?
+  createdAt    DateTime @default(now())
+}
+
+model RolePermission {
+  id           String   @id @default(uuid())
+  role         String
+  permission   String
+  
+  @@unique([role, permission])
+}
+
+model Transaction {
+  id               String   @id @default(uuid())
+  vendorId         String?
+  buyerId          String?
+  projectId        String?
+  transactionType  String   // subscription_payment, lead_purchase, commission_fee, featured_listing_fee, verification_fee, deduction, refund, escrow_deposit, escrow_release
+  amount           Float
+  leadId           String?
+  paymentGatewayId String?
+  status           String   // success, failed, refunded
+  createdAt        DateTime @default(now())
+}
+
+model Category {
+  id           String   @id @default(uuid())
+  name         String   @unique
+  slug         String   @unique
+  description  String?
+  icon         String?
+  isActive     Boolean  @default(true)
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+}
+
+model ProjectMilestone {
+  id              String   @id @default(uuid())
+  projectId       String   // Maps to Requirement ID
+  project         Requirement @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  title           String
+  description     String?
+  amount          Float
+  dueDate         DateTime?
+  status          String   @default("pending") // pending, released, disputed
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  releasedAt      DateTime?
+
+  @@index([projectId])
+}
+
+model ProfileView {
+  id         String   @id @default(uuid())
+  viewerId   String   // The user who viewed the profile
+  viewer     User     @relation("Viewer", fields: [viewerId], references: [id], onDelete: Cascade)
+  targetId   String   // The user whose profile was viewed
+  target     User     @relation("Target", fields: [targetId], references: [id], onDelete: Cascade)
+  viewedAt   DateTime @default(now())
+
+  // Optional: track where they came from
+  source     String?  
+
+  @@index([targetId])
+  @@index([viewerId])
+}
+
+model Notification {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title           String
+  message         String
+  type            String   // email, whatsapp, in-app
+  metadataJson    String?  // JSON string
+  isRead          Boolean  @default(false)
+  createdAt       DateTime @default(now())
+}
+
+model Review {
+  id               String   @id @default(uuid())
+  buyerId          String
+  buyer            User     @relation("BuyerReviews", fields: [buyerId], references: [id], onDelete: Cascade)
+  vendorProfileId  String
+  vendorProfile    VendorProfile @relation(fields: [vendorProfileId], references: [id], onDelete: Cascade)
+  
+  rating           Float
+  reviewText       String?
+  qualityRating    Float?
+  timelinessRating Float?
+  communicationRating Float?
+  
+  createdAt        DateTime @default(now())
+}
+
+model SavedVendor {
+  id               String   @id @default(uuid())
+  buyerId          String
+  buyer            User     @relation("BuyerSavedVendors", fields: [buyerId], references: [id], onDelete: Cascade)
+  vendorProfileId  String
+  vendorProfile    VendorProfile @relation(fields: [vendorProfileId], references: [id], onDelete: Cascade)
+  
+  notes            String?
+  createdAt        DateTime @default(now())
+
+  @@unique([buyerId, vendorProfileId])
+}
+
+model PlatformSettings {
+  id               String   @id @default(uuid())
+  key              String   @unique
+  valueJson        String   // JSON string
+  updatedAt        DateTime @updatedAt
+}
+
+model AnalyticsEvent {
+  id               String   @id @default(uuid())
+  eventType        String   // profile_view, search, click
+  userId           String?  // nullable if anonymous
+  targetId         String?  // vendorProfileId, requirementId
+  metadataJson     String?  // JSON string
+  createdAt        DateTime @default(now())
+}
+
+model Attachment {
+  id          String   @id @default(uuid())
+  targetId    String   // Foreign key to Proposal OR Requirement
+  targetType  String   // 'Proposal' | 'Requirement'
+  fileName    String
+  fileUrl     String   // S3/Cloudinary URL
+  fileSize    Int
+  mimeType    String
+  uploadedBy  String   // userId
+  createdAt   DateTime @default(now())
+}
+
+model OtpAttempt {
+  id          String   @id @default(uuid())
+  identifier  String   
+  code        String   // The generated OTP
+  attempts    Int      @default(0) // Track failed attempts
+  expiresAt   DateTime // Critical: when this OTP becomes invalid
+  verifiedAt  DateTime? // Null if not yet verified
+  
+  // Anti-fraud & cleanup
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  @@index([identifier, expiresAt])
+}
+
+model UserSession {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation("UserSessions", fields: [userId], references: [id], onDelete: Cascade)
+  
+  refreshToken String? @unique // For rotating refresh tokens
+  pushToken    String? // Device push notification token (FCM/APNs)
+  ipAddress   String?
+  userAgent   String?
+  expiresAt   DateTime
+  isRevoked   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+}

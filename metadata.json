@@ -1,0 +1,6 @@
+{
+  "name": "VendiMatch",
+  "description": "A high-performance full-stack vendor discovery and requirement matching platform, featuring AI-assisted RFPs, robust profile directories, and real-time workspaces.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,9 @@
+export { AdminDashboard } from './pages/Dashboard/AdminDashboard';
+export { VerificationQueue } from './pages/Verification/VerificationQueue';
+export { DisputeResolution } from './pages/Disputes/DisputeResolution';
+export { PlatformSettings } from './pages/Settings/PlatformSettings';
+export { AdminVendors } from './pages/Users/AdminVendors';
+export { AdminBuyers } from './pages/Users/AdminBuyers';
+export { AdminCategories } from './pages/Categories/AdminCategories';
+export { AdminTransactions } from './pages/Transactions/AdminTransactions';
+export { AdminProfile } from './pages/Settings/AdminProfile';
