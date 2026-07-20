@@ -8,6 +8,7 @@ import { Routes, Route, useNavigate, useLocation, Navigate } from "react-router-
 import { motion, AnimatePresence } from "motion/react";
 import { ReactLenis } from 'lenis/react';
 import { User, PlatformState, VendorProfile, Requirement } from "./types";
+import { getInitialPlatformState } from "./db/seededData";
 
 // Import Views (We'll stub the new layouts and keep existing views mapped for now)
 import Header from "./components/Header";
@@ -113,7 +114,22 @@ export default function App() {
         }
       }
     } catch (err) {
-      console.error("Boot state fetch error:", err);
+      console.error("Boot state fetch error, falling back to local data:", err);
+      const fallbackState = getInitialPlatformState();
+      setDbState(fallbackState);
+      
+      if (currentUser) {
+        const refreshedSelf = fallbackState.users.find((u: User) => u.id === currentUser.id);
+        if (refreshedSelf) setCurrentUser(refreshedSelf);
+      } else {
+        const savedUserId = localStorage.getItem("vendorMatchUserId");
+        if (savedUserId) {
+          const u = fallbackState.users.find((u: User) => u.id === savedUserId);
+          if (u) setCurrentUser(u);
+        } else {
+          setCurrentUser(null);
+        }
+      }
     } finally {
       setLoading(false);
     }
