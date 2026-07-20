@@ -248,7 +248,7 @@ const Header = memo(function Header({
                     className="px-4 py-2 rounded-lg text-sm font-bold transition-colors cursor-pointer bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm flex items-center gap-1.5"
                     id="nav-post-req"
                   >
-                    <span>Post Requirement</span>
+                    <span>Post your requirement</span>
                     <Sparkles size={14} className="fill-indigo-300" />
                   </button>
                 </div>

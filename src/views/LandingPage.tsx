@@ -186,7 +186,7 @@ export default function LandingPage() {
                   1
                   <div className="absolute -inset-2 bg-indigo-600/5 rounded-3xl -z-10"></div>
                 </div>
-                <h3 className="text-xl font-bold mb-3 text-slate-900">Post Requirement</h3>
+                <h3 className="text-xl font-bold mb-3 text-slate-900">Post your requirement</h3>
                 <p className="text-slate-500 font-medium">Describe what you need. Our AI helps structure your RFP perfectly for vendors.</p>
               </motion.div>
             </ScrollReveal>

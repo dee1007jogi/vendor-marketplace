@@ -274,7 +274,7 @@ export default function PostRequirement({ currentUser }: PostRequirementProps) {
               <div className="flex flex-col-reverse sm:flex-row gap-4">
                 <button onClick={() => setStep(3)} className="px-6 py-4 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors text-center">Edit</button>
                 <button onClick={handleSubmit} className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-emerald-500/25 transition-colors flex items-center justify-center gap-2">
-                  <Building2 size={20} /> Post Requirement & Get Matched
+                  <Building2 size={20} /> Post your requirement & Get Matched
                 </button>
               </div>
             </div>
