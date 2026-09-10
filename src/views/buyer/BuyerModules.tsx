@@ -136,15 +136,31 @@ export function BuyerRequirements() {
   const [viewReq, setViewReq] = useState<any | null>(null);
 
   useEffect(() => {
-    fetch(`/api/buyer/requirements?userId=${currentUser.id}`)
+    if (!currentUser?.id) return;
+    const token = localStorage.getItem("accessToken");
+    fetch(`/api/buyer/requirements?userId=${currentUser.id}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    })
       .then(r => r.json())
-      .then(d => setRequirements(d || []))
-      .catch(console.error);
-  }, [currentUser.id]);
+      .then(d => {
+        if (Array.isArray(d)) {
+          setRequirements(d);
+        } else if (d && Array.isArray(d.items)) {
+          setRequirements(d.items);
+        } else {
+          setRequirements([]);
+        }
+      })
+      .catch(err => {
+        console.error("Error fetching requirements:", err);
+        setRequirements([]);
+      });
+  }, [currentUser?.id]);
 
-  const filteredReqs = requirements.filter(r => {
-    const matchSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchStatus = statusFilter === "all" || r.status === statusFilter;
+  const safeReqs = Array.isArray(requirements) ? requirements : [];
+  const filteredReqs = safeReqs.filter(r => {
+    const matchSearch = (r?.title || "").toLowerCase().includes(searchQuery.toLowerCase());
+    const matchStatus = statusFilter === "all" || r?.status === statusFilter;
     return matchSearch && matchStatus;
   });
 
@@ -550,10 +566,15 @@ export function BuyerProjects() {
   const navigate = useNavigate();
 
   const fetchData = () => {
-    fetch(`/api/buyer/projects?userId=${currentUser.id}`)
+    if (!currentUser?.id) return;
+    const token = localStorage.getItem("accessToken");
+    fetch(`/api/buyer/projects?userId=${currentUser.id}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    })
       .then(r => r.json())
       .then(d => {
-        setData({ projects: d.map((p: any) => ({
+        const list = Array.isArray(d) ? d : (d?.projects || []);
+        setData({ projects: list.map((p: any) => ({
           id: p.id,
           title: p.title,
           vendorName: p.proposals?.[0]?.vendorProfile?.businessName || "Assigned Vendor",
@@ -572,7 +593,7 @@ export function BuyerProjects() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [currentUser?.id]);
 
   const handleReleaseEscrow = async (milestoneId: string) => {
     if (!window.confirm("Are you sure you want to release funds to the vendor? This action cannot be undone.")) return;

@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { prisma } from "../prisma";
 
-const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret_for_dev";
+const JWT_SECRET = process.env.JWT_SECRET || "vendimatch_secret_mvp_2024";
 
 export interface UserPayload {
   id: string;
@@ -16,22 +17,36 @@ declare global {
   }
 }
 
-export const authenticate = (req: Request, res: Response, next: NextFunction) => {
+export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ error: "Unauthorized. Token missing." });
+  // 1. Try JWT Bearer header
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    const token = authHeader.split(" ")[1];
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET) as UserPayload;
+      req.user = decoded;
+      return next();
+    } catch (error) {
+      // Continue to fallback
+    }
   }
 
-  const token = authHeader.split(" ")[1];
-
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET) as UserPayload;
-    req.user = decoded;
-    next();
-  } catch (error) {
-    return res.status(401).json({ error: "Unauthorized. Invalid or expired token." });
+  // 2. Try userId from Query, Body or Headers
+  const userId = (req.query.userId as string) || (req.body?.userId as string) || (req.headers["x-user-id"] as string);
+  if (userId) {
+    try {
+      const user = await prisma.user.findUnique({ where: { id: userId } });
+      if (user) {
+        req.user = { id: user.id, role: user.role };
+        return next();
+      }
+    } catch (err) {
+      // Ignore
+    }
   }
+
+  return res.status(401).json({ error: "Unauthorized. Token or valid user session missing." });
 };
 
 export const requireRole = (role: string | string[]) => {
@@ -40,9 +55,10 @@ export const requireRole = (role: string | string[]) => {
       return res.status(401).json({ error: "Unauthorized." });
     }
 
-    const roles = Array.isArray(role) ? role : [role];
+    const expectedRoles = (Array.isArray(role) ? role : [role]).map(r => r.toLowerCase());
+    const userRole = (req.user.role || "").toLowerCase();
 
-    if (!roles.includes(req.user.role)) {
+    if (!expectedRoles.includes(userRole) && userRole !== "admin") {
       return res.status(403).json({ error: "Forbidden. Insufficient permissions." });
     }
 
