@@ -31,12 +31,12 @@ export default function BuyerLayout({ currentUser }: BuyerLayoutProps) {
     <div className="flex min-h-[calc(100vh-64px)] bg-slate-50 relative -mx-4 sm:-mx-6 lg:-mx-8">
       
       {/* Sidebar Navigation */}
-      <aside className="w-[260px] shrink-0 bg-slate-950 border-r border-slate-800/60 hidden md:flex flex-col sticky top-[104px] h-[calc(100vh-104px)]">
+      <aside data-lenis-prevent className="w-[260px] shrink-0 bg-slate-950 border-r border-slate-800/60 hidden md:flex flex-col sticky top-[104px] h-[calc(100vh-104px)] z-20">
         <div className="p-5 border-b border-slate-800/60 bg-slate-950/80 backdrop-blur z-10 shrink-0">
           <span className="text-[10px] font-extrabold uppercase tracking-widest text-indigo-500/80 block mb-1.5 flex items-center gap-1.5"><Briefcase size={12} /> Buyer Portal</span>
           <h2 className="text-xl font-bold text-white tracking-tight leading-tight">Control Center</h2>
         </div>
-        <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar overscroll-contain">
+        <div data-lenis-prevent className="flex-1 min-h-0 overflow-y-auto custom-scrollbar overscroll-contain">
           <nav className="py-5 space-y-1.5 px-4">
             {navItems.map((item) => (
               <NavLink
@@ -125,6 +125,7 @@ export default function BuyerLayout({ currentUser }: BuyerLayoutProps) {
               className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 md:hidden"
             />
             <motion.aside 
+              data-lenis-prevent
               initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
               transition={{ type: "tween", duration: 0.3 }}
               className="fixed top-0 right-0 bottom-0 w-[280px] bg-slate-950 shadow-2xl z-50 flex flex-col md:hidden overflow-y-auto"

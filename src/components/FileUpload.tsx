@@ -93,14 +93,20 @@ export function FileUpload({ onFilesSelected, maxFiles = 5, maxSizeMB = 10, acce
       {selectedFiles.length > 0 && (
         <ul className="mt-4 space-y-2">
           {selectedFiles.map((file, idx) => (
-            <li key={idx} className="flex justify-between items-center p-3 border border-slate-200 rounded-lg bg-white shadow-sm">
-              <div className="flex flex-col overflow-hidden">
-                <span className="text-sm font-bold text-slate-700 truncate">{file.name}</span>
-                <span className="text-xs text-slate-400">{(file.size / 1024 / 1024).toFixed(2)} MB</span>
+            <li key={idx} className="flex justify-between items-center p-3.5 border-2 border-emerald-500 rounded-xl bg-emerald-50/70 shadow-sm">
+              <div className="flex items-center gap-3 overflow-hidden">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-sm shadow-emerald-600/30">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <div className="flex flex-col overflow-hidden">
+                  <span className="text-sm font-bold text-emerald-950 truncate">{file.name}</span>
+                  <span className="text-xs text-emerald-700 font-medium">{(file.size / 1024 / 1024).toFixed(2)} MB • Uploaded</span>
+                </div>
               </div>
               <button 
                 onClick={(e) => { e.preventDefault(); removeFile(idx); }} 
-                className="text-rose-500 hover:text-rose-700 p-1 bg-rose-50 rounded-md"
+                className="text-slate-400 hover:text-rose-600 p-1.5 hover:bg-rose-50 rounded-lg transition-colors"
+                title="Remove file"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
               </button>

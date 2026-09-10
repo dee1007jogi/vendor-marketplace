@@ -16,10 +16,11 @@ export const config = {
     db: parseInt(process.env.REDIS_DB || '0'),
   },
   twilio: {
-    accountSid: process.env.TWILIO_ACCOUNT_SID!,
-    authToken: process.env.TWILIO_AUTH_TOKEN!,
-    phoneNumber: process.env.TWILIO_PHONE_NUMBER!,
-    whatsappSandbox: process.env.TWILIO_WHATSAPP_SANDBOX!,
+    accountSid: process.env.TWILIO_ACCOUNT_SID || '',
+    authToken: process.env.TWILIO_AUTH_TOKEN || '',
+    verifyServiceSid: process.env.TWILIO_VERIFY_SERVICE_SID || '',
+    phoneNumber: process.env.TWILIO_PHONE_NUMBER || '',
+    whatsappSandbox: process.env.TWILIO_WHATSAPP_SANDBOX || '',
   },
   bcrypt: {
     saltRounds: parseInt(process.env.BCRYPT_SALT_ROUNDS || '10'),

@@ -148,7 +148,7 @@ export default function ChatInbox({ currentUser }: ChatInboxProps) {
           <p className="text-[10px] text-slate-500 mt-0.5 leading-none">Real-time WebSocket connection</p>
         </div>
 
-        <div className="flex-1 overflow-y-auto divide-y divide-slate-100 p-2 space-y-1">
+        <div data-lenis-prevent className="flex-1 overflow-y-auto custom-scrollbar divide-y divide-slate-100 p-2 space-y-1">
           {conversations.length === 0 ? (
             <div className="text-center py-8 text-xs text-slate-400">
               <AlertCircle size={20} className="mx-auto text-slate-350 mb-1.5" />
@@ -219,7 +219,7 @@ export default function ChatInbox({ currentUser }: ChatInboxProps) {
               </div>
             </div>
 
-            <div className="flex-1 p-4 overflow-y-auto bg-slate-50/20 space-y-4">
+            <div data-lenis-prevent className="flex-1 p-4 overflow-y-auto custom-scrollbar bg-slate-50/20 space-y-4">
               {messages.length === 0 ? (
                 <div className="text-center py-10 italic text-slate-400 text-xs text-medium">
                   Workspace channel established. Say hi to start the negotiation!

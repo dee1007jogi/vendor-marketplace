@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { prisma } from "../prisma";
 import { matchVendorsToRequirement } from "../services/ai.service";
+import { upload, normalizeUploadUrl } from "../lib/upload";
 
 const router = Router();
 
@@ -366,24 +367,73 @@ router.post("/profile", async (req, res) => {
 });
 
 // POST /api/vendors/kyc - Submit KYC details
-router.post("/kyc", async (req, res) => {
-  const { userId, panUrl, gstUrl, aadhaarUrl, videoUrl } = req.body;
+router.post("/kyc", upload.fields([
+  { name: 'panFile', maxCount: 1 },
+  { name: 'gstFile', maxCount: 1 },
+  { name: 'aadhaarFile', maxCount: 1 },
+  { name: 'cosFile', maxCount: 1 },
+  { name: 'videoFile', maxCount: 1 }
+]), async (req, res) => {
+  const userId = req.body.userId;
   if (!userId) return res.status(400).json({ error: "Missing vendor ID" });
 
   try {
-    const queue = await prisma.verificationQueue.create({
-      data: {
+    const filesDict = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
+    
+    const panFile = filesDict?.['panFile']?.[0];
+    const panUrl = panFile ? normalizeUploadUrl(panFile.filename ? `/uploads/${panFile.filename}` : panFile.path) : (req.body.panUrl ? normalizeUploadUrl(req.body.panUrl) : undefined);
+    const panName = panFile?.originalname || req.body.panFileName;
+
+    const gstFile = filesDict?.['gstFile']?.[0];
+    const gstUrl = gstFile ? normalizeUploadUrl(gstFile.filename ? `/uploads/${gstFile.filename}` : gstFile.path) : (req.body.gstUrl ? normalizeUploadUrl(req.body.gstUrl) : undefined);
+    const gstName = gstFile?.originalname || req.body.gstFileName;
+
+    const aadhaarFile = filesDict?.['aadhaarFile']?.[0];
+    const aadhaarUrl = aadhaarFile ? normalizeUploadUrl(aadhaarFile.filename ? `/uploads/${aadhaarFile.filename}` : aadhaarFile.path) : (req.body.aadhaarUrl ? normalizeUploadUrl(req.body.aadhaarUrl) : undefined);
+    const aadhaarName = aadhaarFile?.originalname || req.body.aadhaarFileName;
+
+    const cosFile = filesDict?.['cosFile']?.[0];
+    const cosUrl = cosFile ? normalizeUploadUrl(cosFile.filename ? `/uploads/${cosFile.filename}` : cosFile.path) : (req.body.cosFileUrl ? normalizeUploadUrl(req.body.cosFileUrl) : undefined);
+    const cosName = cosFile?.originalname || req.body.cosFileName;
+
+    const queue = await prisma.verificationQueue.upsert({
+      where: { userId },
+      create: {
         userId,
-        panFileUrl: panUrl,
-        gstFileUrl: gstUrl,
-        aadhaarFileUrl: aadhaarUrl,
-        // videoIntroUrl is no longer in schema, we can safely omit or drop it
-        status: "pending"
+        panFileName: panName || null,
+        panFileUrl: panUrl || null,
+        gstFileName: gstName || null,
+        gstFileUrl: gstUrl || null,
+        aadhaarFileName: aadhaarName || null,
+        aadhaarFileUrl: aadhaarUrl || null,
+        cosFileName: cosName || null,
+        cosFileUrl: cosUrl || null,
+        status: "pending",
+        submittedAt: new Date()
+      },
+      update: {
+        panFileName: panName || undefined,
+        panFileUrl: panUrl || undefined,
+        gstFileName: gstName || undefined,
+        gstFileUrl: gstUrl || undefined,
+        aadhaarFileName: aadhaarName || undefined,
+        aadhaarFileUrl: aadhaarUrl || undefined,
+        cosFileName: cosName || undefined,
+        cosFileUrl: cosUrl || undefined,
+        status: "pending",
+        rejectionReason: null,
+        reviewedAt: null,
+        reviewedById: null,
+        submittedAt: new Date()
       }
     });
+
+    req.app.get("io")?.emit("dashboard_update", { source: "vendor_kyc_submit", vendorId: userId });
+
     res.json({ success: true, queue });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("KYC upload error:", error);
+    res.status(500).json({ error: error.message || "Failed to submit KYC documents" });
   }
 });
 

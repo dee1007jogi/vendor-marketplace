@@ -9,10 +9,10 @@ export const errorHandler = (
 ) => {
   console.error("Error:", err);
 
-  if (err instanceof ZodError) {
+  if (err instanceof ZodError || err.name === "ZodError") {
     return res.status(400).json({
       error: "Validation failed",
-      details: err.errors,
+      details: err.issues || (err as any).errors || [],
     });
   }
 

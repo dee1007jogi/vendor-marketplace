@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { X, Mail, Phone, Lock, ChevronRight, KeyRound } from "lucide-react";
+import { PasswordFieldsWithSuggestion } from "./ui/PasswordStrengthInput";
 
 interface ForgotPasswordModalProps {
   isOpen: boolean;
@@ -143,22 +144,12 @@ export default function ForgotPasswordModal({ isOpen, onClose, onRequestReset, o
 
               {error && <div className="p-3 bg-red-50 text-red-600 text-sm font-bold rounded-xl text-center border border-red-100">{error}</div>}
 
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">New Password</label>
-                  <div className="relative">
-                    <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                    <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} required className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 rounded-xl py-3 pl-11 pr-4 outline-none font-medium text-slate-900 transition-all" placeholder="••••••••" />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Confirm Password</label>
-                  <div className="relative">
-                    <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                    <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 rounded-xl py-3 pl-11 pr-4 outline-none font-medium text-slate-900 transition-all" placeholder="••••••••" />
-                  </div>
-                </div>
-              </div>
+              <PasswordFieldsWithSuggestion
+                passwordValue={newPassword}
+                confirmValue={confirmPassword}
+                onPasswordChange={setNewPassword}
+                onConfirmChange={setConfirmPassword}
+              />
 
               <button type="submit" disabled={loading} className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white font-bold py-3 rounded-xl shadow-lg shadow-emerald-500/25 transition-colors">
                 {loading ? "Resetting..." : "Reset Password"}

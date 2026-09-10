@@ -9,7 +9,14 @@ router.get("/verification/pending", async (req, res) => {
   try {
     const queue = await prisma.verificationQueue.findMany({
       where: { status: "pending" },
-      include: { user: true }
+      include: { 
+        user: {
+          include: {
+            vendorProfile: true
+          }
+        }
+      },
+      orderBy: { submittedAt: 'desc' }
     });
     res.json({ items: queue, total: queue.length });
   } catch (error) {

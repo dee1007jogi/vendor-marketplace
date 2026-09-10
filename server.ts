@@ -42,6 +42,54 @@ app.use("/api/payments/webhook", express.raw({ type: "application/json" }));
 // 2. JSON parsing for all other routes
 app.use(express.json());
 
+import fs from "fs";
+import { detectMimeAndExt } from "./src/backend/lib/upload";
+
+// Smart Serve uploaded documents with proper Content-Type, Content-Disposition, and MIME sniffing
+app.get(["/uploads/:filename", "/uploads/*"], (req, res, next) => {
+  let fileParam = req.params.filename || (req.params as any)[0] || req.url.replace(/^\/uploads\/?/, "").split("?")[0];
+  if (!fileParam) return next();
+
+  // Strip query parameters
+  fileParam = fileParam.split("?")[0];
+  const filename = path.basename(fileParam);
+  let filePath = path.join(process.cwd(), "uploads", filename);
+
+  // Check if file exists directly or try adding extension
+  if (!fs.existsSync(filePath)) {
+    // Try matching if extension was omitted
+    const files = fs.existsSync(path.join(process.cwd(), "uploads")) ? fs.readdirSync(path.join(process.cwd(), "uploads")) : [];
+    const matched = files.find(f => f === filename || f.startsWith(filename + "."));
+    if (matched) {
+      filePath = path.join(process.cwd(), "uploads", matched);
+    } else {
+      return res.status(404).send("File not found");
+    }
+  }
+
+  const reqName = (req.query.name as string) || "";
+  const isDownload = req.query.download === "1" || req.query.download === "true";
+  const { mime, ext } = detectMimeAndExt(filePath, reqName);
+
+  let downloadName = reqName || path.basename(filePath);
+  if (!path.extname(downloadName) && ext) {
+    downloadName += ext;
+  }
+
+  res.setHeader("Content-Type", mime);
+  if (isDownload) {
+    res.setHeader("Content-Disposition", `attachment; filename="${encodeURIComponent(downloadName)}"`);
+  } else {
+    res.setHeader("Content-Disposition", `inline; filename="${encodeURIComponent(downloadName)}"`);
+  }
+
+  const readStream = fs.createReadStream(filePath);
+  readStream.pipe(res);
+});
+
+// Fallback static serve for uploads
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+
 // Attach io to express app to emit events from routes
 app.set("io", io);
 
@@ -69,7 +117,12 @@ app.use(errorHandler as express.ErrorRequestHandler);
 async function startServer() {
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: {
+        middlewareMode: true,
+        watch: {
+          ignored: ["**/uploads/**", "**/uploads/*", "**/*.db*", "**/.git/**"],
+        },
+      },
       appType: "spa",
     });
     app.use(vite.middlewares);

@@ -1,21 +1,7 @@
 import { Router } from "express";
 import { prisma } from "../prisma";
 import { generateProposalBlueprint } from "../services/ai.service";
-
-import multer from 'multer';
-import fs from 'fs';
-import path from 'path';
-
-// Ensure uploads dir exists
-const uploadsDir = path.join(process.cwd(), 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-const upload = multer({ 
-  dest: 'uploads/',
-  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
-});
+import { upload, normalizeUploadUrl } from "../lib/upload";
 
 const router = Router();
 

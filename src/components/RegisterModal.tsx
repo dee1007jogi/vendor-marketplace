@@ -3,6 +3,7 @@ import { X, Building2, User, Mail, Phone, Lock, ChevronRight, Briefcase, Upload,
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { PasswordFieldsWithSuggestion } from "./ui/PasswordStrengthInput";
 
 const buyerSchema = z.object({
   name: z.string().min(2, "Name must be 2-100 characters").max(100),
@@ -109,9 +110,9 @@ export default function RegisterModal({ isOpen, onClose, onRegister, onOpenLogin
 // ==========================================
 function BuyerForm({ onClose, onOpenLogin, onSuccess }: { onClose: () => void, onOpenLogin: () => void, onSuccess: (phone: string, role: string) => void }) {
   const [apiError, setApiError] = useState("");
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
+  const { register, handleSubmit, setValue, watch, formState: { errors, isSubmitting } } = useForm({
     resolver: zodResolver(buyerSchema),
-    defaultValues: { termsAccepted: true } // Pre-check for ease
+    defaultValues: { termsAccepted: true, password: "", confirmPassword: "" }
   });
 
   const onSubmit = async (data: any) => {
@@ -170,18 +171,14 @@ function BuyerForm({ onClose, onOpenLogin, onSuccess }: { onClose: () => void, o
           <input {...register("gstNumber")} className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 rounded-xl py-3 px-4 outline-none font-medium text-slate-900 uppercase" placeholder="27AAAAA1234B1Z" />
           {errors.gstNumber && <p className="text-red-500 text-xs mt-1">{errors.gstNumber.message as string}</p>}
         </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Password *</label>
-            <input type="password" {...register("password")} className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 rounded-xl py-3 px-4 outline-none font-medium text-slate-900" placeholder="••••••••" />
-            {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message as string}</p>}
-          </div>
-          <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Confirm *</label>
-            <input type="password" {...register("confirmPassword")} className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 rounded-xl py-3 px-4 outline-none font-medium text-slate-900" placeholder="••••••••" />
-            {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message as string}</p>}
-          </div>
-        </div>
+        <PasswordFieldsWithSuggestion
+          passwordValue={watch("password") || ""}
+          confirmValue={watch("confirmPassword") || ""}
+          onPasswordChange={(val) => setValue("password", val, { shouldValidate: true })}
+          onConfirmChange={(val) => setValue("confirmPassword", val, { shouldValidate: true })}
+          passwordError={errors.password?.message as string}
+          confirmError={errors.confirmPassword?.message as string}
+        />
         
         <div className="flex items-start gap-2 mt-4">
           <input type="checkbox" {...register("termsAccepted")} id="terms" className="mt-1" />
@@ -210,7 +207,10 @@ function VendorForm({ onClose, onOpenLogin, onSuccess }: { onClose: () => void, 
   const [apiError, setApiError] = useState("");
   
   // Step 1 Form
-  const form1 = useForm({ resolver: zodResolver(vendorStep1Schema) });
+  const form1 = useForm({
+    resolver: zodResolver(vendorStep1Schema),
+    defaultValues: { password: "", confirmPassword: "" }
+  });
   // Step 2 Form
   const form2 = useForm({ resolver: zodResolver(vendorStep2Schema) });
   
@@ -316,18 +316,14 @@ function VendorForm({ onClose, onOpenLogin, onSuccess }: { onClose: () => void, 
             <input type="tel" {...form1.register("phone")} className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 rounded-xl py-3 px-4 outline-none font-medium" />
             {form1.formState.errors.phone && <p className="text-red-500 text-xs mt-1">{form1.formState.errors.phone.message as string}</p>}
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Password *</label>
-              <input type="password" {...form1.register("password")} className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 rounded-xl py-3 px-4 outline-none font-medium" />
-              {form1.formState.errors.password && <p className="text-red-500 text-xs mt-1">{form1.formState.errors.password.message as string}</p>}
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Confirm *</label>
-              <input type="password" {...form1.register("confirmPassword")} className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 rounded-xl py-3 px-4 outline-none font-medium" />
-              {form1.formState.errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{form1.formState.errors.confirmPassword.message as string}</p>}
-            </div>
-          </div>
+          <PasswordFieldsWithSuggestion
+            passwordValue={form1.watch("password") || ""}
+            confirmValue={form1.watch("confirmPassword") || ""}
+            onPasswordChange={(val) => form1.setValue("password", val, { shouldValidate: true })}
+            onConfirmChange={(val) => form1.setValue("confirmPassword", val, { shouldValidate: true })}
+            passwordError={form1.formState.errors.password?.message as string}
+            confirmError={form1.formState.errors.confirmPassword?.message as string}
+          />
           <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg mt-6">Next</button>
         </form>
       </div>
@@ -411,20 +407,77 @@ function VendorForm({ onClose, onOpenLogin, onSuccess }: { onClose: () => void, 
             { id: "gstFile", label: "GST Certificate *" },
             { id: "aadhaarFile", label: "Owner's Aadhaar *" },
             { id: "registrationProofFile", label: "Registration Proof (Optional)" },
-          ].map(field => (
-            <div key={field.id} className="border border-slate-200 rounded-xl p-3 flex items-center justify-between bg-slate-50">
-              <div>
-                <label className="block text-xs font-bold text-slate-900 mb-1">{field.label}</label>
-                <div className="text-xs text-slate-500 font-medium max-w-[200px] truncate">
-                  {files[field.id] ? files[field.id]?.name : "No file selected"}
+          ].map(field => {
+            const isUploaded = !!files[field.id];
+            const file = files[field.id];
+            const sizeStr = file ? ` (${(file.size / (1024 * 1024)).toFixed(2)} MB)` : "";
+
+            return (
+              <div
+                key={field.id}
+                className={`rounded-2xl p-3.5 flex items-center justify-between transition-all duration-200 border-2 ${
+                  isUploaded
+                    ? "border-emerald-500 bg-emerald-50/70 shadow-sm shadow-emerald-500/10"
+                    : "border-slate-200 bg-slate-50 hover:bg-slate-100/70"
+                }`}
+              >
+                <div className="flex items-center gap-3 overflow-hidden pr-2">
+                  <div
+                    className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+                      isUploaded
+                        ? "bg-emerald-500 text-white shadow-sm shadow-emerald-600/30"
+                        : "bg-slate-200 text-slate-500"
+                    }`}
+                  >
+                    {isUploaded ? <CheckCircle2 size={20} /> : <Upload size={18} />}
+                  </div>
+                  <div className="overflow-hidden">
+                    <div className="flex items-center gap-2">
+                      <label className={`block text-xs font-bold ${isUploaded ? "text-emerald-950" : "text-slate-900"}`}>
+                        {field.label}
+                      </label>
+                      {isUploaded && (
+                        <span className="inline-flex items-center text-[10px] font-extrabold text-emerald-700 bg-emerald-100/90 px-1.5 py-0.5 rounded">
+                          Uploaded
+                        </span>
+                      )}
+                    </div>
+                    <div className={`text-xs font-medium truncate max-w-[200px] sm:max-w-[240px] ${isUploaded ? "text-emerald-700 font-semibold" : "text-slate-400"}`}>
+                      {file ? `${file.name}${sizeStr}` : "No file selected"}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <label
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer transition-all shadow-sm ${
+                      isUploaded
+                        ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+                        : "bg-white border border-slate-300 hover:border-indigo-500 text-slate-700 hover:text-indigo-600"
+                    }`}
+                  >
+                    {isUploaded ? "Change File" : "Choose File"}
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept=".pdf,image/*"
+                      onChange={e => handleFileChange(e, field.id)}
+                    />
+                  </label>
+                  {isUploaded && (
+                    <button
+                      type="button"
+                      onClick={() => setFiles(prev => ({ ...prev, [field.id]: null }))}
+                      className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                      title="Remove file"
+                    >
+                      <X size={16} />
+                    </button>
+                  )}
                 </div>
               </div>
-              <label className="bg-white border border-slate-300 hover:border-indigo-500 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-colors">
-                Choose File
-                <input type="file" className="hidden" accept=".pdf,image/*" onChange={e => handleFileChange(e, field.id)} />
-              </label>
-            </div>
-          ))}
+            );
+          })}
 
           <div className="flex items-start gap-2 mt-6">
             <input type="checkbox" id="confirmData" className="mt-1" />

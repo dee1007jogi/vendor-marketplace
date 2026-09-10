@@ -854,25 +854,53 @@ export function VendorWallet() {
 export function VendorSettings() {
   const { currentUser } = useOutletContext<{ currentUser: User }>();
   const [kycStatus, setKycStatus] = useState("idle");
+  const [kycErrorMessage, setKycErrorMessage] = useState("");
   const [activeTab, setActiveTab] = useState("profile");
+  const [kycFiles, setKycFiles] = useState<{ [key: string]: File | null }>({
+    panFile: null,
+    gstFile: null,
+    aadhaarFile: null,
+    videoFile: null,
+  });
+
+  const handleKycFileChange = (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
+    if (e.target.files && e.target.files[0]) {
+      setKycFiles(prev => ({ ...prev, [key]: e.target.files![0] }));
+      setKycStatus("idle");
+    }
+  };
 
   const submitKYC = async () => {
+    if (!kycFiles.panFile && !kycFiles.gstFile && !kycFiles.aadhaarFile) {
+      setKycErrorMessage("Please select at least one document to upload (PAN, GST, or Aadhaar).");
+      setKycStatus("error");
+      return;
+    }
+
     setKycStatus("submitting");
+    setKycErrorMessage("");
     try {
+      const formData = new FormData();
+      formData.append("userId", currentUser.id);
+      if (kycFiles.panFile) formData.append("panFile", kycFiles.panFile);
+      if (kycFiles.gstFile) formData.append("gstFile", kycFiles.gstFile);
+      if (kycFiles.aadhaarFile) formData.append("aadhaarFile", kycFiles.aadhaarFile);
+      if (kycFiles.videoFile) formData.append("videoFile", kycFiles.videoFile);
+
       const res = await fetch("/api/vendors/kyc", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: currentUser.id,
-          panUrl: "uploaded_pan.jpg",
-          gstUrl: "uploaded_gst.jpg",
-          aadhaarUrl: "uploaded_aadhaar.jpg",
-          videoUrl: "uploaded_video.mp4"
-        })
+        body: formData,
       });
-      if (res.ok) setKycStatus("submitted");
-      else setKycStatus("error");
-    } catch (e) {
+
+      if (res.ok) {
+        setKycStatus("submitted");
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        setKycErrorMessage(errData.error || "Failed to submit KYC. Please try again.");
+        setKycStatus("error");
+      }
+    } catch (e: any) {
+      setKycErrorMessage(e.message || "Failed to submit KYC. Please try again.");
       setKycStatus("error");
     }
   };
@@ -926,33 +954,97 @@ export function VendorSettings() {
             <p className="text-slate-600 mb-6">Upload your KYC documents and a video portfolio to earn the Verified badge and increase buyer trust.</p>
             
             {kycStatus === "submitted" ? (
-              <div className="bg-emerald-50 text-emerald-700 p-6 rounded-xl font-bold border border-emerald-100 flex items-center gap-3">
-                <span className="text-2xl">✓</span> Your verification documents have been submitted and are under review.
+              <div className="bg-emerald-50 text-emerald-800 p-6 rounded-2xl font-bold border-2 border-emerald-200 flex items-center gap-3 animate-in fade-in duration-200">
+                <span className="text-2xl text-emerald-600">✓</span>
+                <div>
+                  <h4 className="text-sm font-black text-emerald-950">Verification Documents Submitted!</h4>
+                  <p className="text-xs text-emerald-700 font-medium mt-0.5">Your files have been received and are currently under review by our compliance team.</p>
+                </div>
               </div>
             ) : (
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">PAN Card</label>
-                    <input type="file" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">GST Certificate</label>
-                    <input type="file" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Aadhaar Proof</label>
-                    <input type="file" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Video Portfolio Intro</label>
-                    <input type="file" accept="video/*" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
-                  </div>
+                  {[
+                    { id: "panFile", label: "PAN Card", accept: ".pdf,image/*" },
+                    { id: "gstFile", label: "GST Certificate", accept: ".pdf,image/*" },
+                    { id: "aadhaarFile", label: "Aadhaar Proof", accept: ".pdf,image/*" },
+                    { id: "videoFile", label: "Video Portfolio Intro", accept: "video/*" },
+                  ].map(doc => {
+                    const isUploaded = !!kycFiles[doc.id];
+                    const file = kycFiles[doc.id];
+                    const sizeStr = file ? ` (${(file.size / (1024 * 1024)).toFixed(2)} MB)` : "";
+
+                    return (
+                      <div
+                        key={doc.id}
+                        className={`rounded-2xl p-4 border-2 transition-all duration-200 flex items-center justify-between ${
+                          isUploaded
+                            ? "border-emerald-500 bg-emerald-50/70 shadow-sm shadow-emerald-500/10"
+                            : "border-slate-200 bg-slate-50 hover:bg-slate-100/70"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3 overflow-hidden pr-2">
+                          <div
+                            className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+                              isUploaded
+                                ? "bg-emerald-500 text-white shadow-sm shadow-emerald-600/30"
+                                : "bg-slate-200 text-slate-500"
+                            }`}
+                          >
+                            {isUploaded ? <span className="text-base font-black">✓</span> : <span className="text-sm">📄</span>}
+                          </div>
+                          <div className="overflow-hidden">
+                            <div className="flex items-center gap-2">
+                              <label className={`block text-xs font-bold ${isUploaded ? "text-emerald-950" : "text-slate-900"}`}>
+                                {doc.label}
+                              </label>
+                              {isUploaded && (
+                                <span className="inline-flex items-center text-[10px] font-extrabold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">
+                                  Selected
+                                </span>
+                              )}
+                            </div>
+                            <div className={`text-xs font-medium truncate max-w-[180px] sm:max-w-[220px] ${isUploaded ? "text-emerald-700 font-semibold" : "text-slate-400"}`}>
+                              {file ? `${file.name}${sizeStr}` : "No file chosen"}
+                            </div>
+                          </div>
+                        </div>
+
+                        <label
+                          className={`px-3.5 py-2 rounded-xl text-xs font-bold cursor-pointer transition-all shrink-0 shadow-sm ${
+                            isUploaded
+                              ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+                              : "bg-white border border-slate-300 hover:border-indigo-500 text-slate-700 hover:text-indigo-600"
+                          }`}
+                        >
+                          {isUploaded ? "Change File" : "Choose File"}
+                          <input
+                            type="file"
+                            accept={doc.accept}
+                            className="hidden"
+                            onChange={e => handleKycFileChange(e, doc.id)}
+                          />
+                        </label>
+                      </div>
+                    );
+                  })}
                 </div>
-                <button onClick={submitKYC} disabled={kycStatus === "submitting"} className="mt-4 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white font-bold py-3 px-8 rounded-xl transition-colors">
-                  {kycStatus === "submitting" ? "Uploading..." : "Submit for Verification"}
-                </button>
-                {kycStatus === "error" && <p className="text-red-500 text-sm font-bold mt-2">Failed to submit KYC. Please try again.</p>}
+
+                <div className="pt-2">
+                  <button 
+                    onClick={submitKYC} 
+                    disabled={kycStatus === "submitting"} 
+                    className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-bold py-3.5 px-8 rounded-xl shadow-lg transition-colors"
+                  >
+                    {kycStatus === "submitting" ? "Uploading..." : "Submit for Verification"}
+                  </button>
+                </div>
+
+                {kycStatus === "error" && (
+                  <p className="text-red-500 text-xs font-bold mt-2">
+                    {kycErrorMessage || "Failed to submit KYC. Please try again."}
+                  </p>
+                )}
               </div>
             )}
           </div>

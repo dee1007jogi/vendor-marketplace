@@ -1,18 +1,13 @@
 import { Router } from "express";
 import { prisma } from "../prisma";
 import jwt from "jsonwebtoken";
-import multer from "multer";
-import fs from "fs";
 import { notificationService } from "../services/NotificationService";
 import { generateOtp, storeOtp, getOtp, deleteOtp } from "../services/otp.service";
-import { sendOtpViaChannel } from "../services/notification.service";
+import { sendOtpViaChannel, checkOtpViaTwilioVerify } from "../services/notification.service";
 import { hashPassword, verifyPassword } from "../services/password.service";
+import { config } from "../config";
 import redis from "../lib/redis";
-
-if (!fs.existsSync("uploads")) {
-  fs.mkdirSync("uploads");
-}
-const upload = multer({ dest: "uploads/" });
+import { upload, normalizeUploadUrl } from "../lib/upload";
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || "vendimatch_secret_mvp_2024";
@@ -168,14 +163,23 @@ router.post("/register/vendor", upload.fields([
       }
     });
 
-    const filesDict = req.files as { [fieldname: string]: Express.Multer.File[] };
+    const filesDict = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
+    const panFile = filesDict?.['panFile']?.[0];
+    const gstFile = filesDict?.['gstFile']?.[0];
+    const aadhaarFile = filesDict?.['aadhaarFile']?.[0];
+    const cosFile = filesDict?.['registrationProofFile']?.[0];
+
     await prisma.verificationQueue.create({
       data: {
         userId: user.id,
-        panFileUrl: filesDict['panFile']?.[0]?.path,
-        gstFileUrl: filesDict['gstFile']?.[0]?.path,
-        aadhaarFileUrl: filesDict['aadhaarFile']?.[0]?.path,
-        // address proof and video intro are not in new schema, omitting them or they can be stored in metadata if needed.
+        panFileUrl: panFile ? normalizeUploadUrl(panFile.filename ? `/uploads/${panFile.filename}` : panFile.path) : null,
+        panFileName: panFile?.originalname || null,
+        gstFileUrl: gstFile ? normalizeUploadUrl(gstFile.filename ? `/uploads/${gstFile.filename}` : gstFile.path) : null,
+        gstFileName: gstFile?.originalname || null,
+        aadhaarFileUrl: aadhaarFile ? normalizeUploadUrl(aadhaarFile.filename ? `/uploads/${aadhaarFile.filename}` : aadhaarFile.path) : null,
+        aadhaarFileName: aadhaarFile?.originalname || null,
+        cosFileUrl: cosFile ? normalizeUploadUrl(cosFile.filename ? `/uploads/${cosFile.filename}` : cosFile.path) : null,
+        cosFileName: cosFile?.originalname || null,
         status: "pending"
       }
     });
@@ -248,8 +252,20 @@ router.post("/otp/verify", async (req, res) => {
   if (!phone || !otp) return res.status(400).json({ error: "Phone and OTP required" });
 
   try {
-    const storedOtp = await getOtp(phone);
-    if (!storedOtp || storedOtp !== otp) {
+    let isValid = false;
+
+    if (config.twilio.verifyServiceSid) {
+      isValid = await checkOtpViaTwilioVerify(phone, otp);
+    }
+
+    if (!isValid) {
+      const storedOtp = await getOtp(phone);
+      if (storedOtp && storedOtp === otp) {
+        isValid = true;
+      }
+    }
+
+    if (!isValid) {
       return res.status(400).json({ error: "OTP expired or invalid" });
     }
 
