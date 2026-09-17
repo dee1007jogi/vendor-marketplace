@@ -280,35 +280,35 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
           />
 
           {/* Top Header Layer (TranslateZ 35px) */}
-          <div className="flex justify-between items-start relative z-20 translate-z-[35px]">
-            <div className="bg-white/10 hover:bg-white/15 backdrop-blur-md px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-extrabold tracking-wider flex items-center gap-2 border border-white/20 shadow-inner transition-all">
+          <div className="flex justify-between items-start relative z-20" style={{ transform: "translateZ(35px)" }}>
+            <div className="bg-white/15 hover:bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-extrabold tracking-wider flex items-center gap-2 border border-white/25 shadow-inner transition-all text-white">
               <span className="text-amber-400 text-xs">★</span>
               <span className="uppercase tracking-wider">50% RENEWAL VOUCHER</span>
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono font-bold tracking-widest px-2.5 py-1 rounded-md bg-black/40 border border-white/15 text-slate-300 uppercase backdrop-blur-sm">
+              <span className="text-[10px] font-mono font-bold tracking-widest px-2.5 py-1 rounded-md bg-black/60 border border-white/20 text-slate-200 uppercase backdrop-blur-sm">
                 WEBGL 3D
               </span>
-              <span className="text-[10px] font-mono font-bold px-2 py-1 rounded-md bg-white/10 border border-white/15 text-white">
+              <span className="text-[10px] font-mono font-bold px-2 py-1 rounded-md bg-emerald-500/20 border border-emerald-400/30 text-emerald-300">
                 ACTIVE
               </span>
             </div>
           </div>
 
           {/* Content Layer (TranslateZ 65px) */}
-          <div className="relative z-20 my-auto py-6 sm:py-8 translate-z-[65px] max-w-2xl">
+          <div className="relative z-20 my-auto py-6 sm:py-8 max-w-2xl" style={{ transform: "translateZ(65px)" }}>
             <div className="text-[11px] sm:text-xs uppercase tracking-[0.25em] text-blue-300 font-mono font-bold mb-2">
               RENEWAL PASS
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black leading-[1.05] tracking-tight mb-4 text-white drop-shadow-sm font-sans">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black leading-[1.05] tracking-tight mb-4 text-white drop-shadow-md font-sans">
               50% Renewal Voucher
             </h1>
 
-            <p className="text-sm sm:text-base text-slate-200/90 leading-relaxed font-normal max-w-xl mb-7 drop-shadow">
+            <p className="text-sm sm:text-base text-slate-100 leading-relaxed font-medium max-w-xl mb-7 drop-shadow-sm">
               Save flat 50% on all quarterly & annual vendor subscription renewals with code{" "}
-              <span className="font-mono font-bold text-amber-300 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/30">
+              <span className="font-mono font-bold text-amber-300 bg-amber-400/20 px-2.5 py-1 rounded border border-amber-400/40">
                 CEO50RENEW
               </span>
               .
@@ -317,13 +317,13 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
             <div className="flex flex-wrap items-center gap-4 sm:gap-6">
               <button
                 onClick={triggerModal}
-                className="group relative bg-[#f59e0b] hover:bg-[#fbbf24] active:scale-95 text-slate-950 font-black py-3.5 px-7 rounded-full text-xs sm:text-sm flex items-center gap-2.5 transition duration-200 shadow-xl shadow-amber-500/25 tracking-wide cursor-pointer"
+                className="group relative bg-[#f59e0b] hover:bg-[#fbbf24] active:scale-95 text-slate-950 font-black py-3.5 px-7 rounded-full text-xs sm:text-sm flex items-center gap-2.5 transition duration-200 shadow-xl shadow-amber-500/30 tracking-wide cursor-pointer"
               >
                 <span>Claim 50% Discount</span>
                 <ArrowRight size={16} className="transform group-hover:translate-x-1.5 transition-transform" />
               </button>
 
-              <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-200/90 font-mono px-3 py-1.5 rounded-full bg-black/25 border border-white/10">
+              <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-100 font-mono px-3.5 py-1.5 rounded-full bg-black/40 border border-white/20 backdrop-blur-sm">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
                 <span>Instant Renewal Lock</span>
               </div>
@@ -331,15 +331,15 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
           </div>
 
           {/* Footer Features Layer (TranslateZ 35px) */}
-          <div className="flex flex-wrap justify-between items-center relative z-20 pt-4 border-t border-white/15 translate-z-[35px] gap-3">
-            <div className="flex items-center gap-2 text-[11px] sm:text-xs text-slate-300/80 font-mono tracking-wide">
+          <div className="flex flex-wrap justify-between items-center relative z-20 pt-4 border-t border-white/20 gap-3" style={{ transform: "translateZ(35px)" }}>
+            <div className="flex items-center gap-2 text-[11px] sm:text-xs text-slate-200 font-mono tracking-wide">
               <ShieldCheck size={16} className="text-emerald-400" />
-              <span className="text-slate-200 font-semibold">100% Escrow Protection</span>
+              <span className="text-white font-semibold">100% Escrow Protection</span>
               <span className="text-slate-500">•</span>
-              <span className="text-emerald-400">Instant Renewal Lock</span>
+              <span className="text-emerald-400 font-bold">Instant Renewal Lock</span>
             </div>
 
-            <div className="flex items-center gap-2 text-[11px] font-mono text-slate-400">
+            <div className="flex items-center gap-2 text-[11px] font-mono text-slate-300">
               <MousePointer size={14} className="text-sky-300 animate-pulse" />
               <span>Move pointer to distort ripples</span>
             </div>
