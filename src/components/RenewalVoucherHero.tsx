@@ -85,7 +85,7 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
     if (!canvas || !card) return;
 
     let width = card.clientWidth || 900;
-    let height = card.clientHeight || 540;
+    let height = card.clientHeight || 380;
 
     const scene = new THREE.Scene();
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
@@ -263,9 +263,7 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
   };
 
   return (
-    <div className="w-full rounded-[2.5rem] bg-[#0b0f19] p-4 sm:p-8 md:p-12 relative overflow-hidden my-8 border border-slate-800/80 shadow-2xl select-none font-sans">
-      {/* Subtle Dot Grid matching standalone HTML */}
-      <div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px]" />
+    <div className="w-full relative select-none font-sans my-4">
       {/* Embedded High-Fidelity Styles matching the Standalone HTML */}
       <style>{`
         .card-stage {
@@ -364,23 +362,23 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
           ref={cardRef}
           onMouseMove={handleCardMouseMove}
           onMouseLeave={handleCardMouseLeave}
-          className="tilt-card relative w-full min-h-[490px] sm:min-h-[520px] md:min-h-[540px] rounded-[2.5rem] p-7 sm:p-10 md:p-12 text-white flex flex-col justify-between overflow-hidden shadow-glow-sapphire border border-white/15 bg-slate-950/80 backdrop-blur-md cursor-default"
+          className="tilt-card relative w-full min-h-[350px] sm:min-h-[380px] md:min-h-[400px] rounded-[2.25rem] p-6 sm:p-8 md:p-9 text-white flex flex-col justify-between overflow-hidden shadow-glow-sapphire border border-white/15 bg-slate-950/80 backdrop-blur-md cursor-default"
         >
           {/* WebGL Canvas Shader */}
           <canvas
             id="shaderCanvas"
             ref={canvasRef}
-            className="absolute inset-0 w-full h-full pointer-events-none rounded-[2.5rem]"
+            className="absolute inset-0 w-full h-full pointer-events-none rounded-[2.25rem]"
           />
 
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none rounded-[2.5rem]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none rounded-[2.25rem]" />
           <div className="glass-glare" />
 
           {/* Top Header Layer */}
           <div className="flex justify-between items-start relative z-20 tilt-layer-mid">
             <div
               id="topBadge"
-              className="bg-white/10 hover:bg-white/15 backdrop-blur-md px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-extrabold tracking-wider flex items-center gap-2 border border-white/20 shadow-inner transition-all text-white"
+              className="bg-white/10 hover:bg-white/15 backdrop-blur-md px-3.5 py-1 rounded-full text-[10px] sm:text-xs font-extrabold tracking-wider flex items-center gap-2 border border-white/20 shadow-inner transition-all text-white"
             >
               <span className="text-amber-400 text-xs">★</span>
               <span className="uppercase">50% RENEWAL VOUCHER</span>
@@ -397,24 +395,24 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
           </div>
 
           {/* Mid Content Layer */}
-          <div id="slideContent" className="relative z-20 my-auto py-6 sm:py-8 tilt-layer-high max-w-2xl">
+          <div id="slideContent" className="relative z-20 my-auto py-3 sm:py-4 tilt-layer-high max-w-2xl">
             <div
               id="surgeOverline"
-              className="text-[11px] sm:text-xs uppercase tracking-[0.25em] text-blue-300 font-mono font-bold mb-2"
+              className="text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-blue-300 font-mono font-bold mb-1.5"
             >
               RENEWAL PASS
             </div>
 
             <h1
               id="surgeTitle"
-              className="text-4xl sm:text-5xl md:text-6xl font-black leading-[1.05] tracking-tight mb-4 text-white drop-shadow-sm font-sans"
+              className="text-3xl sm:text-4xl md:text-5xl font-black leading-[1.08] tracking-tight mb-3 text-white drop-shadow-sm font-sans"
             >
               50% Renewal Voucher
             </h1>
 
             <p
               id="surgeDescription"
-              className="text-sm sm:text-base text-slate-200/90 leading-relaxed font-normal max-w-xl mb-7 drop-shadow"
+              className="text-xs sm:text-sm text-slate-200/90 leading-relaxed font-normal max-w-xl mb-5 drop-shadow"
             >
               Save flat 50% on all quarterly & annual vendor subscription renewals with code{" "}
               <span className="font-mono font-bold text-amber-300 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/30">
@@ -423,11 +421,11 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
               .
             </p>
 
-            <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-5">
               <button
                 id="ctaBtn"
                 onClick={triggerProcurementModal}
-                className="group relative bg-[#f59e0b] hover:bg-[#fbbf24] active:scale-95 text-slate-950 font-black py-3.5 px-7 rounded-full text-xs sm:text-sm flex items-center gap-2.5 transition duration-200 shadow-xl shadow-amber-500/25 tracking-wide cursor-pointer"
+                className="group relative bg-[#f59e0b] hover:bg-[#fbbf24] active:scale-95 text-slate-950 font-black py-3 px-6 rounded-full text-xs sm:text-sm flex items-center gap-2 transition duration-200 shadow-xl shadow-amber-500/25 tracking-wide cursor-pointer"
               >
                 <span>Claim 50% Discount</span>
                 <svg
@@ -440,7 +438,7 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
                 </svg>
               </button>
 
-              <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-200/90 font-mono px-3 py-1.5 rounded-full bg-black/25 border border-white/10">
+              <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-200/90 font-mono px-3 py-1 rounded-full bg-black/25 border border-white/10">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
                 <span>Instant Renewal Lock</span>
               </div>

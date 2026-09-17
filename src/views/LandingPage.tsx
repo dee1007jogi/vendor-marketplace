@@ -2196,7 +2196,7 @@ export default function LandingPage() {
       {/* 5. TOP 500 VENDOR PERKS: 50% Renewal Voucher WebGL 3D Hero Card */}
       {/* ========================================================================= */}
       <Section3DLayer id="voucher" orbTheme="blue" layerTag="05" layerTitle="50% Renewal Voucher">
-        <div className="py-12 sm:py-16 bg-[#080d1a] relative overflow-hidden w-full border-b border-slate-800/80">
+        <div className="py-6 sm:py-8 relative overflow-hidden w-full">
           <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 relative z-10">
             <RenewalVoucherHero
               onClaimSuccess={(code) => {
