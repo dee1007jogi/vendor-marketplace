@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { gsap } from "gsap";
-import { X, ArrowRight, ShieldCheck, MousePointer } from "lucide-react";
 
 export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?: (code: string) => void }) {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -9,13 +8,12 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
   const cursorDotRef = useRef<HTMLDivElement>(null);
   const cursorRingRef = useRef<HTMLDivElement>(null);
 
-  const [soundEnabled, setSoundEnabled] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [accountId, setAccountId] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
 
-  // Web Audio API for interactive audio feedback
+  // Web Audio Context for haptic sound feedback
   const audioCtxRef = useRef<AudioContext | null>(null);
 
   const playHapticSound = (frequency = 440, type: OscillatorType = "sine", duration = 0.04) => {
@@ -38,9 +36,47 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
       osc.start();
       osc.stop(ctx.currentTime + duration);
     } catch (e) {
-      // Audio context fallback
+      // Audio fallback
     }
   };
+
+  // Custom Cursor Following inside the viewport / card stage
+  useEffect(() => {
+    const dot = cursorDotRef.current;
+    const ring = cursorRingRef.current;
+    if (!dot || !ring) return;
+
+    let mousePos = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+    let dotPos = { x: mousePos.x, y: mousePos.y };
+    let ringPos = { x: mousePos.x, y: mousePos.y };
+    let animId: number;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      mousePos.x = e.clientX;
+      mousePos.y = e.clientY;
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+
+    const renderPointer = () => {
+      dotPos.x += (mousePos.x - dotPos.x) * 0.45;
+      dotPos.y += (mousePos.y - dotPos.y) * 0.45;
+      dot.style.transform = `translate3d(${dotPos.x}px, ${dotPos.y}px, 0) translate(-50%, -50%)`;
+
+      ringPos.x += (mousePos.x - ringPos.x) * 0.18;
+      ringPos.y += (mousePos.y - ringPos.y) * 0.18;
+      ring.style.transform = `translate3d(${ringPos.x}px, ${ringPos.y}px, 0) translate(-50%, -50%)`;
+
+      animId = requestAnimationFrame(renderPointer);
+    };
+
+    animId = requestAnimationFrame(renderPointer);
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, []);
 
   // WebGL THREE.js Shader Pipeline
   useEffect(() => {
@@ -48,15 +84,15 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
     const card = cardRef.current;
     if (!canvas || !card) return;
 
-    let width = card.clientWidth;
-    let height = card.clientHeight;
+    let width = card.clientWidth || 900;
+    let height = card.clientHeight || 540;
 
     const scene = new THREE.Scene();
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
 
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(width, height, false);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 
     const vertexShader = `
       varying vec2 vUv;
@@ -127,17 +163,18 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
       targetMouse.y = 1.0 - ((e.clientY - rect.top) / rect.height);
     };
 
-    const handleResize = () => {
-      if (!card) return;
-      width = card.clientWidth;
-      height = card.clientHeight;
-      renderer.setSize(width, height);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      uniforms.u_resolution.value.set(width, height);
-    };
+    const resizeObserver = new ResizeObserver(() => {
+      if (!card || !renderer) return;
+      const rect = card.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        renderer.setSize(rect.width, rect.height, false);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        uniforms.u_resolution.value.set(rect.width, rect.height);
+      }
+    });
 
+    resizeObserver.observe(card);
     card.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("resize", handleResize);
 
     const clock = new THREE.Clock();
     let animId: number;
@@ -151,26 +188,34 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
 
     animate();
 
-    // GSAP Entrance animation
-    gsap.from(card, {
-      scale: 0.94,
-      y: 20,
-      opacity: 0,
-      duration: 0.9,
-      ease: "power3.out"
-    });
+    // GSAP Entrance animation with explicit fromTo and cleanup
+    const tween = gsap.fromTo(
+      card,
+      { opacity: 0, scale: 0.94, y: 20 },
+      {
+        opacity: 1,
+        scale: 1,
+        y: 0,
+        duration: 0.8,
+        ease: "power3.out",
+        onComplete: () => {
+          gsap.set(card, { clearProps: "opacity,scale,y" });
+        }
+      }
+    );
 
     return () => {
+      tween.kill();
       cancelAnimationFrame(animId);
+      resizeObserver.disconnect();
       card.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("resize", handleResize);
       renderer.dispose();
       geometry.dispose();
       material.dispose();
     };
   }, []);
 
-  // 3D Parallax Tilt
+  // 3D Parallax Tilt with exact angles and glare coords
   const handleCardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = cardRef.current;
     if (!card) return;
@@ -196,18 +241,18 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
     setIsHovering(false);
   };
 
-  const triggerModal = () => {
+  const triggerProcurementModal = () => {
     setIsModalOpen(true);
     playHapticSound(580, "sine", 0.08);
   };
 
-  const closeModal = () => {
+  const closeProcurementModal = () => {
     setIsModalOpen(false);
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const submitRfqForm = (e: React.FormEvent) => {
     e.preventDefault();
-    closeModal();
+    closeProcurementModal();
     setShowToast(true);
     playHapticSound(880, "triangle", 0.12);
     if (onClaimSuccess) onClaimSuccess("CEO50RENEW");
@@ -218,18 +263,26 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
   };
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto p-4 sm:p-6 md:p-8 rounded-[3.5rem] bg-[#0b0f19] text-white shadow-2xl select-none relative z-10 font-sans border border-slate-800/90 overflow-hidden">
-      {/* Inline styles for exact match */}
+    <div className="w-full rounded-[2.5rem] bg-[#0b0f19] p-4 sm:p-8 md:p-12 relative overflow-hidden my-8 border border-slate-800/80 shadow-2xl select-none font-sans">
+      {/* Subtle Dot Grid matching standalone HTML */}
+      <div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px]" />
+      {/* Embedded High-Fidelity Styles matching the Standalone HTML */}
       <style>{`
-        .card-stage { perspective: 1200px; }
+        .card-stage {
+          perspective: 1200px;
+        }
+
         .tilt-card {
           transform-style: preserve-3d;
           transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease;
           will-change: transform;
+          opacity: 1 !important;
         }
+
         .tilt-layer-base { transform: translateZ(0px); }
         .tilt-layer-mid { transform: translateZ(35px); }
         .tilt-layer-high { transform: translateZ(65px); }
+
         .glass-glare {
           position: absolute;
           inset: 0;
@@ -240,7 +293,44 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
           transition: opacity 0.3s ease;
           mix-blend-mode: overlay;
         }
+
         .tilt-card:hover .glass-glare { opacity: 1; }
+
+        .cursor-pointer-dot {
+          position: fixed;
+          top: 0; left: 0;
+          width: 7px; height: 7px;
+          background-color: #38bdf8;
+          border-radius: 50%;
+          pointer-events: none;
+          z-index: 9999;
+          transform: translate(-50%, -50%);
+        }
+
+        .cursor-pointer-ring {
+          position: fixed;
+          top: 0; left: 0;
+          width: 38px; height: 38px;
+          border: 1.5px solid rgba(56, 189, 248, 0.5);
+          background: rgba(56, 189, 248, 0.05);
+          border-radius: 50%;
+          pointer-events: none;
+          z-index: 9998;
+          transform: translate(-50%, -50%);
+          backdrop-filter: blur(1.5px);
+          transition: width 0.25s cubic-bezier(0.2, 1, 0.5, 1), 
+                      height 0.25s cubic-bezier(0.2, 1, 0.5, 1), 
+                      border-color 0.25s ease,
+                      background-color 0.25s ease;
+        }
+
+        .cursor-pointer-ring.is-hovering {
+          width: 60px;
+          height: 60px;
+          border-color: #fbbf24;
+          background-color: rgba(251, 191, 36, 0.12);
+        }
+
         .ambient-glow {
           position: absolute;
           width: 120%; height: 120%;
@@ -252,63 +342,46 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
           pointer-events: none;
           z-index: 0;
         }
+
         .shadow-glow-sapphire {
           box-shadow: 0 25px 60px -15px rgba(29, 78, 216, 0.45);
         }
       `}</style>
 
-      {/* Grid Pattern Background */}
-      <div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px]" />
+      {/* Custom Follow Pointer Elements */}
+      <div ref={cursorDotRef} className="cursor-pointer-dot hidden md:block" />
+      <div
+        ref={cursorRingRef}
+        className={`cursor-pointer-ring hidden md:block ${isHovering ? "is-hovering" : ""}`}
+      />
 
-      {/* Stage Header */}
-      <div className="w-full flex items-center justify-between py-3 mb-6 relative z-20">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30 text-white font-extrabold text-sm">
-            ⚡
-          </div>
-          <div>
-            <span className="text-sm font-extrabold tracking-tight text-white">
-              NEXUS<span className="text-blue-400">SURGE</span>
-            </span>
-            <span className="hidden sm:inline-block ml-2 text-[10px] font-mono uppercase tracking-widest text-slate-400 border border-slate-700/80 px-2 py-0.5 rounded-full">
-              Renewal Portal
-            </span>
-          </div>
-        </div>
+      {/* Main Card Container */}
+      <main className="w-full max-w-5xl mx-auto card-stage relative my-auto">
+        <div id="ambientGlow" className="ambient-glow bg-blue-600" />
 
-        <button
-          onClick={() => {
-            setSoundEnabled(!soundEnabled);
-            playHapticSound(!soundEnabled ? 650 : 250, "triangle", 0.08);
-          }}
-          className="px-3 py-1.5 rounded-full bg-slate-900/80 border border-slate-700/80 text-[11px] font-mono text-slate-300 hover:text-white hover:border-slate-500 transition flex items-center gap-1.5 shadow-sm cursor-pointer"
-        >
-          <span className={`w-2 h-2 rounded-full ${soundEnabled ? "bg-emerald-400" : "bg-slate-500"}`} />
-          <span>Audio: {soundEnabled ? "On" : "Off"}</span>
-        </button>
-      </div>
-
-      {/* Main Card Stage */}
-      <div className="card-stage relative w-full">
-        {/* Ambient Glow */}
-        <div className="ambient-glow bg-blue-600" />
-
-        {/* Surge Hero Card */}
         <div
+          id="surgeHeroCard"
           ref={cardRef}
           onMouseMove={handleCardMouseMove}
           onMouseLeave={handleCardMouseLeave}
-          className="tilt-card relative w-full min-h-[520px] sm:min-h-[580px] md:min-h-[620px] rounded-[2.5rem] p-7 sm:p-10 md:p-12 text-white flex flex-col justify-between overflow-hidden shadow-glow-sapphire border border-white/15 bg-slate-950/80 backdrop-blur-md cursor-default"
+          className="tilt-card relative w-full min-h-[490px] sm:min-h-[520px] md:min-h-[540px] rounded-[2.5rem] p-7 sm:p-10 md:p-12 text-white flex flex-col justify-between overflow-hidden shadow-glow-sapphire border border-white/15 bg-slate-950/80 backdrop-blur-md cursor-default"
         >
-          {/* WebGL Canvas */}
-          <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none rounded-[2.5rem]" />
+          {/* WebGL Canvas Shader */}
+          <canvas
+            id="shaderCanvas"
+            ref={canvasRef}
+            className="absolute inset-0 w-full h-full pointer-events-none rounded-[2.5rem]"
+          />
 
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none rounded-[2.5rem]" />
           <div className="glass-glare" />
 
           {/* Top Header Layer */}
           <div className="flex justify-between items-start relative z-20 tilt-layer-mid">
-            <div className="bg-white/10 hover:bg-white/15 backdrop-blur-md px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-extrabold tracking-wider flex items-center gap-2 border border-white/20 shadow-inner transition-all text-white">
+            <div
+              id="topBadge"
+              className="bg-white/10 hover:bg-white/15 backdrop-blur-md px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-extrabold tracking-wider flex items-center gap-2 border border-white/20 shadow-inner transition-all text-white"
+            >
               <span className="text-amber-400 text-xs">★</span>
               <span className="uppercase">50% RENEWAL VOUCHER</span>
             </div>
@@ -323,17 +396,26 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
             </div>
           </div>
 
-          {/* Content Layer */}
-          <div className="relative z-20 my-auto py-6 sm:py-8 tilt-layer-high max-w-2xl">
-            <div className="text-[11px] sm:text-xs uppercase tracking-[0.25em] text-blue-300 font-mono font-bold mb-2">
+          {/* Mid Content Layer */}
+          <div id="slideContent" className="relative z-20 my-auto py-6 sm:py-8 tilt-layer-high max-w-2xl">
+            <div
+              id="surgeOverline"
+              className="text-[11px] sm:text-xs uppercase tracking-[0.25em] text-blue-300 font-mono font-bold mb-2"
+            >
               RENEWAL PASS
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black leading-[1.05] tracking-tight mb-4 text-white drop-shadow-sm">
+            <h1
+              id="surgeTitle"
+              className="text-4xl sm:text-5xl md:text-6xl font-black leading-[1.05] tracking-tight mb-4 text-white drop-shadow-sm font-sans"
+            >
               50% Renewal Voucher
             </h1>
 
-            <p className="text-sm sm:text-base text-slate-200/90 leading-relaxed font-normal max-w-xl mb-7 drop-shadow">
+            <p
+              id="surgeDescription"
+              className="text-sm sm:text-base text-slate-200/90 leading-relaxed font-normal max-w-xl mb-7 drop-shadow"
+            >
               Save flat 50% on all quarterly & annual vendor subscription renewals with code{" "}
               <span className="font-mono font-bold text-amber-300 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/30">
                 CEO50RENEW
@@ -343,11 +425,17 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
 
             <div className="flex flex-wrap items-center gap-4 sm:gap-6">
               <button
-                onClick={triggerModal}
+                id="ctaBtn"
+                onClick={triggerProcurementModal}
                 className="group relative bg-[#f59e0b] hover:bg-[#fbbf24] active:scale-95 text-slate-950 font-black py-3.5 px-7 rounded-full text-xs sm:text-sm flex items-center gap-2.5 transition duration-200 shadow-xl shadow-amber-500/25 tracking-wide cursor-pointer"
               >
                 <span>Claim 50% Discount</span>
-                <svg className="w-4 h-4 transform group-hover:translate-x-1.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-4 h-4 transform group-hover:translate-x-1.5 transition-transform"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
               </button>
@@ -359,11 +447,16 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
             </div>
           </div>
 
-          {/* Footer Features Layer */}
+          {/* Bottom Features Layer */}
           <div className="flex flex-wrap justify-between items-center relative z-20 pt-4 border-t border-white/15 tilt-layer-mid gap-3">
             <div className="flex items-center gap-2 text-[11px] sm:text-xs text-slate-300/80 font-mono tracking-wide">
               <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                />
               </svg>
               <span className="text-slate-200 font-semibold">100% Escrow Protection</span>
               <span className="text-slate-500">•</span>
@@ -372,23 +465,36 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
 
             <div className="flex items-center gap-2 text-[11px] font-mono text-slate-400">
               <svg className="w-3.5 h-3.5 text-sky-300 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"
+                />
               </svg>
               <span>Move pointer to distort ripples</span>
             </div>
           </div>
         </div>
-      </div>
+      </main>
 
       {/* Modal Form */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md transition-opacity duration-300">
-          <div className="bg-slate-900 border border-slate-700/80 rounded-3xl max-w-md w-full p-6 sm:p-8 text-white shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+        <div
+          id="rfqModal"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md transition-opacity duration-300"
+        >
+          <div
+            id="rfqDialog"
+            className="bg-slate-900 border border-slate-700/80 rounded-3xl max-w-md w-full p-6 sm:p-8 text-white shadow-2xl relative animate-in fade-in zoom-in-95 duration-200"
+          >
             <button
-              onClick={closeModal}
+              onClick={closeProcurementModal}
               className="absolute top-5 right-5 text-slate-400 hover:text-white bg-slate-800 p-2 rounded-full transition cursor-pointer"
             >
-              <X size={16} />
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </button>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-2xl bg-amber-400/20 text-amber-400 flex items-center justify-center font-bold text-lg">
@@ -399,7 +505,7 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
                 <p className="text-xs text-slate-400">Instant code application & lock</p>
               </div>
             </div>
-            <form onSubmit={handleFormSubmit} className="space-y-4">
+            <form onSubmit={submitRfqForm} className="space-y-4">
               <div>
                 <label className="block text-[11px] font-mono text-slate-400 uppercase mb-1">Promo Code Applied</label>
                 <input
@@ -435,11 +541,14 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
         </div>
       )}
 
-      {/* Toast Alert Notification */}
+      {/* Toast Notification */}
       {showToast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900 border border-slate-700 text-white text-xs px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-5 duration-300">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="font-bold">Voucher CEO50RENEW Applied Successfully!</span>
+        <div
+          id="toastAlert"
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-800 border border-slate-700 text-white text-xs px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2 animate-in fade-in slide-in-from-bottom-5 duration-300"
+        >
+          <span className="w-2 h-2 rounded-full bg-emerald-400" />
+          <span id="toastAlertMsg">Voucher CEO50RENEW Applied Successfully!</span>
         </div>
       )}
     </div>

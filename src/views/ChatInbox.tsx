@@ -175,7 +175,7 @@ export default function ChatInbox({ currentUser }: ChatInboxProps) {
         </div>
 
         <div data-lenis-prevent className="flex-1 overflow-y-auto custom-scrollbar divide-y divide-slate-100 p-2 space-y-1">
-            (Array.isArray(conversations) && conversations.length > 0) ? (
+          {(Array.isArray(conversations) && conversations.length > 0) ? (
             conversations.map((conv) => {
               const isActive = conv.id === activeConvId;
               const partnerId = conv.buyerId === currentUser.id ? conv.vendorId : conv.buyerId;

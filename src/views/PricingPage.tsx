@@ -132,8 +132,8 @@ export default function PricingPage({ globalPlans = [] }: { globalPlans?: any[] 
           </div>
         </motion.div>
 
-        {/* 50% Renewal Voucher WebGL 3D Full-Screen Hero Section */}
-        <div className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] bg-[#0b0f19] border-y border-slate-800/90 py-12 sm:py-16 md:py-20 px-4 sm:px-6 lg:px-8 mb-20 shadow-2xl flex flex-col justify-center items-center min-h-[85vh]">
+        {/* 50% Renewal Voucher WebGL 3D Hero Card */}
+        <div className="mb-16">
           <RenewalVoucherHero onClaimSuccess={(code) => setClaimedVoucher(true)} />
         </div>
 
