@@ -22,6 +22,7 @@ import MagneticButton from "../components/animations/MagneticButton";
 import SpotlightCard from "../components/animations/SpotlightCard";
 import ShinyText from "../components/animations/ShinyText";
 import PurpleCyberButton from "../components/ui/PurpleCyberButton";
+import RenewalVoucherHero from "../components/RenewalVoucherHero";
 
 import { 
   useLiveLocation, 
@@ -2192,51 +2193,18 @@ export default function LandingPage() {
       <Layer3DTransition currentTag="04" nextTag="05" nextTitle="50% Renewal Voucher" />
 
       {/* ========================================================================= */}
-      {/* 5. TOP 500 VENDOR PERKS: Pastel BG & Ultra Glossy Renewal Pass Card */}
+      {/* 5. TOP 500 VENDOR PERKS: 50% Renewal Voucher WebGL 3D Hero Card */}
       {/* ========================================================================= */}
       <Section3DLayer id="voucher" orbTheme="blue" layerTag="05" layerTitle="50% Renewal Voucher">
-        <div className="py-16 sm:py-20 bg-[#e9eff6] relative overflow-hidden w-full border-b border-slate-200/80">
-          <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 relative z-10">
-            <ScrollReveal>
-              {/* Minimal & Simple Renewal Pass Card */}
-              <div className="relative rounded-3xl bg-white p-6 sm:p-10 text-center shadow-xl shadow-slate-900/5 border border-slate-200/80 flex flex-col items-center justify-center">
-                
-                {/* Top Badge */}
-                <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-sky-50 text-sky-700 text-xs font-bold border border-sky-200/80 mb-4">
-                  <Tag size={13} className="text-sky-600" /> 50% Renewal Voucher
-                </span>
-
-                {/* Main Header Title */}
-                <h3 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight font-heading mb-2">
-                  Renewal Pass
-                </h3>
-
-                {/* Body Text */}
-                <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed mb-6 font-medium">
-                  Save flat 50% on all quarterly & annual vendor subscription renewals with code <strong className="text-sky-700 bg-sky-50 px-2 py-0.5 rounded font-mono border border-sky-200/60">CEO50RENEW</strong>.
-                </p>
-
-                {/* Claim CTA Button */}
-                <button
-                  onClick={handleCopyVoucher}
-                  className="px-6 py-3 rounded-xl bg-gradient-to-r from-sky-400 to-sky-600 hover:from-sky-500 hover:to-sky-700 text-white font-extrabold text-xs sm:text-sm shadow-md transition-all active:scale-95 cursor-pointer mb-6"
-                >
-                  {copiedVoucher ? "Voucher Copied! (CEO50RENEW)" : "Claim 50% Discount"}
-                </button>
-
-                {/* Bottom Simple Feature Badges */}
-                <div className="flex flex-wrap items-center justify-center gap-4 pt-4 border-t border-slate-100 text-xs text-slate-500 font-medium w-full">
-                  <span className="flex items-center gap-1.5">
-                    <ShieldCheck size={14} className="text-emerald-600" /> 100% Escrow Protection
-                  </span>
-                  <span className="text-slate-300">•</span>
-                  <span className="flex items-center gap-1.5">
-                    <Sparkles size={14} className="text-amber-500" /> Instant Renewal Lock
-                  </span>
-                </div>
-
-              </div>
-            </ScrollReveal>
+        <div className="py-12 sm:py-16 bg-[#080d1a] relative overflow-hidden w-full border-b border-slate-800/80">
+          <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 relative z-10">
+            <RenewalVoucherHero
+              onClaimSuccess={(code) => {
+                setCopiedVoucher(true);
+                setSimulatedAlert("🔔 Push Notification Triggered: 50% Renewal Voucher is active with code " + code);
+                setTimeout(() => setCopiedVoucher(false), 3000);
+              }}
+            />
           </div>
         </div>
       </Section3DLayer>
