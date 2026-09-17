@@ -3,11 +3,14 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { useOutletContext, Link, useNavigate } from "react-router-dom";
 import { User } from "../../types";
 import CheckoutModal from "../../components/CheckoutModal";
-import { Download, ShieldCheck, FileText, Star, TrendingUp, Clock, CheckCircle, Search, Filter, Plus, ArrowRight, Activity, MapPin, XCircle, ChevronRight, User as UserIcon, Bell, Lock, HelpCircle, LogOut, FileCheck, DollarSign, Wallet, Briefcase, Bookmark, MessageSquare, CreditCard } from "lucide-react";
+import { Download, ShieldCheck, FileText, Star, TrendingUp, Clock, CheckCircle, Search, Filter, Plus, ArrowRight, Activity, MapPin, XCircle, ChevronRight, User as UserIcon, Bell, Lock, HelpCircle, LogOut, FileCheck, DollarSign, Wallet, Briefcase, Bookmark, MessageSquare, CreditCard, Upload, Camera, Globe, Phone, Building2, Eye, Sparkles, Check, Image as ImageIcon } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
 import { Input } from "../../components/ui/input";
+import Animated3DLetterAvatar from "../../components/Animated3DLetterAvatar";
+import BuyerProfileModal from "../../components/BuyerProfileModal";
+import InteractiveWallet from "../../components/payment/InteractiveWallet";
 
 export function BuyerOverview() {
   const { currentUser } = useOutletContext<{ currentUser: User }>();
@@ -38,48 +41,56 @@ export function BuyerOverview() {
           <p className="text-sm md:text-base text-slate-500 font-medium mt-1">Here's your marketplace summary.</p>
         </div>
         <div className="grid grid-cols-2 md:flex gap-3 w-full md:w-auto mt-4 md:mt-0">
-          <Button onClick={() => navigate("/vendors")} variant="outline" className="w-full md:w-auto h-12 gap-2 text-sm shadow-sm rounded-xl">
-            <Search size={18} /> Browse
-          </Button>
-          <Button onClick={() => navigate("/post-requirement")} className="w-full md:w-auto h-12 gap-2 text-sm shadow-sm rounded-xl">
+          <button onClick={() => navigate("/vendors")} className="neo-btn w-full md:w-auto px-5 h-12 gap-2 text-sm rounded-xl font-bold flex items-center justify-center cursor-pointer text-slate-800 transition-all">
+            <Search size={18} className="text-sky-600" /> Browse
+          </button>
+          <button onClick={() => navigate("/post-requirement")} className="neo-btn-primary w-full md:w-auto px-5 h-12 gap-2 text-sm rounded-xl font-black flex items-center justify-center cursor-pointer shadow-md transition-all">
             <Plus size={18} /> Post Req
-          </Button>
+          </button>
         </div>
       </div>
       
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
-        <Card onClick={() => navigate("/buyer/projects")} className="p-4 md:p-6 hover:border-indigo-300 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
+        <div onClick={() => navigate("/buyer/projects")} className="neo-card p-4 md:p-6 rounded-2xl cursor-pointer group flex flex-col justify-between transition-all hover:scale-[1.02]">
           <div className="flex justify-between items-start mb-3 md:mb-4">
-            <div className="p-2 md:p-3 bg-indigo-50 text-indigo-600 rounded-xl group-hover:bg-indigo-600 group-hover:text-white transition-colors"><Briefcase size={20} className="md:w-6 md:h-6" /></div>
-            <Badge variant="secondary" className="hidden sm:flex text-emerald-600 bg-emerald-50 hover:bg-emerald-50"><TrendingUp size={12} className="mr-1" /> +2 this month</Badge>
+            <div className="p-2.5 md:p-3 bg-sky-100/70 text-sky-700 rounded-xl group-hover:bg-sky-600 group-hover:text-white transition-colors shadow-2xs">
+              <Briefcase size={20} className="md:w-6 md:h-6" />
+            </div>
+            <span className="hidden sm:flex text-emerald-700 bg-emerald-50 border border-emerald-200/60 font-extrabold text-[11px] px-2.5 py-1 rounded-lg">
+              <TrendingUp size={12} className="mr-1 mt-0.5" /> +2 this month
+            </span>
           </div>
           <div>
-            <p className="text-slate-500 font-bold uppercase tracking-wider text-[10px] md:text-xs mb-1">Active Projects</p>
+            <p className="text-slate-500 font-extrabold uppercase tracking-wider text-[10px] md:text-xs mb-1">Active Projects</p>
             <p className="text-2xl md:text-3xl font-black text-slate-900">{stats?.activeProjects || 0}</p>
           </div>
-        </Card>
+        </div>
         
-        <Card onClick={() => navigate("/buyer/requirements")} className="p-4 md:p-6 hover:border-amber-300 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
+        <div onClick={() => navigate("/buyer/requirements")} className="neo-card p-4 md:p-6 rounded-2xl cursor-pointer group flex flex-col justify-between transition-all hover:scale-[1.02]">
           <div className="flex justify-between items-start mb-3 md:mb-4">
-            <div className="p-2 md:p-3 bg-amber-50 text-amber-600 rounded-xl group-hover:bg-amber-500 group-hover:text-white transition-colors"><FileCheck size={20} className="md:w-6 md:h-6" /></div>
-            <Badge variant="outline" className="text-amber-600 border-amber-200 bg-amber-50 shrink-0">Action Req.</Badge>
+            <div className="p-2.5 md:p-3 bg-amber-100/70 text-amber-700 rounded-xl group-hover:bg-amber-500 group-hover:text-white transition-colors shadow-2xs">
+              <FileCheck size={20} className="md:w-6 md:h-6" />
+            </div>
+            <span className="text-amber-700 border border-amber-200/80 bg-amber-50 font-extrabold text-[10px] px-2 py-0.5 rounded-lg shrink-0">Action Req.</span>
           </div>
           <div>
-            <p className="text-slate-500 font-bold uppercase tracking-wider text-[10px] md:text-xs mb-1">Pending Quotes</p>
+            <p className="text-slate-500 font-extrabold uppercase tracking-wider text-[10px] md:text-xs mb-1">Pending Quotes</p>
             <p className="text-2xl md:text-3xl font-black text-slate-900">{stats?.pendingQuotes || 0}</p>
           </div>
-        </Card>
+        </div>
         
-        <Card onClick={() => navigate("/buyer/shortlist")} className="col-span-2 lg:col-span-1 p-4 md:p-6 hover:border-emerald-300 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
+        <div onClick={() => navigate("/buyer/shortlist")} className="col-span-2 lg:col-span-1 neo-card p-4 md:p-6 rounded-2xl cursor-pointer group flex flex-col justify-between transition-all hover:scale-[1.02]">
           <div className="flex justify-between items-start mb-3 md:mb-4">
-            <div className="p-2 md:p-3 bg-emerald-50 text-emerald-600 rounded-xl group-hover:bg-emerald-500 group-hover:text-white transition-colors"><Bookmark size={20} className="md:w-6 md:h-6" /></div>
+            <div className="p-2.5 md:p-3 bg-emerald-100/70 text-emerald-700 rounded-xl group-hover:bg-emerald-600 group-hover:text-white transition-colors shadow-2xs">
+              <Bookmark size={20} className="md:w-6 md:h-6" />
+            </div>
           </div>
           <div>
-            <p className="text-slate-500 font-bold uppercase tracking-wider text-[10px] md:text-xs mb-1">Saved Vendors</p>
+            <p className="text-slate-500 font-extrabold uppercase tracking-wider text-[10px] md:text-xs mb-1">Saved Vendors</p>
             <p className="text-2xl md:text-3xl font-black text-slate-900">{stats?.savedVendors || 0}</p>
           </div>
-        </Card>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -333,16 +344,17 @@ export function BuyerRequirements() {
       {/* Requirement Detail Modal */}
       {viewReq && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-sky-950/35 backdrop-blur-md animate-in fade-in duration-200"
           onClick={() => setViewReq(null)}
         >
           <div
-            className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-6 md:p-8 max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-200 border border-slate-100 dark:border-slate-800"
+            className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl p-6 md:p-8 max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-200 border border-sky-100"
             role="dialog"
             aria-modal="true"
             aria-labelledby="requirement-title"
             onClick={(e) => e.stopPropagation()}
           >
+            <div className="gold-line-animated absolute top-0 left-0 right-0 h-[3px]"></div>
             {/* Close button */}
             <button
               onClick={() => setViewReq(null)}
@@ -408,7 +420,7 @@ export function BuyerRequirements() {
                   <div className="flex flex-wrap gap-2">
                     {viewReq.aiMetadata.skillsRequired?.map((skill: string, i: number) => (
                       <span key={i}>
-                        <Badge variant="outline" className="bg-white dark:bg-slate-900 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800">
+                        <Badge variant="outline" className="bg-sky-50 text-sky-800 border-sky-200 font-bold">
                           {skill}
                         </Badge>
                       </span>
@@ -532,16 +544,16 @@ export function BuyerShortlist() {
 
       {/* Sticky Action Bar */}
       {selectedVendors.length > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-6 py-4 rounded-full shadow-2xl flex items-center gap-6 animate-in slide-in-from-bottom-8">
-          <span className="font-bold">{selectedVendors.length} vendor{selectedVendors.length > 1 ? 's' : ''} selected</span>
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-xl text-slate-800 px-6 py-4 rounded-full shadow-2xl flex items-center gap-6 animate-in slide-in-from-bottom-8 border border-sky-200">
+          <span className="font-black text-sm">{selectedVendors.length} vendor{selectedVendors.length > 1 ? 's' : ''} selected</span>
           <div className="flex gap-2">
             <button 
               onClick={() => navigate("/compare")}
-              className="bg-indigo-500 hover:bg-indigo-400 text-white px-6 py-2 rounded-full font-bold shadow-sm transition-colors"
+              className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white px-6 py-2 rounded-full font-bold shadow-sm transition-all cursor-pointer"
             >
               Compare Selected
             </button>
-            <button onClick={() => setSelectedVendors([])} className="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-full font-bold transition-colors">Clear</button>
+            <button onClick={() => setSelectedVendors([])} className="bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 px-4 py-2 rounded-full font-bold transition-colors cursor-pointer">Clear</button>
           </div>
         </div>
       )}
@@ -785,8 +797,9 @@ export function BuyerProjects() {
 
       {/* Dispute Modal */}
       {disputeModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-sky-950/35 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 border border-sky-100 relative">
+            <div className="gold-line-animated absolute top-0 left-0 right-0 h-[3px]"></div>
             <div className="p-6 border-b border-slate-100">
               <h3 className="text-xl font-black text-slate-900 flex items-center gap-2"><HelpCircle className="text-rose-600" /> Raise Dispute</h3>
             </div>
@@ -807,7 +820,7 @@ export function BuyerProjects() {
               <button 
                 onClick={submitDispute} 
                 disabled={!disputeReason.trim()}
-                className="bg-rose-600 text-white font-bold px-6 py-2 rounded-xl shadow-sm hover:bg-rose-700 disabled:opacity-50 transition-colors"
+                className="bg-rose-600 text-white font-bold px-6 py-2 rounded-xl shadow-sm hover:bg-rose-700 disabled:opacity-50 transition-colors cursor-pointer"
               >
                 Submit Dispute
               </button>
@@ -818,8 +831,9 @@ export function BuyerProjects() {
 
       {/* Review Modal Mock */}
       {reviewModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-sky-950/35 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 border border-sky-100 relative">
+            <div className="gold-line-animated absolute top-0 left-0 right-0 h-[3px]"></div>
             <div className="p-6 border-b border-slate-100 text-center">
               <h3 className="text-xl font-black text-slate-900">Rate Vendor Performance</h3>
               <p className="text-sm text-slate-500 font-medium mt-1">Your feedback helps maintain platform quality.</p>
@@ -1002,33 +1016,72 @@ export function BuyerPayments() {
         )}
 
         {activeTab === 'methods' && (
-          <div className="p-8">
-            <h3 className="font-bold text-slate-900 mb-4">Saved Payment Methods</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <div className="border border-indigo-200 bg-indigo-50/50 p-4 rounded-xl flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-8 bg-white border border-slate-200 rounded flex items-center justify-center font-black text-slate-900 text-xs italic">VISA</div>
-                  <div>
-                    <p className="font-bold text-slate-900">•••• •••• •••• 4242</p>
-                    <p className="text-xs text-slate-500">Expires 12/28</p>
+          <div className="p-8 space-y-8">
+            <div className="flex flex-col lg:flex-row gap-8 items-center lg:items-start justify-between">
+              <div className="flex-1 space-y-6 w-full">
+                <div>
+                  <h3 className="font-bold text-slate-900 text-lg mb-1">Saved Payment Cards & Methods</h3>
+                  <p className="text-slate-500 text-sm">Manage payment cards linked to your enterprise account for escrow deposits and automatic billing.</p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="border border-indigo-200 bg-indigo-50/50 p-4 rounded-2xl flex justify-between items-center shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-9 bg-gradient-to-r from-indigo-600 to-sky-600 text-white rounded-lg flex items-center justify-center font-black text-xs tracking-wider">
+                        STRIPE
+                      </div>
+                      <div>
+                        <p className="font-bold text-slate-900">•••• •••• •••• 4242</p>
+                        <p className="text-xs text-slate-500 font-medium">Stripe Direct Escrow</p>
+                      </div>
+                    </div>
+                    <span className="text-xs font-bold text-indigo-600 bg-indigo-100 px-2.5 py-1 rounded-full">Primary</span>
+                  </div>
+
+                  <div className="border border-slate-200 bg-white p-4 rounded-2xl flex justify-between items-center hover:border-slate-300 transition-colors shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-9 bg-emerald-500 text-white rounded-lg flex items-center justify-center font-black text-xs tracking-wider">
+                        WISE
+                      </div>
+                      <div>
+                        <p className="font-bold text-slate-900">•••• •••• •••• 8810</p>
+                        <p className="text-xs text-slate-500 font-medium">Wise Business Wire</p>
+                      </div>
+                    </div>
+                    <button className="text-xs font-bold text-slate-400 hover:text-rose-600">Remove</button>
+                  </div>
+
+                  <div className="border border-slate-200 bg-white p-4 rounded-2xl flex justify-between items-center hover:border-slate-300 transition-colors shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-9 bg-white border border-slate-200 text-sky-700 rounded-lg flex items-center justify-center font-black text-xs italic">
+                        PayPal
+                      </div>
+                      <div>
+                        <p className="font-bold text-slate-900">•••• •••• •••• 0094</p>
+                        <p className="text-xs text-slate-500 font-medium">hello@work.com</p>
+                      </div>
+                    </div>
+                    <button className="text-xs font-bold text-slate-400 hover:text-rose-600">Remove</button>
                   </div>
                 </div>
-                <span className="text-xs font-bold text-indigo-600 bg-indigo-100 px-2 py-1 rounded">Primary</span>
+
+                <button className="border-2 border-dashed border-slate-300 text-slate-600 hover:text-indigo-600 hover:border-indigo-400 font-bold px-5 py-3 rounded-2xl transition-all flex items-center justify-center gap-2 w-full sm:w-auto text-sm cursor-pointer">
+                  <Plus size={18} /> Add New Payout / Payment Method
+                </button>
               </div>
-              <div className="border border-slate-200 bg-white p-4 rounded-xl flex justify-between items-center hover:border-slate-300 transition-colors">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-8 bg-white border border-slate-200 rounded flex items-center justify-center font-black text-indigo-600 text-xs italic">UPI</div>
-                  <div>
-                    <p className="font-bold text-slate-900">user@okbank</p>
-                    <p className="text-xs text-slate-500">Google Pay</p>
-                  </div>
+
+              {/* 3D Wallet Display */}
+              <div className="bg-slate-900 rounded-3xl p-6 border border-slate-800 shadow-xl flex flex-col items-center justify-center text-center w-full lg:w-80 shrink-0">
+                <div className="flex items-center gap-2 text-sky-400 font-bold text-xs uppercase tracking-wider mb-2">
+                  <Sparkles size={14} className="animate-spin" /> Interactive 3D Pocket
                 </div>
-                <button className="text-xs font-bold text-slate-400 hover:text-rose-600">Remove</button>
+                <InteractiveWallet 
+                  balance="$12,450.00"
+                  balanceLabel="Escrow Wallet"
+                  defaultShowBalance={false}
+                />
               </div>
             </div>
-            <button className="border-2 border-dashed border-slate-300 text-slate-500 hover:text-indigo-600 hover:border-indigo-300 font-bold px-4 py-3 rounded-xl transition-colors flex items-center justify-center gap-2 w-full md:w-auto">
-              <Plus size={18} /> Add New Payment Method
-            </button>
           </div>
         )}
 
@@ -1071,12 +1124,13 @@ export function BuyerPayments() {
       </div>
 
       {viewReceipt && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 border border-slate-200">
-            <div className="bg-slate-50 px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-sky-950/35 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 border border-sky-100 relative">
+            <div className="gold-line-animated absolute top-0 left-0 right-0 h-[3px]"></div>
+            <div className="bg-sky-50 px-6 py-4 border-b border-sky-100 flex justify-between items-center">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded bg-indigo-600 text-white flex items-center justify-center font-bold">
-                  <span className="sr-only">VendiMatch Logo</span>V
+                <div className="w-8 h-8 rounded bg-gradient-to-br from-sky-500 to-blue-600 text-white flex items-center justify-center font-bold shadow-sm">
+                  <span className="sr-only">Bussinest Logo</span>B
                 </div>
                 <h3 className="font-black text-slate-900">Transaction Receipt</h3>
               </div>
@@ -1133,13 +1187,168 @@ export function BuyerPayments() {
 export function BuyerSettings() {
   const [activeTab, setActiveTab] = useState('profile');
   const { currentUser } = useOutletContext<{ currentUser: User }>();
+  const navigate = useNavigate();
+
+  // Load saved state or fall back to currentUser
+  const savedDataStr = localStorage.getItem(`vendorMatchUserData_${currentUser.id}`);
+  const savedData = savedDataStr ? JSON.parse(savedDataStr) : {};
+
+  const [useCustomAvatar, setUseCustomAvatar] = useState<boolean>(
+    savedData.useCustomAvatar !== undefined ? savedData.useCustomAvatar : (currentUser.useCustomAvatar || false)
+  );
+  const [customAvatar, setCustomAvatar] = useState<string>(
+    savedData.customAvatar || currentUser.customAvatar || currentUser.avatar || ""
+  );
+
+  const [fullName, setFullName] = useState(savedData.name || currentUser.name || "");
+  const [designation, setDesignation] = useState(savedData.designation || currentUser.designation || "Head of Procurement");
+  const [phone, setPhone] = useState(savedData.phone || currentUser.phone || "+91 98765 43210");
+  const [whatsapp, setWhatsapp] = useState(savedData.whatsapp || currentUser.whatsapp || "+91 98765 43210");
+  
+  const [companyName, setCompanyName] = useState(savedData.companyName || currentUser.companyName || "");
+  const [brandName, setBrandName] = useState(savedData.brandName || currentUser.brandName || "");
+  const [gstin, setGstin] = useState(savedData.gstin || currentUser.gstin || "");
+  const [panNumber, setPanNumber] = useState(savedData.panNumber || currentUser.panNumber || "");
+  const [industry, setIndustry] = useState(savedData.industry || currentUser.industry || "Industrial Machinery & Automation");
+  const [businessType, setBusinessType] = useState(savedData.businessType || currentUser.businessType || "Enterprise Procurement & Bulk Buyer");
+  const [companySize, setCompanySize] = useState(savedData.companySize || currentUser.companySize || "51-200 Employees");
+  const [yearEstablished, setYearEstablished] = useState(savedData.yearEstablished || currentUser.yearEstablished || "2018");
+  const [annualTurnover, setAnnualTurnover] = useState(savedData.annualTurnover || currentUser.annualTurnover || "₹5 Cr – ₹25 Cr (Annual Sourcing)");
+  
+  const [address, setAddress] = useState(savedData.address || currentUser.address || "Plot 42, Electronic City Phase 2");
+  const [city, setCity] = useState(savedData.city || currentUser.city || "Bangalore");
+  const [state, setState] = useState(savedData.state || currentUser.state || "Karnataka");
+  const [pincode, setPincode] = useState(savedData.pincode || currentUser.pincode || "560100");
+  const [website, setWebsite] = useState(savedData.website || currentUser.website || "https://bussinest.com");
+  const [description, setDescription] = useState(savedData.description || currentUser.description || "Active bulk procurement enterprise sourcing raw materials, machinery, and OEM components via certified escrow.");
+
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [previewModalOpen, setPreviewModalOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          const dataUrl = event.target.result as string;
+          setCustomAvatar(dataUrl);
+          setUseCustomAvatar(true);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSaveProfile = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setIsSaving(true);
+
+    const updatedProfile: Partial<User> = {
+      name: fullName,
+      designation,
+      phone,
+      whatsapp,
+      companyName,
+      brandName,
+      gstin,
+      panNumber,
+      industry,
+      businessType,
+      companySize,
+      yearEstablished,
+      annualTurnover,
+      address,
+      city,
+      state,
+      pincode,
+      website,
+      description,
+      customAvatar,
+      useCustomAvatar,
+    };
+
+    // Save to user storage
+    localStorage.setItem(`vendorMatchUserData_${currentUser.id}`, JSON.stringify(updatedProfile));
+    
+    // Also merge into active currentUser in memory
+    Object.assign(currentUser, updatedProfile);
+
+    // Sync to backend if endpoint available
+    fetch("/api/auth/profile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: currentUser.id, ...updatedProfile }),
+    }).catch(() => {});
+
+    // Notify other components like Header and Sidebar
+    window.dispatchEvent(new Event("user_updated"));
+    window.dispatchEvent(new Event("storage"));
+
+    setTimeout(() => {
+      setIsSaving(false);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 4000);
+    }, 400);
+  };
+
+  // Profile mock object for preview modal
+  const previewBuyer: User = {
+    ...currentUser,
+    name: fullName,
+    designation,
+    phone,
+    whatsapp,
+    companyName,
+    brandName,
+    gstin,
+    panNumber,
+    industry,
+    businessType,
+    companySize,
+    yearEstablished,
+    annualTurnover,
+    address,
+    city,
+    state,
+    pincode,
+    website,
+    description,
+    customAvatar,
+    useCustomAvatar,
+  };
 
   return (
     <div className="animate-in fade-in zoom-in-95 duration-200 pb-20">
-      <div className="mb-6">
-        <h1 className="text-2xl font-black text-slate-900">Account Settings</h1>
-        <p className="text-slate-500 font-medium mt-1">Manage your profile, preferences, and security settings.</p>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <h1 className="text-2xl font-black text-slate-900">Account & Business Settings</h1>
+          <p className="text-slate-500 font-medium mt-1">Manage your custom image, enterprise profile, and tax credentials.</p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setPreviewModalOpen(true)}
+          className="neo-btn px-4 py-2.5 rounded-xl font-bold text-xs text-sky-800 hover:text-sky-950 flex items-center gap-2 cursor-pointer shadow-xs"
+        >
+          <Eye size={15} className="text-sky-600" />
+          <span>View Public Business Page</span>
+        </button>
       </div>
+
+      {saveSuccess && (
+        <div className="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-center gap-3 animate-in fade-in duration-200">
+          <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0">
+            <Check size={18} />
+          </div>
+          <div>
+            <h4 className="font-black text-sm">Profile Details Saved Successfully!</h4>
+            <p className="text-xs text-emerald-700 font-medium">Your custom photo, business information, and tax IDs are now live across your buyer portal.</p>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Settings Sidebar */}
@@ -1148,7 +1357,7 @@ export function BuyerSettings() {
             onClick={() => setActiveTab('profile')} 
             className={`w-full text-left px-4 py-3 rounded-xl font-bold text-sm transition-colors flex items-center gap-3 ${activeTab === 'profile' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-50'}`}
           >
-            <UserIcon size={18} /> Profile Information
+            <Building2 size={18} /> Business Profile
           </button>
           <button 
             onClick={() => setActiveTab('notifications')} 
@@ -1178,45 +1387,363 @@ export function BuyerSettings() {
 
         {/* Settings Content Area */}
         <div className="md:col-span-3">
-          <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm">
             
             {activeTab === 'profile' && (
-              <div className="animate-in fade-in duration-200">
-                <h2 className="text-xl font-bold text-slate-900 mb-6">Profile Information</h2>
-                <div className="flex flex-col sm:flex-row items-center gap-6 mb-8 text-center sm:text-left">
-                  <div className="w-20 h-20 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-2xl font-black">
-                    {currentUser.name.charAt(0)}
-                  </div>
-                  <div>
-                    <button className="bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-xl font-bold text-sm shadow-sm hover:bg-slate-50 transition-colors mb-2">Upload New Avatar</button>
-                    <p className="text-xs text-slate-500 font-medium">JPG, GIF or PNG. Max size of 800K</p>
+              <form onSubmit={handleSaveProfile} className="animate-in fade-in duration-200 space-y-8">
+                
+                {/* 1. Custom Image & 3D Avatar Selector */}
+                <div className="p-6 rounded-2xl bg-gradient-to-br from-sky-50/70 via-white to-blue-50/40 border border-sky-100">
+                  <h3 className="text-xs font-black uppercase tracking-widest text-sky-800 mb-4 flex items-center gap-2">
+                    <Sparkles size={14} className="text-sky-600" /> Avatar & Brand Identity
+                  </h3>
+
+                  <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+                    {/* Live Preview Avatar */}
+                    <div className="relative shrink-0 p-1 bg-white rounded-full shadow-md border-2 border-sky-200">
+                      <Animated3DLetterAvatar 
+                        role="buyer" 
+                        size="2xl" 
+                        customImage={useCustomAvatar ? customAvatar : undefined}
+                        useCustomAvatar={useCustomAvatar}
+                      />
+                    </div>
+
+                    <div className="flex-1 text-center sm:text-left space-y-3">
+                      <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                        {/* Hidden file input */}
+                        <input 
+                          type="file" 
+                          ref={fileInputRef}
+                          onChange={handleImageFileChange}
+                          accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                          className="hidden" 
+                        />
+                        
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="neo-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-800 hover:text-sky-800 flex items-center gap-1.5 cursor-pointer shadow-xs"
+                        >
+                          <Upload size={14} className="text-sky-600" /> Upload Custom Photo/Logo
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setUseCustomAvatar(false)}
+                          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                            !useCustomAvatar 
+                              ? "bg-sky-600 text-white shadow-md shadow-sky-600/20" 
+                              : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50"
+                          }`}
+                        >
+                          Default 3D Avatar (B)
+                        </button>
+
+                        {customAvatar && (
+                          <button
+                            type="button"
+                            onClick={() => setUseCustomAvatar(true)}
+                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                              useCustomAvatar 
+                                ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/20" 
+                                : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50"
+                            }`}
+                          >
+                            Use Uploaded Photo
+                          </button>
+                        )}
+                      </div>
+
+                      <p className="text-xs text-slate-500 font-medium">
+                        {useCustomAvatar && customAvatar 
+                          ? "Using your custom high-resolution enterprise logo." 
+                          : "Using hardware-accelerated 3D rotating letter token (B). Switch to your custom logo anytime."}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                  <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">Full Name</label>
-                    <input type="text" defaultValue={currentUser.name} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">Email Address</label>
-                    <input type="email" defaultValue={currentUser.email} disabled className="w-full p-3 bg-slate-100 text-slate-500 border border-slate-200 rounded-xl cursor-not-allowed" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">Company Name (Optional)</label>
-                    <input type="text" placeholder="e.g. Acme Corp" className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">GSTIN (Optional)</label>
-                    <input type="text" placeholder="22AAAAA0000A1Z5" className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" />
+                {/* 2. Personal & Representative Details */}
+                <div>
+                  <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-4 flex items-center gap-2 pb-2 border-b border-slate-100">
+                    <UserIcon size={16} className="text-sky-600" /> Primary Procurement Representative
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">Full Name *</label>
+                      <input 
+                        type="text" 
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        required
+                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none font-semibold text-sm" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">Official Designation</label>
+                      <input 
+                        type="text" 
+                        value={designation}
+                        onChange={(e) => setDesignation(e.target.value)}
+                        placeholder="e.g. Director of Sourcing / Procurement Head" 
+                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none font-semibold text-sm" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">Official Email</label>
+                      <input 
+                        type="email" 
+                        defaultValue={currentUser.email} 
+                        disabled 
+                        className="w-full p-3 bg-slate-100 text-slate-500 border border-slate-200 rounded-xl cursor-not-allowed font-semibold text-sm" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">Direct Business Phone</label>
+                      <input 
+                        type="text" 
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="+91 98765 43210" 
+                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none font-semibold text-sm" 
+                      />
+                    </div>
                   </div>
                 </div>
 
-                <div className="pt-6 border-t border-slate-100 flex justify-end">
-                  <button className="bg-indigo-600 text-white font-bold px-6 py-2.5 rounded-xl shadow-sm hover:bg-indigo-700 transition-colors">Save Profile</button>
+                {/* 3. Legal Business & Statutory Identifiers */}
+                <div>
+                  <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-4 flex items-center gap-2 pb-2 border-b border-slate-100">
+                    <Building2 size={16} className="text-sky-600" /> Legal Enterprise & Tax Identification
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">Legal Business / Entity Name *</label>
+                      <input 
+                        type="text" 
+                        value={companyName}
+                        onChange={(e) => setCompanyName(e.target.value)}
+                        placeholder="e.g. Apex Engineering Solutions Pvt Ltd" 
+                        required
+                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none font-semibold text-sm" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">Trade / Brand Name</label>
+                      <input 
+                        type="text" 
+                        value={brandName}
+                        onChange={(e) => setBrandName(e.target.value)}
+                        placeholder="e.g. Apex Global" 
+                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none font-semibold text-sm" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">GSTIN Number (15 Digits)</label>
+                      <input 
+                        type="text" 
+                        value={gstin}
+                        onChange={(e) => setGstin(e.target.value.toUpperCase())}
+                        placeholder="22AAAAA0000A1Z5" 
+                        maxLength={15}
+                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none font-mono font-bold text-sm uppercase" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">PAN Number (10 Digits)</label>
+                      <input 
+                        type="text" 
+                        value={panNumber}
+                        onChange={(e) => setPanNumber(e.target.value.toUpperCase())}
+                        placeholder="AAAAA0000A" 
+                        maxLength={10}
+                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none font-mono font-bold text-sm uppercase" 
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
+
+                {/* 4. Industry Sector & Procurement Scope */}
+                <div>
+                  <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-4 flex items-center gap-2 pb-2 border-b border-slate-100">
+                    <Briefcase size={16} className="text-sky-600" /> Sector & Procurement Capacity
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">Industry Sector</label>
+                      <select 
+                        value={industry}
+                        onChange={(e) => setIndustry(e.target.value)}
+                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none font-semibold text-sm cursor-pointer"
+                      >
+                        <option>Industrial Machinery & Automation</option>
+                        <option>Electrical, Electronics & Components</option>
+                        <option>Raw Metals, Steel & Fabrication</option>
+                        <option>Packaging, Corrugated Boxes & Paper</option>
+                        <option>Construction & Civil Infrastructure</option>
+                        <option>Chemicals, Polymers & Resins</option>
+                        <option>Automotive & Commercial Spares</option>
+                        <option>Textiles, Fabrics & Uniforms</option>
+                        <option>FMCG, Food Processing & Agro</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">Business Classification</label>
+                      <select 
+                        value={businessType}
+                        onChange={(e) => setBusinessType(e.target.value)}
+                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none font-semibold text-sm cursor-pointer"
+                      >
+                        <option>Enterprise Bulk Procurement</option>
+                        <option>Original Equipment Manufacturer (OEM)</option>
+                        <option>Wholesale Stockist & Distributor</option>
+                        <option>Direct Importer / Exporter</option>
+                        <option>EPC Turnkey Project Contractor</option>
+                        <option>Institutional Sourcing Division</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">Annual Sourcing Budget</label>
+                      <select 
+                        value={annualTurnover}
+                        onChange={(e) => setAnnualTurnover(e.target.value)}
+                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none font-semibold text-sm cursor-pointer"
+                      >
+                        <option>Under ₹50 Lakhs</option>
+                        <option>₹50 Lakhs – ₹2 Crores</option>
+                        <option>₹2 Crores – ₹10 Crores</option>
+                        <option>₹10 Crores – ₹50 Crores</option>
+                        <option>₹50 Crores+</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">Company Size / Workforce</label>
+                      <select 
+                        value={companySize}
+                        onChange={(e) => setCompanySize(e.target.value)}
+                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none font-semibold text-sm cursor-pointer"
+                      >
+                        <option>1-10 Employees</option>
+                        <option>11-50 Employees</option>
+                        <option>51-200 Employees</option>
+                        <option>201-500 Employees</option>
+                        <option>500+ Enterprise</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 5. Headquarters Address & Location */}
+                <div>
+                  <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-4 flex items-center gap-2 pb-2 border-b border-slate-100">
+                    <MapPin size={16} className="text-sky-600" /> Corporate Headquarters & Receiving Dock
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-4">
+                    <div className="md:col-span-3">
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">Corporate / Factory Address</label>
+                      <input 
+                        type="text" 
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        placeholder="Plot No., Industrial Area, Street Name" 
+                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none font-semibold text-sm" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">City</label>
+                      <input 
+                        type="text" 
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        placeholder="e.g. Bangalore" 
+                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none font-semibold text-sm" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">State</label>
+                      <input 
+                        type="text" 
+                        value={state}
+                        onChange={(e) => setState(e.target.value)}
+                        placeholder="e.g. Karnataka" 
+                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none font-semibold text-sm" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">Pincode</label>
+                      <input 
+                        type="text" 
+                        value={pincode}
+                        onChange={(e) => setPincode(e.target.value)}
+                        placeholder="560100" 
+                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none font-semibold text-sm" 
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 6. Online Presence & Company Bio */}
+                <div>
+                  <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-4 flex items-center gap-2 pb-2 border-b border-slate-100">
+                    <Globe size={16} className="text-sky-600" /> Digital Profile & Overview
+                  </h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">Official Website URL</label>
+                      <input 
+                        type="url" 
+                        value={website}
+                        onChange={(e) => setWebsite(e.target.value)}
+                        placeholder="https://example.com" 
+                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none font-semibold text-sm" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">About the Enterprise & Procurement Focus</label>
+                      <textarea 
+                        rows={3}
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="Describe your company, main requirements, and sourcing specifications..." 
+                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none font-semibold text-sm"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setPreviewModalOpen(true)}
+                    className="neo-btn px-5 py-2.5 rounded-xl font-bold text-xs text-sky-800 hover:text-sky-950 flex items-center gap-2 cursor-pointer"
+                  >
+                    <Eye size={14} className="text-sky-600" /> Preview Live Profile
+                  </button>
+
+                  <button 
+                    type="submit"
+                    disabled={isSaving}
+                    className="neo-btn-primary px-8 py-3 rounded-xl font-black text-sm shadow-md cursor-pointer disabled:opacity-50 transition-all"
+                  >
+                    {isSaving ? "Saving..." : "Save Business Profile"}
+                  </button>
+                </div>
+              </form>
             )}
+
+            {/* Buyer Profile Preview Modal */}
+            <BuyerProfileModal
+              buyer={previewBuyer}
+              isOpen={previewModalOpen}
+              onClose={() => setPreviewModalOpen(false)}
+              onEdit={() => setActiveTab('profile')}
+              isSelf={true}
+            />
 
             {activeTab === 'notifications' && (
               <div className="animate-in fade-in duration-200">
@@ -1269,7 +1796,7 @@ export function BuyerSettings() {
                     <input type="password" placeholder="••••••••" className="w-full max-w-md p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" />
                   </div>
                   <div>
-                    <button className="bg-slate-900 text-white font-bold px-6 py-2.5 rounded-xl shadow-sm hover:bg-slate-800 transition-colors">Update Password</button>
+                    <button className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-bold px-6 py-2.5 rounded-xl shadow-md shadow-sky-500/20 transition-all cursor-pointer">Update Password</button>
                   </div>
                 </div>
 

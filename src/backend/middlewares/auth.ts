@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { prisma } from "../prisma";
 
-const JWT_SECRET = process.env.JWT_SECRET || "vendimatch_secret_mvp_2024";
+const JWT_SECRET = process.env.JWT_SECRET || "bussinest_secret_mvp_2024";
 
 export interface UserPayload {
   id: string;

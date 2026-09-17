@@ -59,35 +59,41 @@ export default function SeoCategoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-gradient-to-b from-sky-50/70 via-white to-sky-50/50">
       <Helmet>
         <title>Top {category} in {city} – Verified List | VendorMatch</title>
         <meta name="description" content={`Find the best ${category} in ${city}. Compare ratings, portfolios, and response times. Post your requirement for free.`} />
       </Helmet>
 
       {/* Hero Section */}
-      <div className="bg-slate-900 text-white pt-20 pb-24 px-4 text-center">
-        <div className="max-w-4xl mx-auto">
+      <div className="bg-gradient-to-r from-sky-600 via-blue-600 to-indigo-700 text-white pt-20 pb-28 px-4 text-center relative overflow-hidden animate-entrance-down">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2000&q=80')] bg-cover bg-center opacity-25 mix-blend-overlay"></div>
+        <div className="gold-line-animated absolute bottom-0 left-0 right-0 h-[3px]"></div>
+
+        <div className="max-w-4xl mx-auto relative z-10">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-sky-100 text-xs font-black tracking-wide uppercase mb-4 border border-white/20">
+            Wholesale B2B Supplier Directory
+          </div>
           <h1 className="text-4xl md:text-6xl font-black mb-6 leading-tight">
             Top {category} in {city}
           </h1>
-          <p className="text-xl text-slate-300 font-medium mb-10 max-w-2xl mx-auto">
-            Find trusted, verified {category.toLowerCase()} companies in {city}.
+          <p className="text-lg md:text-xl text-sky-100 font-medium mb-10 max-w-2xl mx-auto">
+            Find verified, CRISIL/ICRA AAA certified wholesale {category.toLowerCase()} manufacturers and distributors in {city}.
           </p>
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-            <Link to="/post-requirement" className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 px-8 rounded-xl text-lg transition-colors w-full sm:w-auto shadow-lg shadow-indigo-500/30">
-              Post a Requirement
+            <Link to="/post-requirement" className="bg-amber-400 hover:bg-amber-300 text-amber-950 font-black py-4 px-8 rounded-xl text-base transition-all w-full sm:w-auto shadow-lg shadow-amber-500/25 button-luxury-glow">
+              Post Wholesale RFQ for Free
             </Link>
-            <Link to="/vendors" className="bg-white/10 hover:bg-white/20 text-white font-bold py-4 px-8 rounded-xl text-lg transition-colors w-full sm:w-auto backdrop-blur-sm">
-              Browse all categories
+            <Link to="/vendors" className="bg-white/15 hover:bg-white/25 text-white font-bold py-4 px-8 rounded-xl text-base transition-all w-full sm:w-auto backdrop-blur-md border border-white/20">
+              Browse All 8 Wholesale Sectors
             </Link>
           </div>
         </div>
       </div>
 
       {/* SEO Rich Content Bar */}
-      <div className="max-w-7xl mx-auto px-4 -mt-10 relative z-10">
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-100 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6">
+      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 -mt-10 relative z-10 animate-entrance-up">
+        <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-xl p-8 border border-sky-100 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6">
           <div>
             <h2 className="text-xl font-bold text-slate-900">Why choose our verified vendors?</h2>
             <p className="text-slate-500 mt-1">There are {stats?.vendorCount || 0} {category.toLowerCase()} available in {city}. The average rating is {stats?.avgRating || 4.8}. The typical project cost ranges from {stats?.priceRange || "₹50k to ₹2L"}.</p>
@@ -106,7 +112,7 @@ export default function SeoCategoryPage() {
       </div>
 
       {/* Vendors List */}
-      <div className="max-w-7xl mx-auto px-4 py-16">
+      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-16">
         <h2 className="text-2xl font-bold text-slate-900 mb-8">Verified Providers</h2>
         
         {vendors.length === 0 ? (
@@ -155,7 +161,7 @@ export default function SeoCategoryPage() {
 
       {/* Internal Linking / Related Categories */}
       <div className="bg-white border-t border-slate-200 py-16">
-        <div className="max-w-7xl mx-auto px-4 text-center">
+        <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 text-center">
           <h2 className="text-2xl font-bold text-slate-900 mb-8">Related Searches in {city}</h2>
           <div className="flex flex-wrap justify-center gap-4">
             <Link to={`/software-development-in-${city.toLowerCase()}`} className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-6 py-3 rounded-full transition-colors">Software Development in {city}</Link>

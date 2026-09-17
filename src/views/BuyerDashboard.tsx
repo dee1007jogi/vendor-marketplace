@@ -218,10 +218,10 @@ export default function BuyerDashboard({
         <div className="flex gap-2">
           <button
             onClick={() => setDashboardTab("list")}
-            className={`px-4 py-2 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
+            className={`px-4 py-2 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
               dashboardTab === "list"
-                ? "bg-slate-900 border-slate-900 text-white"
-                : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                ? "bg-gradient-to-r from-sky-500 to-blue-600 border-sky-400 text-white shadow-md shadow-sky-500/20"
+                : "bg-white/80 border-sky-100 text-slate-700 hover:bg-sky-50"
             }`}
           >
             Manage RFPs ({buyerRequirements.length})
@@ -229,10 +229,10 @@ export default function BuyerDashboard({
 
           <button
             onClick={() => setDashboardTab("create")}
-            className={`px-4 py-2 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
+            className={`px-4 py-2 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
               dashboardTab === "create"
-                ? "bg-slate-900 border-slate-900 text-white"
-                : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                ? "bg-gradient-to-r from-sky-500 to-blue-600 border-sky-400 text-white shadow-md shadow-sky-500/20"
+                : "bg-white/80 border-sky-100 text-slate-700 hover:bg-sky-50"
             }`}
             id="draft-rfp-btn"
           >
@@ -388,17 +388,17 @@ export default function BuyerDashboard({
                   type="button"
                   onClick={handleAIAssistParser}
                   disabled={isAiParsing}
-                  className="w-full bg-slate-900 border border-slate-800 hover:bg-slate-800 text-teal-300 rounded-xl py-3 px-4 text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+                  className="w-full bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-700 hover:to-indigo-700 text-white rounded-xl py-3 px-4 text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50 shadow-md shadow-sky-500/20"
                   id="ai-refine-btn"
                 >
                   {isAiParsing ? (
                     <>
-                      <Loader2 size={14} className="animate-spin text-teal-300" />
+                      <Loader2 size={14} className="animate-spin text-white" />
                       <span>Gemini NLP Processing...</span>
                     </>
                   ) : (
                     <>
-                      <Sparkles size={14} className="fill-teal-300" />
+                      <Sparkles size={14} className="fill-amber-300 text-amber-300" />
                       <span>Compile RFP Metrics with Gemini AI</span>
                     </>
                   )}

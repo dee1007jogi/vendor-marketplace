@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { X, Building2, User, Mail, Phone, Lock, ChevronRight, Briefcase, Upload, CheckCircle2, AlertTriangle } from "lucide-react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -55,51 +56,92 @@ export default function RegisterModal({ isOpen, onClose, onRegister, onOpenLogin
     setOtpRole(r);
   };
 
+  // Close on Escape key press & Lock Body Scroll when Modal is Open
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    if (isOpen) {
+      window.addEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg relative animate-in fade-in zoom-in-95 duration-200 my-8">
-        <button onClick={onClose} className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 rounded-full transition-colors z-10">
-          <X size={20} />
-        </button>
-
-        {otpPhone ? (
-          <OtpVerification phone={otpPhone} role={otpRole} onClose={onClose} />
-        ) : !role ? (
-          <div className="p-8">
-            <h2 className="text-2xl font-black text-slate-900 mb-6 text-center">Join VendiMatch</h2>
-            <p className="text-slate-500 font-medium text-sm mb-6 text-center">How do you plan to use the platform?</p>
-            
-            <div className="space-y-4">
-              <button onClick={() => setRole("BUYER")} className="w-full flex items-center gap-4 p-6 rounded-2xl border-2 border-slate-200 bg-white hover:border-indigo-600 hover:bg-indigo-50 transition-all text-left">
-                <div className="p-4 rounded-full bg-slate-100 text-indigo-600"><Briefcase size={32} /></div>
-                <div>
-                  <h3 className="font-bold text-slate-900 text-lg">I am a Buyer</h3>
-                  <p className="text-sm text-slate-500 font-medium mt-1">I want to post requirements and hire vendors.</p>
-                </div>
-              </button>
-
-              <button onClick={() => setRole("VENDOR")} className="w-full flex items-center gap-4 p-6 rounded-2xl border-2 border-slate-200 bg-white hover:border-indigo-600 hover:bg-indigo-50 transition-all text-left">
-                <div className="p-4 rounded-full bg-slate-100 text-indigo-600"><Building2 size={32} /></div>
-                <div>
-                  <h3 className="font-bold text-slate-900 text-lg">I am a Vendor</h3>
-                  <p className="text-sm text-slate-500 font-medium mt-1">I want to offer my services and get leads.</p>
-                </div>
-              </button>
-            </div>
-            
-            <div className="mt-8 text-center">
-              <p className="text-slate-500 font-medium text-sm">
-                Already have an account? <button onClick={() => { onClose(); onOpenLogin(); }} className="text-indigo-600 font-bold hover:underline">Log in</button>
-              </p>
-            </div>
+    <div 
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-sky-950/60 backdrop-blur-md overflow-hidden animate-in fade-in duration-200"
+    >
+      <div className="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl w-full max-w-lg relative animate-in fade-in zoom-in-95 duration-200 my-auto border border-sky-100 flex flex-col max-h-[85vh] sm:max-h-[90vh] overflow-hidden">
+        <div className="gold-line-animated absolute top-0 left-0 right-0 h-[3px] z-30"></div>
+        
+        {/* Authoritative Fixed Top Header with Title & Prominent Close Button */}
+        <div className="bg-white/95 backdrop-blur-md px-6 py-4 border-b border-sky-100 flex items-center justify-between z-40 shrink-0">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              {otpPhone ? "Verify Mobile Number" : role === "BUYER" ? "Create Buyer Account" : role === "VENDOR" ? "Vendor Registration" : "Join Bussinest"}
+            </h2>
+            <p className="text-xs text-slate-500 font-medium mt-0.5">
+              {otpPhone ? "Enter 6-digit OTP code" : role === "BUYER" ? "Post RFQs & source from verified suppliers" : role === "VENDOR" ? "Offer services & receive qualified leads" : "Choose account type to get started"}
+            </p>
           </div>
-        ) : role === "BUYER" ? (
-          <BuyerForm onClose={onClose} onOpenLogin={onOpenLogin} onSuccess={handleRegisterSuccess} />
-        ) : (
-          <VendorForm onClose={onClose} onOpenLogin={onOpenLogin} onSuccess={handleRegisterSuccess} />
-        )}
+          <button 
+            type="button"
+            onClick={onClose} 
+            className="p-2.5 text-slate-500 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-full transition-colors cursor-pointer flex items-center justify-center shrink-0 ml-4 shadow-xs"
+            title="Close modal (Esc)"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Scrollable Form Body */}
+        <div className="overflow-y-auto flex-1 overscroll-contain custom-scrollbar">
+          {otpPhone ? (
+            <OtpVerification phone={otpPhone} role={otpRole} onClose={onClose} />
+          ) : !role ? (
+            <div className="p-6 sm:p-8">
+              <div className="space-y-4">
+                <button onClick={() => setRole("BUYER")} className="w-full flex items-center gap-4 p-6 rounded-2xl border-2 border-slate-200 bg-white hover:border-indigo-600 hover:bg-indigo-50 transition-all text-left">
+                  <div className="p-4 rounded-full bg-slate-100 text-indigo-600"><Briefcase size={32} /></div>
+                  <div>
+                    <h3 className="font-bold text-slate-900 text-lg">I am a Buyer</h3>
+                    <p className="text-sm text-slate-500 font-medium mt-1">I want to post requirements and hire vendors.</p>
+                  </div>
+                </button>
+
+                <button onClick={() => setRole("VENDOR")} className="w-full flex items-center gap-4 p-6 rounded-2xl border-2 border-slate-200 bg-white hover:border-indigo-600 hover:bg-indigo-50 transition-all text-left">
+                  <div className="p-4 rounded-full bg-slate-100 text-indigo-600"><Building2 size={32} /></div>
+                  <div>
+                    <h3 className="font-bold text-slate-900 text-lg">I am a Vendor</h3>
+                    <p className="text-sm text-slate-500 font-medium mt-1">I want to offer my services and get leads.</p>
+                  </div>
+                </button>
+              </div>
+              
+              <div className="mt-8 text-center space-y-2">
+                <p className="text-slate-500 font-medium text-sm">
+                  Already have an account? <button onClick={() => { onClose(); onOpenLogin(); }} className="text-indigo-600 font-bold hover:underline">Log in</button>
+                </p>
+                <div>
+                  <button type="button" onClick={onClose} className="text-xs font-bold text-slate-400 hover:text-slate-700 underline cursor-pointer">
+                    Cancel & Close Modal
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : role === "BUYER" ? (
+            <BuyerForm onClose={onClose} onOpenLogin={onOpenLogin} onSuccess={handleRegisterSuccess} />
+          ) : (
+            <VendorForm onClose={onClose} onOpenLogin={onOpenLogin} onSuccess={handleRegisterSuccess} />
+          )}
+        </div>
       </div>
     </div>
   );
@@ -142,8 +184,7 @@ function BuyerForm({ onClose, onOpenLogin, onSuccess }: { onClose: () => void, o
   };
 
   return (
-    <div className="p-8">
-      <h2 className="text-2xl font-black text-slate-900 mb-6">Create Buyer Account</h2>
+    <div className="p-6 sm:p-8">
       {apiError && <div className="p-3 bg-red-50 text-red-600 text-sm font-bold rounded-xl mb-6 text-center border border-red-100 flex items-center justify-center gap-2"><AlertTriangle size={16}/>{apiError}</div>}
       
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -190,10 +231,15 @@ function BuyerForm({ onClose, onOpenLogin, onSuccess }: { onClose: () => void, o
           {isSubmitting ? "Creating Account..." : "Create Account"}
         </button>
       </form>
-      <div className="mt-6 text-center">
+      <div className="mt-6 text-center space-y-2 pb-2">
         <p className="text-slate-500 font-medium text-sm">
-          Already have an account? <button onClick={() => { onClose(); onOpenLogin(); }} className="text-indigo-600 font-bold hover:underline">Log in</button>
+          Already have an account? <button type="button" onClick={() => { onClose(); onOpenLogin(); }} className="text-indigo-600 font-bold hover:underline">Log in</button>
         </p>
+        <div>
+          <button type="button" onClick={onClose} className="text-xs font-bold text-slate-400 hover:text-slate-700 underline cursor-pointer">
+            Cancel & Close Modal
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -285,10 +331,9 @@ function VendorForm({ onClose, onOpenLogin, onSuccess }: { onClose: () => void, 
   };
 
   return (
-    <div className="p-8">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-black text-slate-900">Vendor Registration</h2>
-        <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded-md">Step {step} of 3</span>
+    <div className="p-6 sm:p-8">
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-xs font-extrabold uppercase bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full">Step {step} of 3</span>
       </div>
 
       {apiError && <div className="p-3 bg-red-50 text-red-600 text-sm font-bold rounded-xl mb-6 text-center border border-red-100">{apiError}</div>}
@@ -501,6 +546,7 @@ function VendorForm({ onClose, onOpenLogin, onSuccess }: { onClose: () => void, 
 // OTP VERIFICATION
 // ==========================================
 function OtpVerification({ phone, role, onClose }: { phone: string, role: string, onClose: () => void }) {
+  const navigate = useNavigate();
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -529,7 +575,8 @@ function OtpVerification({ phone, role, onClose }: { phone: string, role: string
       const data = await res.json();
       localStorage.setItem("vendorMatchUserId", data.user.id);
       localStorage.setItem("vendorMatchToken", data.token);
-      window.location.href = role === "BUYER" ? "/buyer/dashboard" : "/vendor/dashboard";
+      onClose();
+      navigate(role === "BUYER" ? "/buyer/dashboard" : "/vendor/dashboard");
     } catch (e: any) {
       setError(e.message);
       setLoading(false);

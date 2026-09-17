@@ -5,15 +5,28 @@
 
 import { useState, useEffect, useCallback, Suspense, lazy } from "react";
 import { Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
-import { motion, AnimatePresence } from "motion/react";
-import { ReactLenis } from 'lenis/react';
+import { motion, AnimatePresence, useScroll } from "motion/react";
 import { User, PlatformState, VendorProfile, Requirement } from "./types";
 import { getInitialPlatformState } from "./db/seededData";
 
+import GlobalErrorBoundary from "./components/GlobalErrorBoundary";
+import LenisProvider from "./components/animations/LenisProvider";
+import SparkleOverlay from "./components/animations/SparkleOverlay";
+
 // Import Views (We'll stub the new layouts and keep existing views mapped for now)
+import ScrollToTop from "./components/ScrollToTop";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-const LandingPage = lazy(() => import("./views/LandingPage"));
+import LandingPage from "./views/LandingPage";
+
+// Views & Error Pages
+
+// Error Pages & Showcase
+const NotFoundPage = lazy(() => import("./views/errors/NotFoundPage"));
+const ServerErrorPage = lazy(() => import("./views/errors/ServerErrorPage"));
+const ForbiddenPage = lazy(() => import("./views/errors/ForbiddenPage"));
+const OfflinePage = lazy(() => import("./views/errors/OfflinePage"));
+const ErrorPagesShowcase = lazy(() => import("./views/errors/ErrorPagesShowcase"));
 const VendorDiscovery = lazy(() => import("./views/VendorDiscovery"));
 const VendorProfileView = lazy(() => import("./views/VendorProfile"));
 const PostRequirement = lazy(() => import("./views/buyer/PostRequirement"));
@@ -22,6 +35,7 @@ const CompareVendors = lazy(() => import("./views/CompareVendors"));
 const SeoCategoryPage = lazy(() => import("./views/SeoCategoryPage"));
 const PricingPage = lazy(() => import("./views/PricingPage"));
 const DesignSystem = lazy(() => import("./views/DesignSystem"));
+const NeomorphicKitShowcase = lazy(() => import("./views/NeomorphicKitShowcase"));
 const BuyerLayout = lazy(() => import("./views/buyer/BuyerLayout"));
 const BuyerOverview = lazy(() => import("./views/buyer/BuyerModules").then(m => ({ default: m.BuyerOverview })));
 const BuyerRequirements = lazy(() => import("./views/buyer/BuyerModules").then(m => ({ default: m.BuyerRequirements })));
@@ -32,6 +46,7 @@ const BuyerSettings = lazy(() => import("./views/buyer/BuyerModules").then(m => 
 const BuyerReviews = lazy(() => import("./views/buyer/BuyerModules").then(m => ({ default: m.BuyerReviews })));
 const BuyerDisputes = lazy(() => import("./views/buyer/BuyerModules").then(m => ({ default: m.BuyerDisputes })));
 const BuyerSavedSearches = lazy(() => import("./views/buyer/BuyerModules").then(m => ({ default: m.BuyerSavedSearches })));
+const BuyerCompanyProfile = lazy(() => import("./views/buyer/BuyerCompanyProfile"));
 const VendorLayout = lazy(() => import("./views/vendor/VendorLayout"));
 const VendorOverview = lazy(() => import("./views/vendor/VendorModules").then(m => ({ default: m.VendorOverview })));
 const VendorLeads = lazy(() => import("./views/vendor/VendorModules").then(m => ({ default: m.VendorLeads })));
@@ -42,6 +57,7 @@ const VendorAnalytics = lazy(() => import("./views/vendor/VendorModules").then(m
 const VendorWallet = lazy(() => import("./views/vendor/VendorModules").then(m => ({ default: m.VendorWallet })));
 const VendorSettings = lazy(() => import("./views/vendor/VendorModules").then(m => ({ default: m.VendorSettings })));
 const VendorServiceOfferings = lazy(() => import("./views/vendor/VendorModules").then(m => ({ default: m.VendorServiceOfferings })));
+const VendorCompanyProfile = lazy(() => import("./views/vendor/VendorCompanyProfile"));
 const ChatInbox = lazy(() => import("./views/ChatInbox"));
 const AdminLayout = lazy(() => import("./views/admin/AdminLayout"));
 
@@ -54,6 +70,7 @@ const AdminBuyers = lazy(() => import("./views/admin").then(m => ({ default: m.A
 const AdminCategories = lazy(() => import("./views/admin").then(m => ({ default: m.AdminCategories })));
 const AdminTransactions = lazy(() => import("./views/admin").then(m => ({ default: m.AdminTransactions })));
 const AdminProfile = lazy(() => import("./views/admin").then(m => ({ default: m.AdminProfile })));
+const AdminAdManager = lazy(() => import("./views/admin").then(m => ({ default: m.AdminAdManager })));
 
 const AdminFraud = lazy(() => import("./views/admin/AdminModules").then(m => ({ default: m.AdminFraud })));
 const AdminModeration = lazy(() => import("./views/admin/AdminModules").then(m => ({ default: m.AdminModeration })));
@@ -76,6 +93,9 @@ import RegisterModal from "./components/RegisterModal";
 import LoginModal from "./components/LoginModal";
 import ForgotPasswordModal from "./components/ForgotPasswordModal";
 import SupportWidget from "./components/SupportWidget";
+import BackToTop from "./components/BackToTop";
+import AdRunnerModal from "./components/AdRunnerModal";
+import Preloader from "./components/Preloader";
 
 import { useRealTimeUpdates } from "./hooks/useRealTimeUpdates";
 
@@ -85,13 +105,17 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [dbState, setDbState] = useState<PlatformState | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [showPreloader, setShowPreloader] = useState<boolean>(true);
   const [isRegisterOpen, setIsRegisterOpen] = useState<boolean>(false);
   const [isLoginOpen, setIsLoginOpen] = useState<boolean>(false);
   const [isForgotOpen, setIsForgotOpen] = useState<boolean>(false);
+  const [isAdRunnerOpen, setIsAdRunnerOpen] = useState<boolean>(false);
+
   const [initialChatReqId, setInitialChatReqId] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const location = useLocation();
+  const { scrollYProgress } = useScroll();
 
   const reloadState = async () => {
     try {
@@ -141,6 +165,14 @@ export default function App() {
 
   const handleSwitchUser = useCallback(async (userId: string) => {
     if (!dbState) return;
+    if (!userId) {
+      // Logout — clear user state
+      setCurrentUser(null);
+      localStorage.removeItem("vendorMatchUserId");
+      localStorage.removeItem("vendorMatchToken");
+      navigate("/");
+      return;
+    }
     const targetUser = dbState.users.find(u => u.id === userId);
     if (targetUser) {
       setCurrentUser(targetUser);
@@ -285,13 +317,36 @@ export default function App() {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center space-y-3">
         <div className="h-10 w-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-xs font-semibold text-slate-500">Compiling VendiMatch platform databases...</p>
+        <p className="text-xs font-semibold text-slate-500">Compiling Bussinest platform databases...</p>
       </div>
     );
   }
 
   return (
-    <ReactLenis root options={{ lerp: 0.1, duration: 1.2, smoothTouch: true }}>
+    <GlobalErrorBoundary>
+      <LenisProvider>
+        {/* Creative Enterprise Preloader with Vault Shutter Curtain Split */}
+        {showPreloader && <Preloader onComplete={() => setShowPreloader(false)} />}
+
+        {/* Global Ambient Floating Sparkle Effect Overlay */}
+        <SparkleOverlay count={28} />
+
+      {/* Isolated GPU Hardware-Composited Ambient Background Layer (Zero scroll repaint penalty) */}
+
+      <div 
+        className="fixed inset-0 pointer-events-none -z-50 bg-[radial-gradient(at_15%_15%,rgba(56,189,248,0.12)_0px,transparent_50%),radial-gradient(at_85%_25%,rgba(251,191,36,0.08)_0px,transparent_50%),radial-gradient(at_50%_75%,rgba(14,165,233,0.08)_0px,transparent_50%)]" 
+        style={{ transform: "translateZ(0)", willChange: "transform" }} 
+      />
+
+      {/* Route Transition Scroll Restoration */}
+      <ScrollToTop />
+
+      {/* Global Reading Scroll Progress Bar */}
+      <motion.div
+        style={{ scaleX: scrollYProgress, transformOrigin: "0%" }}
+        className="fixed top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-sky-500 via-amber-400 to-sky-600 z-[100] shadow-[0_0_10px_rgba(245,158,11,0.6)] pointer-events-none"
+      />
+
       <div className="min-h-screen bg-slate-50/60 flex flex-col font-sans">
       <Header
         currentUser={currentUser}
@@ -302,6 +357,7 @@ export default function App() {
         setActiveTab={handleSetActiveTab}
         onOpenRegister={handleOpenRegister}
         onOpenLogin={handleOpenLogin}
+        onOpenAdRunner={() => setIsAdRunnerOpen(true)}
       />
 
       <RegisterModal
@@ -329,7 +385,17 @@ export default function App() {
         onOpenLogin={() => { setIsForgotOpen(false); setIsLoginOpen(true); }}
       />
 
-      <main className="flex-1 mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-8">
+      <AdRunnerModal
+        isOpen={isAdRunnerOpen}
+        onClose={() => setIsAdRunnerOpen(false)}
+        currentUser={currentUser}
+        onCampaignCreated={() => {
+          // Trigger global refresh
+          window.dispatchEvent(new CustomEvent("bussinest_ads_updated"));
+        }}
+      />
+
+      <main className="flex-1 w-full flex flex-col min-h-0">
             <Suspense fallback={<GlobalLoader />}>
               <Routes location={location}>
                 {/* Landing Page (Public) */}
@@ -338,14 +404,12 @@ export default function App() {
                 {/* Pricing Page (Public) */}
                 <Route path="/pricing" element={<PricingPage globalPlans={dbState?.settings?.subscription_plans || []} />} />
 
-                {/* Design System Preview */}
+                {/* Design System & Neomorphic UI Kit Showcase */}
                 <Route path="/design-system" element={<DesignSystem />} />
+                <Route path="/neomorphic-kit" element={<NeomorphicKitShowcase />} />
 
                 {/* Vendor Directory Search (Public) */}
                 <Route path="/vendors" element={<VendorDiscovery />} />
-
-                {/* Vendor Profile Page (Public) */}
-                <Route path="/vendor/:slug" element={<VendorProfileView />} />
 
                 {/* Standalone Post Requirement Flow */}
                 <Route path="/post-requirement" element={<PostRequirement currentUser={currentUser} />} />
@@ -357,6 +421,7 @@ export default function App() {
                     : <Navigate to={currentUser?.role?.toLowerCase() === "admin" ? "/admin/dashboard" : currentUser?.role?.toLowerCase() === "vendor" ? "/vendor/dashboard" : "/"} replace />
                 }>
                   <Route path="dashboard" element={<BuyerOverview />} />
+                  <Route path="profile" element={<BuyerCompanyProfile />} />
                   <Route path="requirements" element={<BuyerRequirements />} />
                   <Route path="requirements/:id/quotes" element={<QuoteComparison currentUser={currentUser} />} />
                   <Route path="shortlist" element={<BuyerShortlist />} />
@@ -370,11 +435,13 @@ export default function App() {
 
                 {/* Vendor Portal Routing */}
                 <Route path="/vendor" element={
-                  currentUser?.role?.toLowerCase() === "vendor"
-                    ? <VendorLayout currentUser={currentUser} globalPlans={dbState?.settings?.subscription_plans || []} />
-                    : <Navigate to={currentUser?.role?.toLowerCase() === "admin" ? "/admin/dashboard" : currentUser?.role?.toLowerCase() === "buyer" ? "/buyer/dashboard" : "/"} replace />
+                  <VendorLayout 
+                    currentUser={(currentUser && currentUser.role?.toLowerCase() === "vendor") ? currentUser : (dbState?.users?.find(u => u.role?.toLowerCase() === "vendor") || getInitialPlatformState().users.find(u => u.role?.toLowerCase() === "vendor")!)} 
+                    globalPlans={dbState?.settings?.subscription_plans || []} 
+                  />
                 }>
                   <Route path="dashboard" element={<VendorOverview />} />
+                  <Route path="profile" element={<VendorCompanyProfile />} />
                   <Route path="requirements" element={<VendorServiceOfferings />} />
                   <Route path="requirements/:id/quotes" element={<QuoteComparison currentUser={currentUser} />} />
                   <Route path="leads" element={<VendorLeads />} />
@@ -385,6 +452,10 @@ export default function App() {
                   <Route path="wallet" element={<VendorWallet />} />
                   <Route path="settings" element={<VendorSettings />} />
                 </Route>
+
+                {/* Vendor Directory Public Profile Page */}
+                <Route path="/vendor/:slug" element={<VendorProfileView />} />
+
 
                 {/* Vendor Compare Page */}
                 <Route path="/compare" element={<CompareVendors />} />
@@ -403,6 +474,7 @@ export default function App() {
                   <Route path="verification" element={<VerificationQueue />} />
                   <Route path="vendors" element={<AdminVendors />} />
                   <Route path="buyers" element={<AdminBuyers />} />
+                  <Route path="ads" element={<AdminAdManager />} />
                   <Route path="moderation" element={<AdminModeration />} />
                   <Route path="disputes" element={<AdminDisputes />} />
                   <Route path="fraud" element={<AdminFraud />} />
@@ -418,17 +490,27 @@ export default function App() {
                   <Route path="audit-log" element={<AdminAuditLog />} />
                 </Route>
 
+
+                {/* Error Pages & Diagnostic Showcase */}
+                <Route path="/errors" element={<ErrorPagesShowcase />} />
+                <Route path="/404" element={<NotFoundPage />} />
+                <Route path="/500" element={<ServerErrorPage />} />
+                <Route path="/403" element={<ForbiddenPage />} />
+                <Route path="/offline" element={<OfflinePage />} />
+
                 {/* Programmatic SEO Category Pages (Catch-All for pattern /:category-in-:city) */}
                 <Route path="/:slug" element={<SeoCategoryPage />} />
 
-                {/* Fallback */}
-                <Route path="*" element={<Navigate to="/" replace />} />
+                {/* Fallback Catch-All */}
+                <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </Suspense>
       </main>
       <Footer />
       <SupportWidget />
+      <BackToTop />
       </div>
-    </ReactLenis>
+      </LenisProvider>
+    </GlobalErrorBoundary>
   );
 }

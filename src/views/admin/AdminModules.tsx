@@ -678,7 +678,7 @@ export function AdminFraud() {
                     <div className="flex flex-wrap gap-2">
                       <Button onClick={() => resolveAlert(a.id, "false_positive")} variant="outline">False Positive</Button>
                       <Button onClick={() => resolveAlert(a.id, "resolved")} variant="destructive">Suspend Account</Button>
-                      <Button variant="default" className="bg-slate-800 hover:bg-slate-900 text-white">Blacklist IP</Button>
+                      <Button variant="default" className="bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-700 hover:to-blue-800 text-white shadow-sm cursor-pointer">Blacklist IP</Button>
                     </div>
                   </Card>
                 </div>
@@ -932,7 +932,7 @@ export function AdminSettings() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-1">Platform Support Email</label>
-              <input type="email" defaultValue="support@vendimatch.com" className="w-full p-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
+              <input type="email" defaultValue="support@bussinest.com" className="w-full p-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
             </div>
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-1">Platform Escrow Commission (%)</label>

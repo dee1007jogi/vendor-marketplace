@@ -70,7 +70,7 @@ export const seededUsers: User[] = [
   {
     id: "user-admin",
     name: "System Admin",
-    email: "admin@vendimatch.ai",
+    email: "admin@bussinest.ai",
     phone: "+91 80000 11111",
     role: "admin",
     avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=150&q=80",
@@ -166,7 +166,7 @@ export const seededVendorProfiles: VendorProfile[] = [
         id: "port-vc-1",
         title: "NeoBank Brand Design Redux",
         description: "A comprehensive brand strategy, aesthetic guidelines, and digital asset suite.",
-        url: "https://images.unsplash.com/photo-1561070791-26c113006238?auto=format&fit=crop&w=600&q=80",
+        url: "https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=600&q=80",
         type: "image",
       },
       {

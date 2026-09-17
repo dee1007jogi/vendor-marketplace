@@ -50,6 +50,27 @@ export interface User {
   phone: string;
   role: UserRole;
   avatar: string;
+  customAvatar?: string;
+  useCustomAvatar?: boolean;
+  companyName?: string;
+  brandName?: string;
+  gstin?: string;
+  panNumber?: string;
+  industry?: string;
+  businessType?: string;
+  companySize?: string;
+  yearEstablished?: string;
+  annualTurnover?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  pincode?: string;
+  website?: string;
+  description?: string;
+  designation?: string;
+  whatsapp?: string;
+  department?: string;
+  adminClearance?: string;
   verified: boolean;
   verificationDocs?: VerificationDocs;
   vendorProfile?: VendorProfile;
@@ -212,4 +233,79 @@ export interface PlatformState {
   messages: ChatMessage[];
   reviews: Review[];
   settings?: Record<string, any>;
+}
+
+// ============================================================================
+// RETAIL MEDIA NETWORK (RMN) & AD RUNNER SYSTEM
+// ============================================================================
+
+export type AdPlacementType = 
+  | "popup_modal"         // Luxury Floating Glass Promo Spotlight Modal
+  | "top_banner"           // Global Sticky Header Announcement Bar
+  | "hero_spotlight"       // Homepage Prime Spotlight Card
+  | "category_sponsor"     // Sourcing Category Top Header Banner
+  | "floating_corner"      // Interactive Floating Glass Pill Widget
+  | "marketplace_native";   // Promoted Native Card in Directory Search
+
+export type AdTimeSlot = 
+  | "all_day"              // 24/7 Continuous Delivery (1.0x)
+  | "prime_b2b"            // Prime B2B Sourcing Hours: 09:00 AM - 07:00 PM (1.25x)
+  | "evening_procurement"  // Evening Procurement Shift: 06:00 PM - 12:00 AM (1.10x)
+  | "weekend_priority";    // Weekend Priority Bidding: Saturday & Sunday (1.15x)
+
+export interface AdPricingBreakdown {
+  baseRatePerDay: number;
+  durationDays: number;
+  grossAmount: number;
+  durationDiscountPct: number;
+  durationDiscountAmount: number;
+  timeSlotMultiplier: number;
+  timeSlotSurcharge: number;
+  categoryTargetingFee: number;
+  locationTargetingFee: number;
+  subtotal: number;
+  gstRatePct: number;
+  gstAmount: number;
+  totalPayable: number;
+}
+
+export interface AdCampaign {
+  id: string;
+  advertiserId: string;
+  advertiserName: string;
+  advertiserEmail: string;
+  advertiserPhone: string;
+  advertiserRole?: "vendor" | "brand" | "agency" | "admin";
+  
+  title: string;
+  headline: string;
+  description: string;
+  badgeText?: string;
+  ctaText: string;
+  ctaUrl: string;
+  bannerImage: string;
+  
+  placement: AdPlacementType;
+  timeSlot: AdTimeSlot;
+  targetCategory: string; // "all" or specific category e.g., "Industrial Machinery & CNC"
+  targetLocation: string; // "all" or specific cluster e.g., "Pune Auto Cluster, Maharashtra"
+  targetAudience?: "all_visitors" | "verified_buyers" | "rfq_creators" | "msme_enterprises";
+  
+  durationDays: number;
+  startDate: string;
+  endDate: string;
+  
+  pricing: AdPricingBreakdown;
+  status: "active" | "paused" | "pending_review" | "completed" | "rejected";
+  paymentStatus: "paid" | "escrow_locked" | "pending";
+  
+  stats: {
+    impressions: number;
+    clicks: number;
+    ctr: number;
+    budgetSpent: number;
+  };
+  
+  verifiedBadge?: boolean;
+  createdAt: string;
 }

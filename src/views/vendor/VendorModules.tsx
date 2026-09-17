@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useOutletContext, Link, useNavigate } from "react-router-dom";
 import { User } from "../../types";
-import { Star, TrendingUp, Zap, Clock, BarChart2, FileText, CheckCircle, XCircle, Search, Filter, Download, Plus, MapPin, Map, LineChart, PieChart, ShieldCheck, Settings, DollarSign, Briefcase, MessageSquare } from "lucide-react";
+import { Star, TrendingUp, Zap, Clock, BarChart2, FileText, CheckCircle, XCircle, Search, Filter, Download, Plus, MapPin, Map, LineChart, PieChart, ShieldCheck, Settings, DollarSign, Briefcase, MessageSquare, Upload, Eye, Building2, Globe, Phone, Check, Sparkles } from "lucide-react";
 import CheckoutModal from "../../components/CheckoutModal";
 import InvoiceModal from "../../components/InvoiceModal";
 import { SubmitQuoteModal } from "../../components/SubmitQuoteModal";
@@ -10,6 +10,8 @@ import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
 import { Input } from "../../components/ui/input";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import Animated3DLetterAvatar from "../../components/Animated3DLetterAvatar";
+import InteractiveWallet from "../../components/payment/InteractiveWallet";
 
 export function VendorOverview() {
   const { currentUser } = useOutletContext<{ currentUser: User }>();
@@ -44,45 +46,48 @@ export function VendorOverview() {
       </div>
       
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <Card className="p-4 md:p-6 hover:shadow-md transition-all flex flex-col justify-center">
+        <div className="neo-card p-4 md:p-6 rounded-2xl flex flex-col justify-center transition-all hover:scale-[1.02]">
           <div className="flex justify-between items-start mb-3 md:mb-4">
-            <div className="p-2 md:p-3 bg-emerald-50 text-emerald-600 rounded-xl"><DollarSign size={20} className="md:w-6 md:h-6" /></div>
-            <Badge variant="secondary" className="hidden sm:flex text-emerald-600 bg-emerald-50"><TrendingUp size={12} className="mr-1" /> +8%</Badge>
+            <div className="p-2.5 md:p-3 bg-emerald-100/70 text-emerald-700 rounded-xl shadow-2xs"><DollarSign size={20} className="md:w-6 md:h-6" /></div>
+            <span className="hidden sm:flex text-emerald-700 bg-emerald-50 border border-emerald-200/60 font-extrabold text-[11px] px-2 py-0.5 rounded-lg"><TrendingUp size={12} className="mr-1 mt-0.5" /> +8%</span>
           </div>
           <div>
-            <p className="text-slate-500 font-bold uppercase tracking-wider text-[10px] md:text-xs mb-1">Earnings</p>
+            <p className="text-slate-500 font-extrabold uppercase tracking-wider text-[10px] md:text-xs mb-1">Earnings</p>
             <p className="text-2xl md:text-3xl font-black text-slate-900">₹0</p>
           </div>
-        </Card>
-        <Card onClick={() => navigate("/vendor/projects")} className="p-4 md:p-6 hover:border-indigo-300 hover:shadow-md transition-all cursor-pointer flex flex-col justify-center">
+        </div>
+
+        <div onClick={() => navigate("/vendor/projects")} className="neo-card p-4 md:p-6 rounded-2xl cursor-pointer flex flex-col justify-center transition-all hover:scale-[1.02]">
           <div className="flex justify-between items-start mb-3 md:mb-4">
-            <div className="p-2 md:p-3 bg-indigo-50 text-indigo-600 rounded-xl"><Briefcase size={20} className="md:w-6 md:h-6" /></div>
+            <div className="p-2.5 md:p-3 bg-sky-100/70 text-sky-700 rounded-xl shadow-2xs"><Briefcase size={20} className="md:w-6 md:h-6" /></div>
           </div>
           <div>
-            <p className="text-slate-500 font-bold uppercase tracking-wider text-[10px] md:text-xs mb-1">Active Projects</p>
+            <p className="text-slate-500 font-extrabold uppercase tracking-wider text-[10px] md:text-xs mb-1">Active Projects</p>
             <p className="text-2xl md:text-3xl font-black text-slate-900">0</p>
           </div>
-        </Card>
-        <Card onClick={() => navigate("/vendor/quotes")} className="p-4 md:p-6 hover:border-amber-300 hover:shadow-md transition-all cursor-pointer flex flex-col justify-center">
+        </div>
+
+        <div onClick={() => navigate("/vendor/quotes")} className="neo-card p-4 md:p-6 rounded-2xl cursor-pointer flex flex-col justify-center transition-all hover:scale-[1.02]">
           <div className="flex justify-between items-start mb-3 md:mb-4">
-            <div className="p-2 md:p-3 bg-amber-50 text-amber-600 rounded-xl"><FileText size={20} className="md:w-6 md:h-6" /></div>
-            <Badge variant="outline" className="text-amber-600 border-amber-200 bg-amber-50 shrink-0">Action Req.</Badge>
+            <div className="p-2.5 md:p-3 bg-amber-100/70 text-amber-700 rounded-xl shadow-2xs"><FileText size={20} className="md:w-6 md:h-6" /></div>
+            <span className="text-amber-700 border border-amber-200/80 bg-amber-50 font-extrabold text-[10px] px-2 py-0.5 rounded-lg shrink-0">Action Req.</span>
           </div>
           <div>
-            <p className="text-slate-500 font-bold uppercase tracking-wider text-[10px] md:text-xs mb-1">Pending Proposals</p>
+            <p className="text-slate-500 font-extrabold uppercase tracking-wider text-[10px] md:text-xs mb-1">Pending Proposals</p>
             <p className="text-2xl md:text-3xl font-black text-slate-900">{stats?.quotesSent || 0}</p>
           </div>
-        </Card>
-        <Card onClick={() => navigate("/chats")} className="p-4 md:p-6 hover:border-rose-300 hover:shadow-md transition-all cursor-pointer flex flex-col justify-center">
+        </div>
+
+        <div onClick={() => navigate("/chats")} className="neo-card p-4 md:p-6 rounded-2xl cursor-pointer flex flex-col justify-center transition-all hover:scale-[1.02]">
           <div className="flex justify-between items-start mb-3 md:mb-4">
-            <div className="p-2 md:p-3 bg-rose-50 text-rose-600 rounded-xl"><MessageSquare size={20} className="md:w-6 md:h-6" /></div>
-            <Badge variant="default" className="bg-rose-500 text-white hover:bg-rose-600 shrink-0">New</Badge>
+            <div className="p-2.5 md:p-3 bg-rose-100/70 text-rose-700 rounded-xl shadow-2xs"><MessageSquare size={20} className="md:w-6 md:h-6" /></div>
+            <span className="bg-rose-500 text-white font-extrabold text-[10px] px-2 py-0.5 rounded-lg shrink-0 shadow-2xs">New</span>
           </div>
           <div>
-            <p className="text-slate-500 font-bold uppercase tracking-wider text-[10px] md:text-xs mb-1">New Messages</p>
+            <p className="text-slate-500 font-extrabold uppercase tracking-wider text-[10px] md:text-xs mb-1">New Messages</p>
             <p className="text-2xl md:text-3xl font-black text-slate-900">0</p>
           </div>
-        </Card>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
@@ -99,12 +104,12 @@ export function VendorOverview() {
         
         <div>
           <h2 className="text-xl font-bold text-slate-900 mb-4">AI Tip of the Day</h2>
-          <Card className="bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-100 p-6 relative overflow-hidden h-[85%] flex flex-col justify-center shadow-sm">
-            <Zap className="absolute top-2 right-2 text-indigo-200 opacity-50" size={64} />
-            <h3 className="font-bold text-indigo-900 mb-2 relative z-10">Optimize Your Profile</h3>
-            <p className="text-sm text-indigo-700 mb-4 relative z-10">Responding to leads within 1 hour increases your match score by 10%. You have 1 unseen lead right now.</p>
-            <Button onClick={() => navigate("/vendor/leads")} className="w-full relative z-10 font-bold">Go to Inbox</Button>
-          </Card>
+          <div className="neo-card p-6 rounded-2xl relative overflow-hidden h-[85%] flex flex-col justify-center bg-gradient-to-br from-sky-50/60 via-white to-blue-50/40">
+            <Zap className="absolute top-2 right-2 text-sky-200 opacity-40" size={64} />
+            <h3 className="font-extrabold text-slate-900 mb-2 relative z-10">Optimize Your Profile</h3>
+            <p className="text-sm text-slate-600 mb-4 relative z-10">Responding to leads within 1 hour increases your match score by 10%. You have 1 unseen lead right now.</p>
+            <button onClick={() => navigate("/vendor/leads")} className="neo-btn-primary w-full py-2.5 rounded-xl relative z-10 font-bold text-xs cursor-pointer shadow-md">Go to Inbox</button>
+          </div>
         </div>
       </div>
     </div>
@@ -215,8 +220,8 @@ export function VendorServiceOfferings() {
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="w-full border border-slate-200 rounded-lg p-3 md:p-2 text-sm h-24 focus:ring-2 focus:ring-indigo-500"></textarea>
           </div>
           <div className="flex flex-col-reverse sm:flex-row justify-end gap-3">
-            <button onClick={() => setIsAdding(false)} className="w-full sm:w-auto px-4 py-3 sm:py-2 text-slate-500 font-bold hover:bg-slate-100 rounded-lg">Cancel</button>
-            <button onClick={handlePublish} className="w-full sm:w-auto bg-slate-900 text-white px-6 py-3 sm:py-2 rounded-lg font-bold">Publish Offering</button>
+            <button onClick={() => setIsAdding(false)} className="w-full sm:w-auto px-4 py-3 sm:py-2 text-slate-500 font-bold hover:bg-slate-100 rounded-xl cursor-pointer">Cancel</button>
+            <button onClick={handlePublish} className="w-full sm:w-auto bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white px-6 py-3 sm:py-2 rounded-xl font-bold shadow-md shadow-sky-500/20 transition-all cursor-pointer">Publish Offering</button>
           </div>
         </div>
       )}
@@ -566,8 +571,8 @@ export function VendorPortfolio() {
           </div>
           
           <div className="flex justify-end gap-3">
-            <button onClick={() => setIsAdding(false)} className="px-4 py-2 text-slate-500 font-bold hover:bg-slate-100 rounded-lg">Cancel</button>
-            <button onClick={() => setIsAdding(false)} className="bg-slate-900 text-white px-6 py-2 rounded-lg font-bold">Save Item</button>
+            <button onClick={() => setIsAdding(false)} className="px-4 py-2 text-slate-500 font-bold hover:bg-slate-100 rounded-xl cursor-pointer">Cancel</button>
+            <button onClick={() => setIsAdding(false)} className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white px-6 py-2 rounded-xl font-bold shadow-md shadow-sky-500/20 transition-all cursor-pointer">Save Item</button>
           </div>
         </div>
       )}
@@ -715,32 +720,80 @@ export function VendorWallet() {
         <h1 className="text-2xl font-black text-slate-900">Wallet & Billing</h1>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Interactive 3D Payment Wallet */}
+        <div className="bg-gradient-to-br from-emerald-950 via-slate-900 to-slate-950 rounded-3xl p-6 text-white border border-emerald-500/20 shadow-xl flex flex-col items-center justify-between min-h-[340px]">
+          <div className="w-full flex items-center justify-between mb-2">
+            <h3 className="text-emerald-400 font-extrabold uppercase tracking-wider text-xs flex items-center gap-1.5">
+              <Sparkles size={14} className="text-emerald-400 animate-pulse" /> 3D Payout Pocket
+            </h3>
+            <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/30">Interactive</span>
+          </div>
+          
+          <InteractiveWallet 
+            balance="₹124,500.00" 
+            balanceLabel="Payout Balance"
+            cards={[
+              {
+                id: "stripe",
+                type: "stripe",
+                title: "Stripe Payout",
+                label: "Account",
+                value: currentUser.name?.toUpperCase() || "VENDOR PARTNER",
+                maskedNumber: "**** 4242",
+                fullNumber: "5524 9910 4242"
+              },
+              {
+                id: "wise",
+                type: "wise",
+                title: "Wise B2B",
+                label: "Business ID",
+                value: currentUser.vendorProfile?.businessName?.toUpperCase() || currentUser.companyName?.toUpperCase() || "ENTERPRISE CORP",
+                maskedNumber: "**** 8810",
+                fullNumber: "9012 4432 8810"
+              },
+              {
+                id: "paypal",
+                type: "paypal",
+                title: <>Pay<b style={{ color: "#0079C1" }}>Pal</b></>,
+                label: "Payout Email",
+                value: currentUser.email || "vendor@work.com",
+                maskedNumber: "**** 0094",
+                fullNumber: "3312 0045 0094"
+              }
+            ]}
+          />
+        </div>
+
         {/* Credits Card */}
-        <div className="bg-slate-900 rounded-3xl p-8 text-white relative overflow-hidden shadow-xl shadow-slate-900/10">
+        <div className="bg-gradient-to-br from-sky-600 via-blue-600 to-indigo-700 rounded-3xl p-8 text-white relative overflow-hidden shadow-xl shadow-sky-500/15 border border-sky-300/30 gold-border-glow flex flex-col justify-between">
+          <div className="gold-line-animated absolute top-0 left-0 right-0 h-[3px]"></div>
           <div className="absolute right-0 top-0 opacity-10">
             <svg width="200" height="200" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
           </div>
           <div className="relative z-10">
-            <h3 className="text-slate-400 font-bold mb-2 uppercase tracking-wider text-sm">Available Leads</h3>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-sky-100 font-extrabold uppercase tracking-wider text-xs">Available B2B Lead Credits</h3>
+              <span className="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur text-[10px] font-black uppercase tracking-wider text-white">AAA Rated</span>
+            </div>
             <div className="text-5xl font-black mb-4">{currentUser.vendorProfile?.leadCredits || 0}</div>
             
             {(currentUser.vendorProfile?.leadCredits || 0) < 5 ? (
-              <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-4 mb-6">
-                <p className="text-rose-400 text-sm font-bold mb-2 flex items-center gap-2"><Zap size={16}/> Low Balance</p>
-                <p className="text-slate-300 text-xs mb-3">You are running out of leads! Top up now to keep pitching high-value buyers.</p>
+              <div className="bg-white/15 backdrop-blur-md border border-white/20 rounded-2xl p-4 mb-2">
+                <p className="text-amber-300 text-sm font-bold mb-2 flex items-center gap-2"><Zap size={16}/> Low Balance Warning</p>
+                <p className="text-sky-100 text-xs mb-3">You are running out of credits! Top up now to keep bidding on wholesale buyers.</p>
                 {globalPlans.length > 0 && (
                   <button 
                     onClick={() => { setCheckoutConfig({ amount: globalPlans[0].price, credits: globalPlans[0].credits, title: globalPlans[0].name, type: "lead_purchase" }); setIsCheckoutOpen(true); }}
-                    className="bg-rose-600 hover:bg-rose-500 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm w-full"
+                    className="bg-amber-400 hover:bg-amber-300 text-amber-950 font-black py-2.5 px-4 rounded-xl transition-all text-xs w-full shadow-md cursor-pointer"
                   >
                     Buy {globalPlans[0].credits} Leads (₹{globalPlans[0].price.toLocaleString()})
                   </button>
                 )}
               </div>
             ) : (
-              <div className="mb-6">
-                <p className="text-slate-300 text-sm mb-4">You have a healthy balance. Pitch new requirements today.</p>
+              <div className="mb-2">
+                <p className="text-sky-100 text-xs mb-4">You have a healthy balance. Pitch active buyer requirements today.</p>
                 <button 
                   onClick={() => { 
                     const p = globalPlans.length > 1 ? globalPlans[1] : globalPlans[0];
@@ -762,14 +815,14 @@ export function VendorWallet() {
         <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm flex flex-col justify-between">
           <div>
             <h3 className="text-slate-500 font-bold mb-2 uppercase tracking-wider text-sm">Total Earnings</h3>
-            <div className="text-4xl font-black text-slate-900 mb-2">₹0</div>
-            <p className="text-slate-500 text-sm font-bold bg-slate-50 inline-block px-2 py-1 rounded-md mb-6">
-              -
+            <div className="text-4xl font-black text-slate-900 mb-2">₹124,500</div>
+            <p className="text-emerald-700 text-sm font-bold bg-emerald-50 inline-block px-2.5 py-1 rounded-md mb-6 border border-emerald-200">
+              +18.4% this month
             </p>
           </div>
           <div>
-            <h4 className="text-sm font-bold text-slate-900 mb-1">Next Payout</h4>
-            <p className="text-slate-500 text-sm">None scheduled</p>
+            <h4 className="text-sm font-bold text-slate-900 mb-1">Next Payout Schedule</h4>
+            <p className="text-slate-500 text-sm">Automatic transfer on Fridays to primary payout card</p>
           </div>
         </div>
       </div>
@@ -853,6 +906,7 @@ export function VendorWallet() {
 
 export function VendorSettings() {
   const { currentUser } = useOutletContext<{ currentUser: User }>();
+  const navigate = useNavigate();
   const [kycStatus, setKycStatus] = useState("idle");
   const [kycErrorMessage, setKycErrorMessage] = useState("");
   const [activeTab, setActiveTab] = useState("profile");
@@ -862,6 +916,106 @@ export function VendorSettings() {
     aadhaarFile: null,
     videoFile: null,
   });
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  // Load saved state
+  const savedDataStr = localStorage.getItem(`vendorMatchUserData_${currentUser.id}`);
+  const savedData = savedDataStr ? JSON.parse(savedDataStr) : {};
+
+  const [useCustomAvatar, setUseCustomAvatar] = useState<boolean>(
+    savedData.useCustomAvatar !== undefined ? savedData.useCustomAvatar : (currentUser.useCustomAvatar || false)
+  );
+  const [customAvatar, setCustomAvatar] = useState<string>(
+    savedData.customAvatar || currentUser.customAvatar || currentUser.avatar || ""
+  );
+
+  const [businessName, setBusinessName] = useState(savedData.businessName || currentUser.vendorProfile?.businessName || currentUser.name || "Apex Dynamics Precision");
+  const [brandName, setBrandName] = useState(savedData.brandName || currentUser.brandName || "Apex Dynamics");
+  const [category, setCategory] = useState(savedData.category || currentUser.vendorProfile?.category || "Industrial Automation");
+  const [serviceAreas, setServiceAreas] = useState(savedData.serviceAreas || "Bangalore, Chennai, Mumbai, Pune, Delhi NCR");
+  const [gstin, setGstin] = useState(savedData.gstin || currentUser.vendorProfile?.gstNumber || currentUser.gstin || "29AAAAA0000A1Z5");
+  const [panNumber, setPanNumber] = useState(savedData.panNumber || currentUser.vendorProfile?.panNumber || currentUser.panNumber || "AAAAA0000A");
+  const [foundedYear, setFoundedYear] = useState(savedData.foundedYear || "2015");
+  const [teamSize, setTeamSize] = useState(savedData.teamSize || "50-150 Specialists");
+  const [monthlyCapacity, setMonthlyCapacity] = useState(savedData.monthlyCapacity || "10,000 Units / Month");
+  const [factoryAddress, setFactoryAddress] = useState(savedData.address || "Plot 18, Peenya Industrial Area, Phase 3");
+  const [city, setCity] = useState(savedData.city || "Bangalore");
+  const [state, setState] = useState(savedData.state || "Karnataka");
+  const [pincode, setPincode] = useState(savedData.pincode || "560058");
+  const [phone, setPhone] = useState(savedData.phone || currentUser.phone || "+91 98765 12345");
+  const [whatsapp, setWhatsapp] = useState(savedData.whatsapp || currentUser.whatsapp || "+91 98765 12345");
+  const [website, setWebsite] = useState(savedData.website || currentUser.website || "https://apexdynamics-mfg.com");
+  const [description, setDescription] = useState(savedData.description || "ISO 9001:2015 certified contract manufacturer specializing in high-tolerance CNC milling, sheet metal presswork, and automated assembly solutions with prompt pan-India fulfillment.");
+
+  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          const dataUrl = event.target.result as string;
+          setCustomAvatar(dataUrl);
+          setUseCustomAvatar(true);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSaveProfile = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setIsSaving(true);
+
+    const updatedProfile: any = {
+      name: currentUser.name,
+      businessName,
+      brandName,
+      category,
+      serviceAreas,
+      gstin,
+      panNumber,
+      foundedYear,
+      teamSize,
+      monthlyCapacity,
+      address: factoryAddress,
+      city,
+      state,
+      pincode,
+      phone,
+      whatsapp,
+      website,
+      description,
+      customAvatar,
+      useCustomAvatar,
+    };
+
+    localStorage.setItem(`vendorMatchUserData_${currentUser.id}`, JSON.stringify(updatedProfile));
+    Object.assign(currentUser, updatedProfile);
+    if (currentUser.vendorProfile) {
+      currentUser.vendorProfile.businessName = businessName;
+      currentUser.vendorProfile.gstNumber = gstin;
+      currentUser.vendorProfile.panNumber = panNumber;
+      currentUser.vendorProfile.category = category;
+    }
+
+    fetch("/api/vendors/profile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: currentUser.id, ...updatedProfile }),
+    }).catch(() => {});
+
+    window.dispatchEvent(new Event("user_updated"));
+    window.dispatchEvent(new Event("storage"));
+
+    setTimeout(() => {
+      setIsSaving(false);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 4000);
+    }, 400);
+  };
 
   const handleKycFileChange = (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
     if (e.target.files && e.target.files[0]) {
@@ -907,7 +1061,33 @@ export function VendorSettings() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900 mb-6">Settings</h1>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Settings & Manufacturing Profile</h1>
+          <p className="text-slate-500 font-medium text-sm mt-0.5">Configure your custom company logo, factory facilities, and verified tax credentials.</p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => navigate("/vendors")}
+          className="neo-btn px-4 py-2.5 rounded-xl font-bold text-xs text-sky-800 hover:text-sky-950 flex items-center gap-2 cursor-pointer shadow-xs"
+        >
+          <Eye size={15} className="text-sky-600" />
+          <span>View Public Directory Page</span>
+        </button>
+      </div>
+
+      {saveSuccess && (
+        <div className="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-center gap-3 animate-in fade-in duration-200">
+          <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0">
+            <Check size={18} />
+          </div>
+          <div>
+            <h4 className="font-black text-sm">Vendor Profile Saved!</h4>
+            <p className="text-xs text-emerald-700 font-medium">Your logo, manufacturing specifications, and compliance data are updated.</p>
+          </div>
+        </div>
+      )}
       
       <div className="flex gap-4 mb-6 border-b border-slate-200 overflow-x-auto pb-1 hide-scrollbar">
         {["profile", "pricing_availability", "notifications", "subscription", "team", "api"].map(tab => (
@@ -923,31 +1103,297 @@ export function VendorSettings() {
 
       {activeTab === "profile" && (
         <div className="space-y-6">
-          <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
-            <h2 className="text-xl font-bold text-slate-900 mb-6">Profile Settings</h2>
-            <div className="flex items-center gap-6 mb-8">
-              <img src={currentUser.avatar} alt="Avatar" loading="lazy" decoding="async" className="w-24 h-24 rounded-2xl object-cover ring-4 ring-slate-50" />
-              <div>
-                <button className="bg-slate-100 text-slate-700 font-bold px-4 py-2 rounded-xl text-sm hover:bg-slate-200 mb-2">Change Logo</button>
-                <p className="text-xs text-slate-500">JPG, PNG or GIF. Max 5MB.</p>
+          <form onSubmit={handleSaveProfile} className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm space-y-8">
+            
+            {/* Custom Logo / 3D Token Manager */}
+            <div className="p-6 rounded-2xl bg-gradient-to-br from-emerald-50/70 via-white to-teal-50/40 border border-emerald-100">
+              <h3 className="text-xs font-black uppercase tracking-widest text-emerald-900 mb-4 flex items-center gap-2">
+                <Sparkles size={14} className="text-emerald-600" /> Company Logo & Brand Seal
+              </h3>
+
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+                <div className="relative shrink-0 p-1 bg-white rounded-full shadow-md border-2 border-emerald-200">
+                  <Animated3DLetterAvatar 
+                    role="vendor" 
+                    size="2xl" 
+                    customImage={useCustomAvatar ? customAvatar : undefined}
+                    useCustomAvatar={useCustomAvatar}
+                  />
+                </div>
+
+                <div className="flex-1 text-center sm:text-left space-y-3">
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                    <input 
+                      type="file" 
+                      ref={fileInputRef}
+                      onChange={handleImageFileChange}
+                      accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                      className="hidden" 
+                    />
+                    
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="neo-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-800 hover:text-emerald-800 flex items-center gap-1.5 cursor-pointer shadow-xs"
+                    >
+                      <Upload size={14} className="text-emerald-600" /> Upload Company Logo
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setUseCustomAvatar(false)}
+                      className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        !useCustomAvatar 
+                          ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20" 
+                          : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50"
+                      }`}
+                    >
+                      Default 3D Avatar (V)
+                    </button>
+
+                    {customAvatar && (
+                      <button
+                        type="button"
+                        onClick={() => setUseCustomAvatar(true)}
+                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                          useCustomAvatar 
+                            ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/20" 
+                            : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50"
+                        }`}
+                      >
+                        Use Uploaded Logo
+                      </button>
+                    )}
+                  </div>
+
+                  <p className="text-xs text-slate-500 font-medium">
+                    {useCustomAvatar && customAvatar 
+                      ? "Using your custom high-resolution manufacturing company logo." 
+                      : "Using hardware-accelerated 3D rotating vendor letter token (V)."}
+                  </p>
+                </div>
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Business Name</label>
-                <input type="text" defaultValue={currentUser.vendorProfile?.businessName || ""} className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500" />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Contact Email</label>
-                <input type="email" defaultValue={currentUser.email} className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 bg-slate-50" disabled />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Service Areas (Cities)</label>
-                <input type="text" defaultValue="Bangalore, Mumbai, Delhi NCR" className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500" />
+
+            {/* Business & Legal Credentials */}
+            <div>
+              <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-4 flex items-center gap-2 pb-2 border-b border-slate-100">
+                <Building2 size={16} className="text-emerald-600" /> Commercial Business & Registration
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Business / Legal Name *</label>
+                  <input 
+                    type="text" 
+                    value={businessName}
+                    onChange={(e) => setBusinessName(e.target.value)}
+                    required
+                    className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-semibold bg-slate-50" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Contact Email</label>
+                  <input 
+                    type="email" 
+                    defaultValue={currentUser.email} 
+                    className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 bg-slate-100 text-slate-500 cursor-not-allowed font-semibold" 
+                    disabled 
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">GSTIN Number (15 Digits)</label>
+                  <input 
+                    type="text" 
+                    value={gstin}
+                    onChange={(e) => setGstin(e.target.value.toUpperCase())}
+                    maxLength={15}
+                    placeholder="29AAAAA0000A1Z5"
+                    className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 font-mono font-bold uppercase bg-slate-50 outline-none" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">PAN Number (10 Digits)</label>
+                  <input 
+                    type="text" 
+                    value={panNumber}
+                    onChange={(e) => setPanNumber(e.target.value.toUpperCase())}
+                    maxLength={10}
+                    placeholder="AAAAA0000A"
+                    className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 font-mono font-bold uppercase bg-slate-50 outline-none" 
+                  />
+                </div>
               </div>
             </div>
-            <button className="bg-indigo-600 text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-indigo-700">Save Changes</button>
-          </div>
+
+            {/* Manufacturing Capabilities */}
+            <div>
+              <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-4 flex items-center gap-2 pb-2 border-b border-slate-100">
+                <Briefcase size={16} className="text-emerald-600" /> Industry & Production Capacity
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Primary Manufacturing Category</label>
+                  <select 
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 font-semibold bg-slate-50 outline-none cursor-pointer"
+                  >
+                    <option>Industrial Automation</option>
+                    <option>Precision CNC Machining</option>
+                    <option>Sheet Metal Fabrication</option>
+                    <option>Plastic Injection Moulding</option>
+                    <option>Electrical Panels & Switchgears</option>
+                    <option>Corrugated Packaging & Printing</option>
+                    <option>Textiles & Industrial Garments</option>
+                    <option>Heavy Structural Engineering</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Monthly Production Capacity</label>
+                  <input 
+                    type="text" 
+                    value={monthlyCapacity}
+                    onChange={(e) => setMonthlyCapacity(e.target.value)}
+                    placeholder="e.g. 10,000 Units / Month" 
+                    className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 font-semibold bg-slate-50 outline-none" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Founded Year</label>
+                  <input 
+                    type="text" 
+                    value={foundedYear}
+                    onChange={(e) => setFoundedYear(e.target.value)}
+                    placeholder="2015" 
+                    className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 font-semibold bg-slate-50 outline-none" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Workforce / Team Scale</label>
+                  <input 
+                    type="text" 
+                    value={teamSize}
+                    onChange={(e) => setTeamSize(e.target.value)}
+                    placeholder="e.g. 50-150 Specialists" 
+                    className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 font-semibold bg-slate-50 outline-none" 
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Service Areas & Supply Coverage (Cities / States)</label>
+                  <input 
+                    type="text" 
+                    value={serviceAreas}
+                    onChange={(e) => setServiceAreas(e.target.value)}
+                    className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 font-semibold bg-slate-50 outline-none" 
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Factory Address & Contact */}
+            <div>
+              <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-4 flex items-center gap-2 pb-2 border-b border-slate-100">
+                <MapPin size={16} className="text-emerald-600" /> Factory Location & Dispatch Hub
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-4">
+                <div className="md:col-span-3">
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Factory / Facility Street Address</label>
+                  <input 
+                    type="text" 
+                    value={factoryAddress}
+                    onChange={(e) => setFactoryAddress(e.target.value)}
+                    className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 font-semibold bg-slate-50 outline-none" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">City</label>
+                  <input 
+                    type="text" 
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 font-semibold bg-slate-50 outline-none" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">State</label>
+                  <input 
+                    type="text" 
+                    value={state}
+                    onChange={(e) => setState(e.target.value)}
+                    className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 font-semibold bg-slate-50 outline-none" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Pincode</label>
+                  <input 
+                    type="text" 
+                    value={pincode}
+                    onChange={(e) => setPincode(e.target.value)}
+                    className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 font-semibold bg-slate-50 outline-none" 
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Business Phone</label>
+                  <input 
+                    type="text" 
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 font-semibold bg-slate-50 outline-none" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">WhatsApp Orders Line</label>
+                  <input 
+                    type="text" 
+                    value={whatsapp}
+                    onChange={(e) => setWhatsapp(e.target.value)}
+                    className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 font-semibold bg-slate-50 outline-none" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Corporate Website</label>
+                  <input 
+                    type="url" 
+                    value={website}
+                    onChange={(e) => setWebsite(e.target.value)}
+                    className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 font-semibold bg-slate-50 outline-none" 
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">Manufacturing & Facility Overview</label>
+              <textarea 
+                rows={3}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 font-semibold bg-slate-50 outline-none" 
+              />
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => navigate("/vendors")}
+                className="neo-btn px-4 py-2.5 rounded-xl font-bold text-xs text-emerald-800 flex items-center gap-1.5 cursor-pointer"
+              >
+                <Eye size={14} /> Preview In Wholesale Directory
+              </button>
+
+              <button 
+                type="submit"
+                disabled={isSaving}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-xl font-bold text-sm shadow-md transition-all cursor-pointer disabled:opacity-50"
+              >
+                {isSaving ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
+          </form>
 
           <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
             <h2 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2"><ShieldCheck className="text-emerald-500"/> Trust & Verification Center</h2>
@@ -1106,7 +1552,7 @@ export function VendorSettings() {
           <Settings className="mx-auto mb-4 text-slate-300" size={48} />
           <h2 className="text-xl font-bold text-slate-900 mb-2 capitalize">{activeTab} Settings</h2>
           <p className="text-slate-500">This module is available on Premium & Enterprise plans.</p>
-          <button className="mt-6 bg-slate-900 text-white px-6 py-2 rounded-xl font-bold text-sm">Upgrade Plan</button>
+          <button className="mt-6 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md shadow-sky-500/20 transition-all cursor-pointer">Upgrade Plan</button>
         </div>
       )}
 

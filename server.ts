@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import "dotenv/config";
 import express from "express";
 import path from "path";
 import http from "http";
@@ -25,6 +26,7 @@ import publicRouter from "./src/backend/routes/public";
 import dashboardsRouter from "./src/backend/routes/dashboards";
 import buyerRouter from "./src/backend/routes/buyer";
 import verificationRouter from "./src/backend/routes/verification";
+import adsRouter from "./src/backend/routes/ads";
 
 // Setup express app
 const app = express();
@@ -34,7 +36,15 @@ const io = new SocketIOServer(httpServer, { cors: { origin: "*" } });
 // Initialize real-time chat
 initializeChatSocket(io);
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+
+// Health Checks for Cloud Load Balancers, Kubernetes & CI/CD Probes
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok", uptime: process.uptime(), timestamp: new Date().toISOString() });
+});
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "healthy", service: "Bussinest B2B Marketplace API", timestamp: new Date().toISOString() });
+});
 
 // 1. Raw body for Stripe Webhook (must be parsed before express.json)
 app.use("/api/payments/webhook", express.raw({ type: "application/json" }));
@@ -109,6 +119,7 @@ app.use("/api/public", publicRouter);
 app.use("/api/dashboards", dashboardsRouter);
 app.use("/api/buyer", buyerRouter);
 app.use("/api/user/verification", verificationRouter);
+app.use("/api/ads", adsRouter);
 
 // Global Error Handler
 app.use(errorHandler as express.ErrorRequestHandler);
@@ -128,6 +139,11 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), "dist");
+    // Long-term immutable caching for bundled Vite assets
+    app.use("/assets", express.static(path.join(distPath, "assets"), {
+      maxAge: "1y",
+      immutable: true
+    }));
     app.use(express.static(distPath));
     app.get("*", (req, res) => {
       res.sendFile(path.join(distPath, "index.html"));
@@ -135,8 +151,20 @@ async function startServer() {
   }
 
   httpServer.listen(PORT, () => {
-    console.log(`[Vendimatch] AI-Powered B2B Marketplace running at http://localhost:${PORT}`);
+    console.log(`[Bussinest] Production-Ready B2B Wholesale Marketplace running at http://localhost:${PORT}`);
   });
+
+  // Graceful shutdown handling for container orchestrators (Kubernetes, Cloud Run, Docker)
+  const gracefulShutdown = async (signal: string) => {
+    console.log(`[Bussinest] Received ${signal}. Shutting down gracefully...`);
+    httpServer.close(async () => {
+      await prisma.$disconnect().catch(() => {});
+      process.exit(0);
+    });
+  };
+
+  process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+  process.on("SIGINT", () => gracefulShutdown("SIGINT"));
 }
 
 startServer();

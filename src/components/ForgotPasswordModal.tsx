@@ -22,6 +22,19 @@ export default function ForgotPasswordModal({ isOpen, onClose, onRequestReset, o
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Escape key handler
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    if (isOpen) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleRequest = async (e: React.FormEvent) => {
@@ -73,13 +86,30 @@ export default function ForgotPasswordModal({ isOpen, onClose, onRequestReset, o
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden relative animate-in fade-in zoom-in-95 duration-200">
-        <button onClick={onClose} className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 rounded-full transition-colors z-10">
-          <X size={20} />
-        </button>
+    <div 
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-sky-950/60 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200"
+    >
+      <div className="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl w-full max-w-md overflow-hidden relative animate-in fade-in zoom-in-95 duration-200 border border-sky-100 flex flex-col max-h-[90vh]">
+        <div className="gold-line-animated absolute top-0 left-0 right-0 h-[3px] z-30"></div>
+        
+        {/* Sticky Fixed Header with Close Button */}
+        <div className="sticky top-0 bg-white/95 backdrop-blur-md px-6 py-3.5 border-b border-sky-100 flex items-center justify-between z-30 shrink-0">
+          <span className="text-[11px] font-black tracking-wider uppercase bg-sky-100 text-sky-800 px-3 py-1 rounded-full">
+            Password Recovery
+          </span>
+          <button 
+            type="button"
+            onClick={onClose} 
+            className="px-3 py-1.5 text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-full transition-colors cursor-pointer flex items-center gap-1.5 font-extrabold text-xs shadow-xs"
+            title="Close (Esc)"
+          >
+            <span>Close</span>
+            <X size={16} />
+          </button>
+        </div>
 
-        <div className="p-8">
+        <div className="overflow-y-auto flex-1 p-6 sm:p-8">
           
           {/* STEP 1: Identify */}
           {step === 1 && (
@@ -157,6 +187,11 @@ export default function ForgotPasswordModal({ isOpen, onClose, onRequestReset, o
             </form>
           )}
 
+          <div className="mt-6 text-center pt-4 border-t border-slate-100">
+            <button type="button" onClick={onClose} className="text-xs font-bold text-slate-400 hover:text-slate-700 underline cursor-pointer">
+              Cancel & Close Modal
+            </button>
+          </div>
         </div>
       </div>
     </div>

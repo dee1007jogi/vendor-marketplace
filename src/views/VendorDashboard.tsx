@@ -543,17 +543,17 @@ export default function VendorDashboard({
                       type="button"
                       onClick={handleGeminiOptimizeLetter}
                       disabled={isAiOptimizing}
-                      className="w-full mt-2 bg-slate-900 border border-slate-800 hover:bg-slate-800 text-teal-300 rounded-xl py-2 px-4 text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm cursor-pointer disabled:opacity-50"
+                      className="w-full mt-2 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-700 hover:to-indigo-700 text-white rounded-xl py-2.5 px-4 text-xs font-bold flex items-center justify-center gap-1.5 shadow-md shadow-sky-500/20 cursor-pointer disabled:opacity-50 transition-all"
                       id="optimize-proposal-btn"
                     >
                       {isAiOptimizing ? (
                         <>
-                          <Loader2 size={13} className="animate-spin text-teal-300" />
+                          <Loader2 size={13} className="animate-spin text-white" />
                           <span>Gemini Copywriting Architect...</span>
                         </>
                       ) : (
                         <>
-                          <Sparkles size={13} className="fill-teal-300 text-teal-300" />
+                          <Sparkles size={13} className="fill-amber-300 text-amber-300" />
                           <span>Structure Proposal Outline with Gemini AI</span>
                         </>
                       )}

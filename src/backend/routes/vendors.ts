@@ -73,6 +73,51 @@ router.get("/facets", async (req, res) => {
   }
 });
 
+// Helper for city coordinate resolution
+const CITY_COORDINATES: Record<string, { lat: number; lng: number }> = {
+  "pune": { lat: 18.5204, lng: 73.8567 },
+  "mumbai": { lat: 19.0760, lng: 72.8777 },
+  "ahmedabad": { lat: 23.0225, lng: 72.5714 },
+  "surat": { lat: 21.1702, lng: 72.8311 },
+  "delhi": { lat: 28.6139, lng: 77.2090 },
+  "noida": { lat: 28.5355, lng: 77.3910 },
+  "gurgaon": { lat: 28.4595, lng: 77.0266 },
+  "bengaluru": { lat: 12.9716, lng: 77.5946 },
+  "bangalore": { lat: 12.9716, lng: 77.5946 },
+  "chennai": { lat: 13.0827, lng: 80.2707 },
+  "hyderabad": { lat: 17.3850, lng: 78.4867 },
+  "coimbatore": { lat: 11.0168, lng: 76.9558 },
+  "ludhiana": { lat: 30.9010, lng: 75.8573 },
+  "rajkot": { lat: 22.3039, lng: 70.8022 },
+  "kolkata": { lat: 22.5726, lng: 88.3639 },
+  "jaipur": { lat: 26.9124, lng: 75.7873 },
+  "indore": { lat: 22.7196, lng: 75.8577 },
+  "vadodara": { lat: 22.3072, lng: 73.1812 }
+};
+
+function getCityCoords(loc: string): { lat: number; lng: number } {
+  if (!loc) return { lat: 18.5204, lng: 73.8567 };
+  const lower = loc.toLowerCase();
+  for (const [city, coords] of Object.entries(CITY_COORDINATES)) {
+    if (lower.includes(city)) return coords;
+  }
+  return { lat: 18.5204, lng: 73.8567 };
+}
+
+function calcHaversineKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * (Math.PI / 180)) *
+      Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return Math.round(R * c * 1.18 * 10) / 10;
+}
+
 // GET /api/vendors/search - Main discovery search
 router.get("/search", async (req, res) => {
   try {
@@ -88,8 +133,14 @@ router.get("/search", async (req, res) => {
       sort = "best_match",
       page = "1",
       limit = "20",
-      cursor // New cursor parameter for cursor-based pagination
+      cursor,
+      lat,
+      lng,
+      radiusKm
     } = req.query;
+
+    const userLat = lat ? parseFloat(String(lat)) : null;
+    const userLng = lng ? parseFloat(String(lng)) : null;
 
     const where: any = {};
 
@@ -102,7 +153,6 @@ router.get("/search", async (req, res) => {
     }
 
     if (category) {
-      // Split by commas for multiple categories if needed, but simple equals for now
       where.category = { equals: String(category) };
     }
 
@@ -123,8 +173,6 @@ router.get("/search", async (req, res) => {
     const limitNum = parseInt(String(limit), 10);
     const pageNum = parseInt(String(page), 10);
     
-    // DB optimization: If sorting by price_asc, we can use Prisma's native cursor/limit
-    // avoiding fetching the entire dataset into memory.
     const findArgs: any = {
       where,
       include: { user: { select: { avatar: true, verified: true } } }
@@ -134,12 +182,10 @@ router.get("/search", async (req, res) => {
       findArgs.orderBy = { pricingMin: "asc" };
       findArgs.take = limitNum;
       
-      // Implement Cursor-based Pagination if cursor is provided
       if (cursor) {
         findArgs.cursor = { userId: String(cursor) };
         findArgs.skip = 1;
       } else if (pageNum > 1) {
-        // Fallback to skip if page is explicitly provided without cursor
         findArgs.skip = (pageNum - 1) * limitNum;
       }
     }
@@ -155,13 +201,20 @@ router.get("/search", async (req, res) => {
         }
       } catch (e) {}
       
-      let services = ["Web Development", "UI/UX Design", "Cloud Architecture", "API Integration", "Consulting"];
+      let services = ["Industrial Components", "Precision CNC", "Bulk Logistics", "Factory Supply", "Quality Control"];
       try { 
         if (v.servicesJson) {
           const parsed = JSON.parse(v.servicesJson);
           if (parsed.length > 0) services = parsed;
         }
       } catch (e) {}
+
+      // Resolve vendor coordinates & live distance
+      const coords = getCityCoords(v.location);
+      let distanceKm: number | null = null;
+      if (userLat !== null && userLng !== null) {
+        distanceKm = calcHaversineKm(userLat, userLng, coords.lat, coords.lng);
+      }
 
       // simple match score calculation
       let matchScore = 70;
@@ -170,15 +223,26 @@ router.get("/search", async (req, res) => {
       if (v.responseTime && v.responseTime.includes("hour")) matchScore += 5;
       if (q && v.businessName.toLowerCase().includes(String(q).toLowerCase())) matchScore += 5;
 
-      return { ...v, ratings, services, matchScore };
+      return { ...v, ratings, services, matchScore, coords, distanceKm };
     });
 
     if (minRating) processedVendors = processedVendors.filter(v => v.ratings.avg >= Number(minRating));
     if (responseTime) processedVendors = processedVendors.filter(v => v.responseTime && v.responseTime.includes(String(responseTime)));
+    if (radiusKm && userLat !== null && userLng !== null) {
+      const maxR = parseFloat(String(radiusKm));
+      processedVendors = processedVendors.filter(v => v.distanceKm !== null && v.distanceKm <= maxR);
+    }
 
-    // Only sort in memory if not already sorted natively by DB
+    // Sort in memory
     if (sort === "rating") processedVendors.sort((a, b) => b.ratings.avg - a.ratings.avg);
     else if (sort === "best_match") processedVendors.sort((a, b) => b.matchScore - a.matchScore);
+    else if (sort === "nearest") {
+      processedVendors.sort((a, b) => {
+        if (a.distanceKm === null) return 1;
+        if (b.distanceKm === null) return -1;
+        return a.distanceKm - b.distanceKm;
+      });
+    }
 
     let paginated = processedVendors;
     // If we didn't natively paginate in the DB, slice it here
@@ -198,6 +262,8 @@ router.get("/search", async (req, res) => {
         logo: (v as any).user.avatar,
         category: v.category,
         location: v.location,
+        coords: v.coords,
+        distanceKm: v.distanceKm,
         verified: (v as any).user.verified,
         premium: v.subscriptionPlan === "premium" || v.subscriptionPlan === "enterprise",
         rating: v.ratings.avg,

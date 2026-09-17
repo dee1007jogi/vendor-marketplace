@@ -10,7 +10,7 @@ import redis from "../lib/redis";
 import { upload, normalizeUploadUrl } from "../lib/upload";
 
 const router = Router();
-const JWT_SECRET = process.env.JWT_SECRET || "vendimatch_secret_mvp_2024";
+const JWT_SECRET = process.env.JWT_SECRET || "bussinest_secret_mvp_2024";
 
 function generateToken(user: any) {
   return jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });

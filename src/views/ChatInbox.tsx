@@ -5,6 +5,7 @@ import {
   RefreshCw, PlusCircle, AlertCircle, ChevronLeft 
 } from "lucide-react";
 import { io, Socket } from "socket.io-client";
+import Animated3DLetterAvatar from "../components/Animated3DLetterAvatar";
 
 interface ChatInboxProps {
   currentUser: User;
@@ -136,7 +137,7 @@ export default function ChatInbox({ currentUser }: ChatInboxProps) {
   const activePartner = usersInfo.find(u => u.id === activePartnerId);
 
   return (
-    <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm flex flex-col md:flex-row h-[85vh] md:h-[70vh]">
+    <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm flex flex-col md:flex-row h-[85vh] md:h-[70vh] animate-entrance-up">
       
       {/* Sidebar */}
       <div className={`w-full md:w-80 border-r border-slate-200 flex-col bg-slate-50 ${showMobileChat ? 'hidden md:flex' : 'flex'} h-full`}>
@@ -169,11 +170,7 @@ export default function ChatInbox({ currentUser }: ChatInboxProps) {
                     isActive ? "bg-indigo-600 text-white shadow-md shadow-indigo-100" : "bg-transparent text-slate-700 hover:bg-slate-200/50"
                   }`}
                 >
-                  <img
-                    src={partner?.avatar || "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=150&q=80"}
-                    alt={partner?.name}
-                    className="h-9 w-9 rounded-full object-cover ring-2 ring-white/10"
-                  />
+                  <Animated3DLetterAvatar role={partner?.role || (currentUser.role.toLowerCase() === "vendor" ? "buyer" : "vendor")} size="sm" />
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-baseline">
                       <span className={`text-xs font-bold truncate ${isActive ? "text-white" : "text-slate-900"}`}>
@@ -209,7 +206,7 @@ export default function ChatInbox({ currentUser }: ChatInboxProps) {
                 >
                   <ChevronLeft size={20} />
                 </button>
-                <img src={activePartner.avatar} alt={activePartner.name} className="h-10 w-10 rounded-full object-cover" />
+                <Animated3DLetterAvatar role={activePartner.role || (currentUser.role.toLowerCase() === "vendor" ? "buyer" : "vendor")} size="md" />
                 <div>
                   <h3 className="font-bold text-slate-900 text-sm leading-tight">{activePartner.name}</h3>
                   <p className="text-[10px] text-indigo-600 font-bold uppercase tracking-wider flex items-center gap-1 leading-none mt-0.5">

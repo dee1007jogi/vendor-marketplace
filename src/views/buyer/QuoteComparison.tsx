@@ -181,9 +181,10 @@ export default function QuoteComparison({ currentUser }: QuoteComparisonProps) {
 
       {/* Cover Letter Modal */}
       {selectedCoverLetter && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-sky-950/35 backdrop-blur-md">
+          <div className="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-sky-100 relative">
+            <div className="gold-line-animated absolute top-0 left-0 right-0 h-[3px]"></div>
+            <div className="p-6 border-b border-sky-100 flex justify-between items-center bg-sky-50/60">
               <h3 className="text-xl font-black text-slate-900">Cover Letter from {selectedCoverLetter.vendorName}</h3>
               <button 
                 onClick={() => setSelectedCoverLetter(null)}

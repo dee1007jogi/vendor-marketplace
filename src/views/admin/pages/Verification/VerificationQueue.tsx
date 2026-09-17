@@ -278,13 +278,14 @@ export function VerificationQueue() {
       {/* FULL DOCUMENT REVIEW & INSPECTION MODAL */}
       {/* ========================================================= */}
       {reviewingVendor && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden relative my-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-sky-950/35 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden relative my-6 border border-sky-100">
+            <div className="gold-line-animated absolute top-0 left-0 right-0 h-[3px]"></div>
             
             {/* Modal Header */}
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+            <div className="p-6 border-b border-sky-100 flex items-center justify-between bg-sky-50/50">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold">
+                <div className="w-12 h-12 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center font-bold">
                   <Building2 size={24} />
                 </div>
                 <div>
@@ -460,18 +461,18 @@ export function VerificationQueue() {
 
               {/* Active Document Inline Viewer */}
               {activePreviewDoc && (
-                <div className="border border-slate-700/60 rounded-3xl p-5 bg-slate-900 text-white shadow-2xl animate-in fade-in duration-200">
-                  <div className="flex flex-wrap items-center justify-between pb-3 border-b border-slate-800 gap-2 mb-3">
+                <div className="border border-sky-200 rounded-3xl p-5 bg-gradient-to-br from-sky-50/90 via-white to-sky-100/60 text-slate-800 shadow-xl animate-in fade-in duration-200">
+                  <div className="flex flex-wrap items-center justify-between pb-3 border-b border-sky-200/80 gap-2 mb-3">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold">
+                      <div className="w-8 h-8 rounded-xl bg-sky-500/15 text-sky-600 flex items-center justify-center font-bold">
                         <Eye size={16} />
                       </div>
                       <div>
-                        <span className="text-xs font-bold text-slate-200 block">
-                          Viewing: <strong className="text-white">{activePreviewDoc.title}</strong>
+                        <span className="text-xs font-bold text-slate-800 block">
+                          Viewing: <strong className="text-sky-900">{activePreviewDoc.title}</strong>
                         </span>
                         {activePreviewDoc.fileName && (
-                          <span className="text-[11px] text-slate-400 font-mono">
+                          <span className="text-[11px] text-slate-500 font-mono">
                             {activePreviewDoc.fileName}
                           </span>
                         )}
@@ -483,7 +484,7 @@ export function VerificationQueue() {
                         href={activePreviewDoc.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition-colors border border-slate-700"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-sky-50 text-sky-800 text-xs font-bold rounded-xl transition-colors border border-sky-200 shadow-2xs"
                         title="Open in new full tab"
                       >
                         <ExternalLink size={13} />
@@ -500,7 +501,7 @@ export function VerificationQueue() {
                       </a>
                       <button
                         onClick={() => setActivePreviewDoc(null)}
-                        className="p-1.5 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-xl transition-colors ml-1"
+                        className="p-1.5 text-slate-400 hover:text-slate-700 bg-white hover:bg-sky-50 rounded-xl transition-colors ml-1 border border-slate-200 shadow-2xs"
                         title="Close Viewer"
                       >
                         <X size={16} />
@@ -508,7 +509,7 @@ export function VerificationQueue() {
                     </div>
                   </div>
 
-                  <div className="bg-slate-950/90 rounded-2xl p-3 flex items-center justify-center min-h-[380px] max-h-[550px] overflow-auto border border-slate-800/80">
+                  <div className="bg-white rounded-2xl p-3 flex items-center justify-center min-h-[380px] max-h-[550px] overflow-auto border border-sky-100 shadow-inner">
                     {activePreviewDoc.isPdf || activePreviewDoc.url.toLowerCase().includes('.pdf') ? (
                       <iframe
                         src={activePreviewDoc.url}
@@ -519,7 +520,7 @@ export function VerificationQueue() {
                       <img
                         src={activePreviewDoc.url}
                         alt={activePreviewDoc.title}
-                        className="max-h-[500px] max-w-full object-contain rounded-xl shadow-2xl transition-transform hover:scale-[1.01]"
+                        className="max-h-[500px] max-w-full object-contain rounded-xl shadow-md transition-transform hover:scale-[1.01]"
                         onError={() => {
                           if (!activePreviewDoc.isPdf) {
                             setActivePreviewDoc(prev => prev ? { ...prev, isPdf: true } : null);
@@ -580,11 +581,12 @@ export function VerificationQueue() {
       {/* REJECTION REASON DIALOG WITH PREDEFINED CHIPS */}
       {/* ========================================================= */}
       {rejectingVendor && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-6 relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-sky-950/35 backdrop-blur-md animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-6 relative border border-sky-100 overflow-hidden">
+            <div className="gold-line-animated absolute top-0 left-0 right-0 h-[3px]"></div>
             <button
               onClick={() => setRejectingVendor(null)}
-              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-800 rounded-full hover:bg-slate-100"
+              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-800 rounded-full hover:bg-sky-50"
             >
               <X size={18} />
             </button>

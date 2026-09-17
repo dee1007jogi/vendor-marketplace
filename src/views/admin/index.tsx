@@ -1,4 +1,4 @@
-export { AdminDashboard } from './pages/Dashboard/AdminDashboard';
+export { default as AdminDashboard } from './AdminDashboard';
 export { VerificationQueue } from './pages/Verification/VerificationQueue';
 export { DisputeResolution } from './pages/Disputes/DisputeResolution';
 export { PlatformSettings } from './pages/Settings/PlatformSettings';
@@ -7,3 +7,4 @@ export { AdminBuyers } from './pages/Users/AdminBuyers';
 export { AdminCategories } from './pages/Categories/AdminCategories';
 export { AdminTransactions } from './pages/Transactions/AdminTransactions';
 export { AdminProfile } from './pages/Settings/AdminProfile';
+export { default as AdminAdManager } from './pages/Ads/AdminAdManager';

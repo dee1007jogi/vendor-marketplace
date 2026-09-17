@@ -52,54 +52,55 @@ export default function CheckoutModal({ isOpen, onClose, title, amount, transact
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" />
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="absolute inset-0 bg-sky-950/35 backdrop-blur-md" />
         
         <motion.div 
           initial={{ opacity: 0, scale: 0.95, y: 20 }} 
           animate={{ opacity: 1, scale: 1, y: 0 }} 
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden z-10"
+          className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-sky-100 overflow-hidden z-10"
         >
-          <div className="bg-indigo-600 p-6 flex items-start justify-between">
+          <div className="gold-line-animated absolute top-0 left-0 right-0 h-[3px]"></div>
+          <div className="bg-gradient-to-r from-sky-600 to-blue-700 p-6 flex items-start justify-between">
             <div className="text-white">
-              <h2 className="text-xl font-bold">{title}</h2>
-              <p className="text-indigo-200 text-sm mt-1">Secured by VendiMatch Escrow & Stripe</p>
+              <h2 className="text-xl font-black">{title}</h2>
+              <p className="text-sky-100 text-xs mt-1">Secured by Bussinest Escrow (CRISIL AAA Rated)</p>
             </div>
-            <button onClick={onClose} className="text-indigo-200 hover:text-white bg-indigo-700/50 hover:bg-indigo-700 p-2 rounded-full transition-colors">
+            <button onClick={onClose} className="text-sky-100 hover:text-white bg-white/20 hover:bg-white/30 p-2 rounded-full transition-colors cursor-pointer">
               <X size={20} />
             </button>
           </div>
           
           <div className="p-8">
-            <div className="flex justify-between items-end border-b border-slate-100 pb-6 mb-6">
-              <span className="text-slate-500 font-bold uppercase tracking-wider text-xs">Total Amount</span>
+            <div className="flex justify-between items-end border-b border-sky-100 pb-6 mb-6">
+              <span className="text-slate-500 font-extrabold uppercase tracking-wider text-xs">Total Amount</span>
               <span className="text-4xl font-black text-slate-900">₹{amount.toLocaleString()}</span>
             </div>
 
             {error && <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-xl font-bold text-sm text-center border border-red-100">{error}</div>}
 
             <div className="space-y-4 mb-8">
-              <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl flex items-center gap-3">
-                <CreditCard className="text-slate-400" />
+              <div className="bg-sky-50/70 border border-sky-100 p-4 rounded-xl flex items-center gap-3">
+                <CreditCard className="text-sky-600" />
                 <div className="flex-1">
-                  <p className="text-sm font-bold text-slate-900">Card ending in 4242</p>
-                  <p className="text-xs text-slate-500">Expires 12/26</p>
+                  <p className="text-sm font-bold text-slate-900">Wholesale Escrow Account / Card</p>
+                  <p className="text-xs text-slate-500">Encrypted 256-bit bank transfer</p>
                 </div>
-                <button className="text-indigo-600 font-bold text-sm">Edit</button>
+                <button className="text-sky-600 font-bold text-sm">Edit</button>
               </div>
             </div>
 
             <button 
               onClick={handleCheckout} 
               disabled={processing}
-              className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all ${
-                processing ? "bg-slate-100 text-slate-400 cursor-not-allowed" : "bg-slate-900 hover:bg-slate-800 text-white shadow-lg shadow-slate-900/20"
+              className={`w-full py-4 rounded-xl font-black text-base flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                processing ? "bg-slate-100 text-slate-400 cursor-not-allowed" : "bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white shadow-lg shadow-sky-500/25"
               }`}
             >
               {processing ? (
                 <>
-                  <div className="h-5 w-5 border-2 border-slate-400 border-t-transparent rounded-full animate-spin"></div>
-                  Processing...
+                  <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Processing Secure Escrow...
                 </>
               ) : (
                 <>
@@ -107,7 +108,7 @@ export default function CheckoutModal({ isOpen, onClose, title, amount, transact
                 </>
               )}
             </button>
-            <p className="text-center text-xs text-slate-400 font-medium mt-4">By proceeding, you agree to the VendiMatch Terms of Service.</p>
+            <p className="text-center text-xs text-slate-400 font-medium mt-4">Protected by 50/50 Dual Escrow Milestone Release.</p>
           </div>
         </motion.div>
       </div>

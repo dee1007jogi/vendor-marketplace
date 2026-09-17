@@ -32,13 +32,14 @@ export default function InvoiceModal({ isOpen, onClose, transaction, user }: Inv
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/70 backdrop-blur-sm print:bg-white print:p-0">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-sky-950/40 backdrop-blur-md print:bg-white print:p-0">
       
       {/* Modal Container */}
-      <div className="bg-white w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] print:max-h-none print:shadow-none print:rounded-none">
+      <div className="bg-white w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] print:max-h-none print:shadow-none print:rounded-none relative border border-sky-100">
+        <div className="gold-line-animated absolute top-0 left-0 right-0 h-[3px] print:hidden"></div>
         
         {/* Header Actions - Hidden when printing */}
-        <div className="flex justify-between items-center p-4 border-b border-slate-100 bg-slate-50 print:hidden">
+        <div className="flex justify-between items-center p-4 border-b border-sky-100 bg-sky-50/60 print:hidden">
           <h3 className="font-bold text-slate-900">Tax Invoice</h3>
           <div className="flex gap-2">
             <button onClick={handlePrint} className="flex items-center gap-2 bg-white border border-slate-200 px-4 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors">
@@ -57,12 +58,12 @@ export default function InvoiceModal({ isOpen, onClose, transaction, user }: Inv
             <div>
               <div className="flex items-center gap-2 mb-6">
                 <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center transform rotate-3">
-                  <span className="text-white font-black text-xl tracking-tighter">VM</span>
+                  <span className="text-white font-black text-xl tracking-tighter">BN</span>
                 </div>
-                <span className="text-2xl font-black text-slate-900 tracking-tight">VendiMatch</span>
+                <span className="text-2xl font-black text-slate-900 tracking-tight">Bussinest</span>
               </div>
               <div className="text-sm text-slate-500 font-medium">
-                <p>VendiMatch Technologies Pvt. Ltd.</p>
+                <p>Bussinest Technologies Pvt. Ltd.</p>
                 <p>123 Startup Hub, Koramangala</p>
                 <p>Bengaluru, Karnataka 560034</p>
                 <p>GSTIN: 29AABCU9603R1ZX</p>
@@ -134,8 +135,8 @@ export default function InvoiceModal({ isOpen, onClose, transaction, user }: Inv
           </div>
 
           <div className="border-t border-slate-200 pt-8 flex justify-between items-center text-xs text-slate-500 font-medium">
-            <p>Thank you for doing business with VendiMatch.</p>
-            <p>support@vendimatch.com</p>
+            <p>Thank you for doing business with Bussinest.</p>
+            <p>support@bussinest.com</p>
           </div>
           
         </div>
