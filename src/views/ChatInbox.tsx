@@ -30,17 +30,33 @@ export default function ChatInbox({ currentUser }: ChatInboxProps) {
     // 1. Fetch system users to map names/avatars
     fetch("/api/state")
       .then(res => res.json())
-      .then(data => setUsersInfo(data.users || []))
-      .catch(console.error);
+      .then(data => {
+        if (data && Array.isArray(data.users)) {
+          setUsersInfo(data.users);
+        } else {
+          setUsersInfo([]);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to fetch state users:", err);
+        setUsersInfo([]);
+      });
 
     // 2. Fetch conversations
     fetch(`/api/chats/conversations?userId=${currentUser.id}`)
       .then(res => res.json())
       .then(data => {
-        setConversations(data);
-        if (data.length > 0) setActiveConvId(data[0].id);
+        if (Array.isArray(data)) {
+          setConversations(data);
+          if (data.length > 0) setActiveConvId(data[0].id);
+        } else {
+          setConversations([]);
+        }
       })
-      .catch(console.error);
+      .catch((err) => {
+        console.error("Failed to fetch conversations:", err);
+        setConversations([]);
+      });
   }, [currentUser.id]);
 
   // Init socket
@@ -79,8 +95,17 @@ export default function ChatInbox({ currentUser }: ChatInboxProps) {
     // Load history
     fetch(`/api/chats/conversations/${activeConvId}/messages`)
       .then(res => res.json())
-      .then(data => setMessages(data))
-      .catch(console.error);
+      .then(data => {
+        if (Array.isArray(data)) {
+          setMessages(data);
+        } else {
+          setMessages([]);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to fetch messages:", err);
+        setMessages([]);
+      });
       
   }, [activeConvId, socket]);
 
@@ -132,9 +157,9 @@ export default function ChatInbox({ currentUser }: ChatInboxProps) {
     }
   };
 
-  const activeConv = conversations.find(c => c.id === activeConvId);
+  const activeConv = Array.isArray(conversations) ? conversations.find(c => c?.id === activeConvId) : null;
   const activePartnerId = activeConv ? (activeConv.buyerId === currentUser.id ? activeConv.vendorId : activeConv.buyerId) : null;
-  const activePartner = usersInfo.find(u => u.id === activePartnerId);
+  const activePartner = (Array.isArray(usersInfo) && activePartnerId) ? usersInfo.find(u => u?.id === activePartnerId) : null;
 
   return (
     <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm flex flex-col md:flex-row h-[85vh] md:h-[70vh] animate-entrance-up">
@@ -150,16 +175,11 @@ export default function ChatInbox({ currentUser }: ChatInboxProps) {
         </div>
 
         <div data-lenis-prevent className="flex-1 overflow-y-auto custom-scrollbar divide-y divide-slate-100 p-2 space-y-1">
-          {conversations.length === 0 ? (
-            <div className="text-center py-8 text-xs text-slate-400">
-              <AlertCircle size={20} className="mx-auto text-slate-350 mb-1.5" />
-              <span>No active chat workspaces yet.</span>
-            </div>
-          ) : (
+            (Array.isArray(conversations) && conversations.length > 0) ? (
             conversations.map((conv) => {
               const isActive = conv.id === activeConvId;
               const partnerId = conv.buyerId === currentUser.id ? conv.vendorId : conv.buyerId;
-              const partner = usersInfo.find(u => u.id === partnerId);
+              const partner = Array.isArray(usersInfo) ? usersInfo.find(u => u?.id === partnerId) : null;
               const lastMsg = conv.messages && conv.messages.length > 0 ? conv.messages[0] : null;
 
               return (
@@ -190,6 +210,11 @@ export default function ChatInbox({ currentUser }: ChatInboxProps) {
                 </div>
               );
             })
+          ) : (
+            <div className="text-center py-8 text-xs text-slate-400">
+              <AlertCircle size={20} className="mx-auto text-slate-350 mb-1.5" />
+              <span>No active chat workspaces yet.</span>
+            </div>
           )}
         </div>
       </div>
@@ -217,14 +242,14 @@ export default function ChatInbox({ currentUser }: ChatInboxProps) {
             </div>
 
             <div data-lenis-prevent className="flex-1 p-4 overflow-y-auto custom-scrollbar bg-slate-50/20 space-y-4">
-              {messages.length === 0 ? (
+              {!Array.isArray(messages) || messages.length === 0 ? (
                 <div className="text-center py-10 italic text-slate-400 text-xs text-medium">
                   Workspace channel established. Say hi to start the negotiation!
                 </div>
               ) : (
                 messages.map((msg) => {
                   const isOutgoing = msg.senderId === currentUser.id;
-                  const senderUser = msg.sender || usersInfo.find(u => u.id === msg.senderId);
+                  const senderUser = msg.sender || (Array.isArray(usersInfo) ? usersInfo.find(u => u?.id === msg.senderId) : null);
                   return (
                     <div key={msg.id} className={`flex items-start gap-2.5 max-w-[80%] ${isOutgoing ? "ml-auto flex-row-reverse" : "mr-auto"}`}>
                       <div className={`rounded-2xl p-4 shadow-sm text-xs ${isOutgoing ? "bg-indigo-600 text-white rounded-tr-none font-medium" : "bg-white border border-slate-200 text-slate-800 rounded-tl-none font-normal"}`}>
