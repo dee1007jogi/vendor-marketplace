@@ -1,16 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { gsap } from "gsap";
-import { 
-  Zap, Star, ShieldCheck, Sparkles, Volume2, VolumeX, 
-  X, Check, Lock, ArrowRight, MousePointer 
-} from "lucide-react";
+import { X, ArrowRight, ShieldCheck, MousePointer } from "lucide-react";
 
 export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?: (code: string) => void }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const soundDotRef = useRef<HTMLSpanElement>(null);
-  
+  const cursorDotRef = useRef<HTMLDivElement>(null);
+  const cursorRingRef = useRef<HTMLDivElement>(null);
+
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [accountId, setAccountId] = useState("");
@@ -21,7 +19,6 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
   const audioCtxRef = useRef<AudioContext | null>(null);
 
   const playHapticSound = (frequency = 440, type: OscillatorType = "sine", duration = 0.04) => {
-    if (!soundEnabled) return;
     try {
       if (!audioCtxRef.current) {
         audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -41,14 +38,8 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
       osc.start();
       osc.stop(ctx.currentTime + duration);
     } catch (e) {
-      // Audio context error fallback
+      // Audio context fallback
     }
-  };
-
-  const toggleSound = () => {
-    const nextState = !soundEnabled;
-    setSoundEnabled(nextState);
-    playHapticSound(nextState ? 650 : 250, "triangle", 0.08);
   };
 
   // WebGL THREE.js Shader Pipeline
@@ -63,7 +54,7 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
     const scene = new THREE.Scene();
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-    
+
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
@@ -179,7 +170,7 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
     };
   }, []);
 
-  // 3D Parallax Tilt Handling
+  // 3D Parallax Tilt
   const handleCardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = cardRef.current;
     if (!card) return;
@@ -227,9 +218,50 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto my-6 p-4 sm:p-6 md:p-8 rounded-[3.5rem] bg-[#0b0f19] text-white shadow-2xl font-sans select-none relative z-10 border border-slate-800/90 overflow-hidden">
-      {/* Header Bar with Audio Toggle */}
-      <div className="w-full flex items-center justify-between py-3 mb-4 relative z-20">
+    <div className="w-full max-w-5xl mx-auto my-6 p-4 sm:p-6 md:p-10 rounded-[3rem] bg-[#0b0f19] text-white shadow-2xl select-none relative z-10 font-sans border border-slate-800/90 overflow-hidden">
+      {/* Inline styles for exact match */}
+      <style>{`
+        .card-stage { perspective: 1200px; }
+        .tilt-card {
+          transform-style: preserve-3d;
+          transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease;
+          will-change: transform;
+        }
+        .tilt-layer-base { transform: translateZ(0px); }
+        .tilt-layer-mid { transform: translateZ(35px); }
+        .tilt-layer-high { transform: translateZ(65px); }
+        .glass-glare {
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.18) 0%, transparent 65%);
+          pointer-events: none;
+          opacity: 0;
+          transition: opacity 0.3s ease;
+          mix-blend-mode: overlay;
+        }
+        .tilt-card:hover .glass-glare { opacity: 1; }
+        .ambient-glow {
+          position: absolute;
+          width: 120%; height: 120%;
+          top: -10%; left: -10%;
+          border-radius: 3.5rem;
+          filter: blur(80px);
+          opacity: 0.35;
+          transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease;
+          pointer-events: none;
+          z-index: 0;
+        }
+        .shadow-glow-sapphire {
+          box-shadow: 0 25px 60px -15px rgba(29, 78, 216, 0.45);
+        }
+      `}</style>
+
+      {/* Grid Pattern Background */}
+      <div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px]" />
+
+      {/* Stage Header */}
+      <div className="w-full flex items-center justify-between py-3 mb-6 relative z-20">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30 text-white font-extrabold text-sm">
             ⚡
@@ -245,70 +277,65 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
         </div>
 
         <button
-          onClick={toggleSound}
-          className="px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-slate-700/80 text-[11px] font-mono text-slate-300 hover:text-white hover:border-slate-500 transition flex items-center gap-2 shadow-sm cursor-pointer"
+          onClick={() => {
+            setSoundEnabled(!soundEnabled);
+            playHapticSound(!soundEnabled ? 650 : 250, "triangle", 0.08);
+          }}
+          className="px-3 py-1.5 rounded-full bg-slate-900/80 border border-slate-700/80 text-[11px] font-mono text-slate-300 hover:text-white hover:border-slate-500 transition flex items-center gap-1.5 shadow-sm cursor-pointer"
         >
-          {soundEnabled ? <Volume2 size={13} className="text-emerald-400" /> : <VolumeX size={13} className="text-slate-500" />}
+          <span className={`w-2 h-2 rounded-full ${soundEnabled ? "bg-emerald-400" : "bg-slate-500"}`} />
           <span>Audio: {soundEnabled ? "On" : "Off"}</span>
         </button>
       </div>
 
-      {/* Card Stage with Perspective */}
-      <div className="perspective-[1200px] relative w-full">
+      {/* Main Card Stage */}
+      <div className="card-stage relative w-full">
         {/* Ambient Glow */}
-        <div className="absolute -inset-4 rounded-[3.5rem] bg-blue-600/30 blur-3xl pointer-events-none transition-all duration-700" />
+        <div className="ambient-glow bg-blue-600" />
 
-        {/* 3D Tilt Card Container */}
+        {/* Surge Hero Card */}
         <div
           ref={cardRef}
           onMouseMove={handleCardMouseMove}
           onMouseLeave={handleCardMouseLeave}
-          className="relative w-full min-h-[490px] sm:min-h-[520px] md:min-h-[540px] rounded-[2.5rem] p-7 sm:p-10 md:p-12 text-white flex flex-col justify-between overflow-hidden shadow-[0_25px_60px_-15px_rgba(29,78,216,0.45)] border border-white/15 bg-slate-950 cursor-default transition-all duration-150 ease-out preserve-3d"
+          className="tilt-card relative w-full min-h-[490px] sm:min-h-[520px] md:min-h-[540px] rounded-[2.5rem] p-7 sm:p-10 md:p-12 text-white flex flex-col justify-between overflow-hidden shadow-glow-sapphire border border-white/15 bg-slate-950/80 backdrop-blur-md cursor-default"
         >
-          {/* Canvas for WebGL Ripple Shader */}
+          {/* WebGL Canvas */}
           <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none rounded-[2.5rem]" />
 
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none" />
+          <div className="glass-glare" />
 
-          {/* Interactive Dynamic Glare */}
-          <div
-            className="absolute inset-0 rounded-[2.5rem] pointer-events-none opacity-0 transition-opacity duration-300 mix-blend-overlay"
-            style={{
-              opacity: isHovering ? 1 : 0,
-              background: `radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.18) 0%, transparent 65%)`
-            }}
-          />
-
-          {/* Top Header Layer (TranslateZ 35px) */}
-          <div className="flex justify-between items-start relative z-20" style={{ transform: "translateZ(35px)" }}>
-            <div className="bg-white/15 hover:bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-extrabold tracking-wider flex items-center gap-2 border border-white/25 shadow-inner transition-all text-white">
+          {/* Top Header Layer */}
+          <div className="flex justify-between items-start relative z-20 tilt-layer-mid">
+            <div className="bg-white/10 hover:bg-white/15 backdrop-blur-md px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-extrabold tracking-wider flex items-center gap-2 border border-white/20 shadow-inner transition-all text-white">
               <span className="text-amber-400 text-xs">★</span>
-              <span className="uppercase tracking-wider">50% RENEWAL VOUCHER</span>
+              <span className="uppercase">50% RENEWAL VOUCHER</span>
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono font-bold tracking-widest px-2.5 py-1 rounded-md bg-black/60 border border-white/20 text-slate-200 uppercase backdrop-blur-sm">
+              <span className="text-[10px] font-mono font-bold tracking-widest px-2.5 py-1 rounded-md bg-black/40 border border-white/15 text-slate-300 uppercase backdrop-blur-sm">
                 WEBGL 3D
               </span>
-              <span className="text-[10px] font-mono font-bold px-2 py-1 rounded-md bg-emerald-500/20 border border-emerald-400/30 text-emerald-300">
+              <span className="text-[10px] font-mono font-bold px-2 py-1 rounded-md bg-white/10 border border-white/15 text-white">
                 ACTIVE
               </span>
             </div>
           </div>
 
-          {/* Content Layer (TranslateZ 65px) */}
-          <div className="relative z-20 my-auto py-6 sm:py-8 max-w-2xl" style={{ transform: "translateZ(65px)" }}>
+          {/* Content Layer */}
+          <div className="relative z-20 my-auto py-6 sm:py-8 tilt-layer-high max-w-2xl">
             <div className="text-[11px] sm:text-xs uppercase tracking-[0.25em] text-blue-300 font-mono font-bold mb-2">
               RENEWAL PASS
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black leading-[1.05] tracking-tight mb-4 text-white drop-shadow-md font-sans">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black leading-[1.05] tracking-tight mb-4 text-white drop-shadow-sm">
               50% Renewal Voucher
             </h1>
 
-            <p className="text-sm sm:text-base text-slate-100 leading-relaxed font-medium max-w-xl mb-7 drop-shadow-sm">
+            <p className="text-sm sm:text-base text-slate-200/90 leading-relaxed font-normal max-w-xl mb-7 drop-shadow">
               Save flat 50% on all quarterly & annual vendor subscription renewals with code{" "}
-              <span className="font-mono font-bold text-amber-300 bg-amber-400/20 px-2.5 py-1 rounded border border-amber-400/40">
+              <span className="font-mono font-bold text-amber-300 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/30">
                 CEO50RENEW
               </span>
               .
@@ -317,30 +344,36 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
             <div className="flex flex-wrap items-center gap-4 sm:gap-6">
               <button
                 onClick={triggerModal}
-                className="group relative bg-[#f59e0b] hover:bg-[#fbbf24] active:scale-95 text-slate-950 font-black py-3.5 px-7 rounded-full text-xs sm:text-sm flex items-center gap-2.5 transition duration-200 shadow-xl shadow-amber-500/30 tracking-wide cursor-pointer"
+                className="group relative bg-[#f59e0b] hover:bg-[#fbbf24] active:scale-95 text-slate-950 font-black py-3.5 px-7 rounded-full text-xs sm:text-sm flex items-center gap-2.5 transition duration-200 shadow-xl shadow-amber-500/25 tracking-wide cursor-pointer"
               >
                 <span>Claim 50% Discount</span>
-                <ArrowRight size={16} className="transform group-hover:translate-x-1.5 transition-transform" />
+                <svg className="w-4 h-4 transform group-hover:translate-x-1.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
               </button>
 
-              <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-100 font-mono px-3.5 py-1.5 rounded-full bg-black/40 border border-white/20 backdrop-blur-sm">
+              <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-200/90 font-mono px-3 py-1.5 rounded-full bg-black/25 border border-white/10">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
                 <span>Instant Renewal Lock</span>
               </div>
             </div>
           </div>
 
-          {/* Footer Features Layer (TranslateZ 35px) */}
-          <div className="flex flex-wrap justify-between items-center relative z-20 pt-4 border-t border-white/20 gap-3" style={{ transform: "translateZ(35px)" }}>
-            <div className="flex items-center gap-2 text-[11px] sm:text-xs text-slate-200 font-mono tracking-wide">
-              <ShieldCheck size={16} className="text-emerald-400" />
-              <span className="text-white font-semibold">100% Escrow Protection</span>
+          {/* Footer Features Layer */}
+          <div className="flex flex-wrap justify-between items-center relative z-20 pt-4 border-t border-white/15 tilt-layer-mid gap-3">
+            <div className="flex items-center gap-2 text-[11px] sm:text-xs text-slate-300/80 font-mono tracking-wide">
+              <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              <span className="text-slate-200 font-semibold">100% Escrow Protection</span>
               <span className="text-slate-500">•</span>
-              <span className="text-emerald-400 font-bold">Instant Renewal Lock</span>
+              <span className="text-emerald-400">Instant Renewal Lock</span>
             </div>
 
-            <div className="flex items-center gap-2 text-[11px] font-mono text-slate-300">
-              <MousePointer size={14} className="text-sky-300 animate-pulse" />
+            <div className="flex items-center gap-2 text-[11px] font-mono text-slate-400">
+              <svg className="w-3.5 h-3.5 text-sky-300 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+              </svg>
               <span>Move pointer to distort ripples</span>
             </div>
           </div>
@@ -363,7 +396,7 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
               </div>
               <div>
                 <h3 className="text-lg font-extrabold text-white">Apply Renewal Discount</h3>
-                <p class="text-xs text-slate-400">Instant code application & lock</p>
+                <p className="text-xs text-slate-400">Instant code application & lock</p>
               </div>
             </div>
             <form onSubmit={handleFormSubmit} className="space-y-4">
