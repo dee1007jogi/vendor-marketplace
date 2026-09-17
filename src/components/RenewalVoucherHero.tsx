@@ -227,7 +227,7 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto my-6 px-2 sm:px-4 font-sans select-none relative z-10">
+    <div className="w-full max-w-5xl mx-auto my-6 p-4 sm:p-6 md:p-8 rounded-[3.5rem] bg-[#0b0f19] text-white shadow-2xl font-sans select-none relative z-10 border border-slate-800/90 overflow-hidden">
       {/* Header Bar with Audio Toggle */}
       <div className="w-full flex items-center justify-between py-3 mb-4 relative z-20">
         <div className="flex items-center gap-3">
@@ -235,10 +235,10 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
             ⚡
           </div>
           <div>
-            <span className="text-sm font-extrabold tracking-tight text-slate-900 dark:text-white">
-              NEXUS<span className="text-blue-500">SURGE</span>
+            <span className="text-sm font-extrabold tracking-tight text-white">
+              NEXUS<span className="text-blue-400">SURGE</span>
             </span>
-            <span className="hidden sm:inline-block ml-2 text-[10px] font-mono uppercase tracking-widest text-slate-500 dark:text-slate-400 border border-slate-300 dark:border-slate-700/80 px-2 py-0.5 rounded-full">
+            <span className="hidden sm:inline-block ml-2 text-[10px] font-mono uppercase tracking-widest text-slate-400 border border-slate-700/80 px-2 py-0.5 rounded-full">
               Renewal Portal
             </span>
           </div>
@@ -263,7 +263,7 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
           ref={cardRef}
           onMouseMove={handleCardMouseMove}
           onMouseLeave={handleCardMouseLeave}
-          className="relative w-full min-h-[490px] sm:min-h-[520px] md:min-h-[540px] rounded-[2.5rem] p-7 sm:p-10 md:p-12 text-white flex flex-col justify-between overflow-hidden shadow-[0_25px_60px_-15px_rgba(29,78,216,0.45)] border border-white/15 bg-slate-950/80 backdrop-blur-md cursor-default transition-all duration-150 ease-out preserve-3d"
+          className="relative w-full min-h-[490px] sm:min-h-[520px] md:min-h-[540px] rounded-[2.5rem] p-7 sm:p-10 md:p-12 text-white flex flex-col justify-between overflow-hidden shadow-[0_25px_60px_-15px_rgba(29,78,216,0.45)] border border-white/15 bg-slate-950 cursor-default transition-all duration-150 ease-out preserve-3d"
         >
           {/* Canvas for WebGL Ripple Shader */}
           <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none rounded-[2.5rem]" />
