@@ -477,14 +477,26 @@ export default function VendorDiscovery() {
   const debouncedQ = useDebounce(localQ, 500);
 
   const filteredCategories = useMemo(() => {
-    if (!facets.categories) return [];
+    if (!facets || !Array.isArray(facets.categories)) return [];
     if (!categorySearch.trim()) return facets.categories;
-    return facets.categories.filter((c: any) => c.name.toLowerCase().includes(categorySearch.toLowerCase()));
+    return facets.categories.filter((c: any) => c.name?.toLowerCase().includes(categorySearch.toLowerCase()));
   }, [facets.categories, categorySearch]);
 
   // Fetch Facets once
   useEffect(() => {
-    fetch("/api/vendors/facets").then(r => r.json()).then(setFacets).catch(console.error);
+    fetch("/api/vendors/facets")
+      .then(r => r.json())
+      .then(data => {
+        if (data && Array.isArray(data.categories) && Array.isArray(data.locations)) {
+          setFacets(data);
+        } else {
+          setFacets({ categories: [], locations: [] });
+        }
+      })
+      .catch((err) => {
+        console.error("Facets fetch error:", err);
+        setFacets({ categories: [], locations: [] });
+      });
   }, []);
 
   // Fetch Vendors
@@ -522,6 +534,7 @@ export default function VendorDiscovery() {
 
   // Transform vendors for Map Component
   const mapVendors = useMemo(() => {
+    if (!vendors || !Array.isArray(vendors)) return [];
     return vendors.map(v => ({
       id: v.id,
       name: v.businessName,
@@ -615,7 +628,7 @@ export default function VendorDiscovery() {
               onChange={(e) => updateFilter("location", e.target.value)}
             >
               <option value="">All India Delivery</option>
-              {facets.locations.map((l: any) => (
+              {Array.isArray(facets?.locations) && facets.locations.map((l: any) => (
                 <option key={l.name} value={l.name}>{l.name}</option>
               ))}
             </select>
@@ -998,7 +1011,7 @@ export default function VendorDiscovery() {
             /* Split Screen Mode: List on Left, Sticky Map on Right (Yelp Desktop Layout) */
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               <div className="lg:col-span-7 space-y-5">
-                {vendors.map((vendor, i) => (
+                {Array.isArray(vendors) && vendors.map((vendor, i) => (
                   <VendorCard 
                     key={vendor.id}
                     vendor={vendor}
@@ -1041,7 +1054,7 @@ export default function VendorDiscovery() {
               /* Vendors Grid / List */
               <div className={`grid gap-5 ${viewMode === "grid" ? "grid-cols-1 sm:grid-cols-2 xl:grid-cols-3" : "grid-cols-1"}`}>
                 <AnimatePresence>
-                  {vendors.map((vendor, i) => (
+                  {Array.isArray(vendors) && vendors.map((vendor, i) => (
                     <VendorCard 
                       key={vendor.id}
                       vendor={vendor}

@@ -115,7 +115,7 @@ export default function SeoCategoryPage() {
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-16">
         <h2 className="text-2xl font-bold text-slate-900 mb-8">Verified Providers</h2>
         
-        {vendors.length === 0 ? (
+        {!Array.isArray(vendors) || vendors.length === 0 ? (
           <div className="bg-white rounded-2xl p-12 text-center border border-slate-200">
              <h3 className="text-xl font-bold text-slate-900 mb-2">No vendors found in this category/city combination yet.</h3>
              <Link to="/vendors" className="text-indigo-600 font-bold hover:underline">Explore all vendors globally.</Link>
