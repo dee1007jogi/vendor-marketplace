@@ -218,7 +218,7 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto my-6 p-4 sm:p-6 md:p-10 rounded-[3rem] bg-[#0b0f19] text-white shadow-2xl select-none relative z-10 font-sans border border-slate-800/90 overflow-hidden">
+    <div className="w-full max-w-[1400px] mx-auto p-4 sm:p-6 md:p-8 rounded-[3.5rem] bg-[#0b0f19] text-white shadow-2xl select-none relative z-10 font-sans border border-slate-800/90 overflow-hidden">
       {/* Inline styles for exact match */}
       <style>{`
         .card-stage { perspective: 1200px; }
@@ -298,7 +298,7 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
           ref={cardRef}
           onMouseMove={handleCardMouseMove}
           onMouseLeave={handleCardMouseLeave}
-          className="tilt-card relative w-full min-h-[490px] sm:min-h-[520px] md:min-h-[540px] rounded-[2.5rem] p-7 sm:p-10 md:p-12 text-white flex flex-col justify-between overflow-hidden shadow-glow-sapphire border border-white/15 bg-slate-950/80 backdrop-blur-md cursor-default"
+          className="tilt-card relative w-full min-h-[520px] sm:min-h-[580px] md:min-h-[620px] rounded-[2.5rem] p-7 sm:p-10 md:p-12 text-white flex flex-col justify-between overflow-hidden shadow-glow-sapphire border border-white/15 bg-slate-950/80 backdrop-blur-md cursor-default"
         >
           {/* WebGL Canvas */}
           <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none rounded-[2.5rem]" />
