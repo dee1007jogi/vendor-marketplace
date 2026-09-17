@@ -36,7 +36,7 @@ const io = new SocketIOServer(httpServer, { cors: { origin: "*" } });
 // Initialize real-time chat
 initializeChatSocket(io);
 
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 // Health Checks for Cloud Load Balancers, Kubernetes & CI/CD Probes
 app.get("/health", (req, res) => {
@@ -150,8 +150,8 @@ async function startServer() {
     });
   }
 
-  httpServer.listen(PORT, () => {
-    console.log(`[Bussinest] Production-Ready B2B Wholesale Marketplace running at http://localhost:${PORT}`);
+  httpServer.listen(PORT, "0.0.0.0", () => {
+    console.log(`[Bussinest] Production-Ready B2B Wholesale Marketplace running on 0.0.0.0:${PORT}`);
   });
 
   // Graceful shutdown handling for container orchestrators (Kubernetes, Cloud Run, Docker)
