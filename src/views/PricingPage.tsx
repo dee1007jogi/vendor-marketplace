@@ -4,6 +4,7 @@ import { CheckCircle2, Zap, Star, ShieldCheck, Crown, Sparkles, Gift, ArrowRight
 import CheckoutModal from "../components/CheckoutModal";
 import NeumorphicToggle from "../components/ui/NeumorphicToggle";
 import PurpleCyberButton from "../components/ui/PurpleCyberButton";
+import RenewalVoucherHero from "../components/RenewalVoucherHero";
 
 export default function PricingPage({ globalPlans = [] }: { globalPlans?: any[] }) {
   const [checkoutConfig, setCheckoutConfig] = useState<{ isOpen: boolean; title: string; amount: number; type: string } | null>(null);
@@ -130,6 +131,11 @@ export default function PricingPage({ globalPlans = [] }: { globalPlans?: any[] 
             />
           </div>
         </motion.div>
+
+        {/* 50% Renewal Voucher WebGL 3D Hero Card */}
+        <div className="mb-16">
+          <RenewalVoucherHero onClaimSuccess={(code) => setClaimedVoucher(true)} />
+        </div>
 
         {/* 50% Renewal Pass Minimal Card */}
         <motion.div 
