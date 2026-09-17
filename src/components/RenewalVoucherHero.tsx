@@ -229,7 +229,7 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
 
         .tilt-card {
           transform-style: preserve-3d;
-          transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease;
+          transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
           will-change: transform;
           opacity: 1 !important;
         }
@@ -250,34 +250,16 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
         }
 
         .tilt-card:hover .glass-glare { opacity: 1; }
-
-        .ambient-glow {
-          position: absolute;
-          width: 120%; height: 120%;
-          top: -10%; left: -10%;
-          border-radius: 3.5rem;
-          filter: blur(80px);
-          opacity: 0.35;
-          transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease;
-          pointer-events: none;
-          z-index: 0;
-        }
-
-        .shadow-glow-sapphire {
-          box-shadow: 0 25px 60px -15px rgba(29, 78, 216, 0.45);
-        }
       `}</style>
 
       {/* Main Card Container */}
       <main className="w-full max-w-5xl mx-auto card-stage relative my-auto">
-        <div id="ambientGlow" className="ambient-glow bg-blue-600" />
-
         <div
           id="surgeHeroCard"
           ref={cardRef}
           onMouseMove={handleCardMouseMove}
           onMouseLeave={handleCardMouseLeave}
-          className="tilt-card relative w-full min-h-[350px] sm:min-h-[380px] md:min-h-[400px] rounded-[2.25rem] p-6 sm:p-8 md:p-9 text-white flex flex-col justify-between overflow-hidden shadow-glow-sapphire border border-white/15 bg-slate-950/80 backdrop-blur-md cursor-default"
+          className="tilt-card relative w-full min-h-[350px] sm:min-h-[380px] md:min-h-[400px] rounded-[2.25rem] p-6 sm:p-8 md:p-9 text-white flex flex-col justify-between overflow-hidden border border-white/15 bg-slate-950/80 backdrop-blur-md cursor-default"
         >
           {/* WebGL Canvas Shader */}
           <canvas
