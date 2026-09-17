@@ -5,13 +5,10 @@ import { gsap } from "gsap";
 export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?: (code: string) => void }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const cursorDotRef = useRef<HTMLDivElement>(null);
-  const cursorRingRef = useRef<HTMLDivElement>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [accountId, setAccountId] = useState("");
   const [showToast, setShowToast] = useState(false);
-  const [isHovering, setIsHovering] = useState(false);
 
   // Web Audio Context for haptic sound feedback
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -39,44 +36,6 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
       // Audio fallback
     }
   };
-
-  // Custom Cursor Following inside the viewport / card stage
-  useEffect(() => {
-    const dot = cursorDotRef.current;
-    const ring = cursorRingRef.current;
-    if (!dot || !ring) return;
-
-    let mousePos = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-    let dotPos = { x: mousePos.x, y: mousePos.y };
-    let ringPos = { x: mousePos.x, y: mousePos.y };
-    let animId: number;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      mousePos.x = e.clientX;
-      mousePos.y = e.clientY;
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-
-    const renderPointer = () => {
-      dotPos.x += (mousePos.x - dotPos.x) * 0.45;
-      dotPos.y += (mousePos.y - dotPos.y) * 0.45;
-      dot.style.transform = `translate3d(${dotPos.x}px, ${dotPos.y}px, 0) translate(-50%, -50%)`;
-
-      ringPos.x += (mousePos.x - ringPos.x) * 0.18;
-      ringPos.y += (mousePos.y - ringPos.y) * 0.18;
-      ring.style.transform = `translate3d(${ringPos.x}px, ${ringPos.y}px, 0) translate(-50%, -50%)`;
-
-      animId = requestAnimationFrame(renderPointer);
-    };
-
-    animId = requestAnimationFrame(renderPointer);
-
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, []);
 
   // WebGL THREE.js Shader Pipeline
   useEffect(() => {
@@ -231,14 +190,12 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
     card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.015, 1.015, 1.015)`;
     card.style.setProperty("--mouse-x", `${(x / rect.width) * 100}%`);
     card.style.setProperty("--mouse-y", `${(y / rect.height) * 100}%`);
-    setIsHovering(true);
   };
 
   const handleCardMouseLeave = () => {
     const card = cardRef.current;
     if (!card) return;
     card.style.transform = "rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
-    setIsHovering(false);
   };
 
   const triggerProcurementModal = () => {
@@ -294,41 +251,6 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
 
         .tilt-card:hover .glass-glare { opacity: 1; }
 
-        .cursor-pointer-dot {
-          position: fixed;
-          top: 0; left: 0;
-          width: 7px; height: 7px;
-          background-color: #38bdf8;
-          border-radius: 50%;
-          pointer-events: none;
-          z-index: 9999;
-          transform: translate(-50%, -50%);
-        }
-
-        .cursor-pointer-ring {
-          position: fixed;
-          top: 0; left: 0;
-          width: 38px; height: 38px;
-          border: 1.5px solid rgba(56, 189, 248, 0.5);
-          background: rgba(56, 189, 248, 0.05);
-          border-radius: 50%;
-          pointer-events: none;
-          z-index: 9998;
-          transform: translate(-50%, -50%);
-          backdrop-filter: blur(1.5px);
-          transition: width 0.25s cubic-bezier(0.2, 1, 0.5, 1), 
-                      height 0.25s cubic-bezier(0.2, 1, 0.5, 1), 
-                      border-color 0.25s ease,
-                      background-color 0.25s ease;
-        }
-
-        .cursor-pointer-ring.is-hovering {
-          width: 60px;
-          height: 60px;
-          border-color: #fbbf24;
-          background-color: rgba(251, 191, 36, 0.12);
-        }
-
         .ambient-glow {
           position: absolute;
           width: 120%; height: 120%;
@@ -345,13 +267,6 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
           box-shadow: 0 25px 60px -15px rgba(29, 78, 216, 0.45);
         }
       `}</style>
-
-      {/* Custom Follow Pointer Elements */}
-      <div ref={cursorDotRef} className="cursor-pointer-dot hidden md:block" />
-      <div
-        ref={cursorRingRef}
-        className={`cursor-pointer-ring hidden md:block ${isHovering ? "is-hovering" : ""}`}
-      />
 
       {/* Main Card Container */}
       <main className="w-full max-w-5xl mx-auto card-stage relative my-auto">
@@ -462,15 +377,8 @@ export default function RenewalVoucherHero({ onClaimSuccess }: { onClaimSuccess?
             </div>
 
             <div className="flex items-center gap-2 text-[11px] font-mono text-slate-400">
-              <svg className="w-3.5 h-3.5 text-sky-300 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"
-                />
-              </svg>
-              <span>Move pointer to distort ripples</span>
+              <span className="w-2 h-2 rounded-full bg-sky-400 animate-pulse" />
+              <span>Interactive 3D WebGL</span>
             </div>
           </div>
         </div>
