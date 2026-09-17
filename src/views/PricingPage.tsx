@@ -137,52 +137,6 @@ export default function PricingPage({ globalPlans = [] }: { globalPlans?: any[] 
           <RenewalVoucherHero onClaimSuccess={(code) => setClaimedVoucher(true)} />
         </div>
 
-        {/* 50% Renewal Pass Minimal Card */}
-        <motion.div 
-          initial={{ opacity: 0, y: 24, scale: 0.98 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.55, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-16 relative overflow-hidden rounded-3xl bg-white p-6 sm:p-10 text-center shadow-xl shadow-slate-900/5 border border-slate-200/80 flex flex-col items-center justify-center max-w-3xl mx-auto"
-        >
-          {/* Top Badge */}
-          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-sky-50 text-sky-700 text-xs font-bold border border-sky-200/80 mb-4">
-            <Tag size={13} className="text-sky-600" /> 50% Renewal Voucher
-          </span>
-
-          {/* Main Title */}
-          <h3 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight font-heading mb-2">
-            Renewal Pass
-          </h3>
-
-          {/* Body Text */}
-          <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed mb-6 font-medium">
-            Save flat 50% on all quarterly & annual subscription renewals with code <strong className="text-sky-700 bg-sky-50 px-2 py-0.5 rounded font-mono border border-sky-200/60">CEO50RENEW</strong>.
-          </p>
-
-          {/* Claim Button */}
-          <button
-            onClick={() => {
-              navigator.clipboard.writeText("CEO50RENEW");
-              setClaimedVoucher(true);
-              setTimeout(() => setClaimedVoucher(false), 3000);
-            }}
-            className="px-6 py-3 rounded-xl bg-gradient-to-r from-sky-400 to-sky-600 hover:from-sky-500 hover:to-sky-700 text-white font-extrabold text-xs sm:text-sm shadow-md transition-all active:scale-95 cursor-pointer mb-6"
-          >
-            {claimedVoucher ? "Voucher Copied! (CEO50RENEW)" : "Claim 50% Discount"}
-          </button>
-
-          {/* Specs Bar */}
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-4 border-t border-slate-100 text-xs text-slate-500 font-medium w-full">
-            <span className="flex items-center gap-1.5">
-              <ShieldCheck size={14} className="text-emerald-600" /> 100% Escrow Protection
-            </span>
-            <span className="text-slate-300">•</span>
-            <span className="flex items-center gap-1.5">
-              <Sparkles size={14} className="text-amber-500" /> Instant Renewal Lock
-            </span>
-          </div>
-        </motion.div>
-
         {/* Subscriptions Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
           {subscriptionTiers.map((tier, idx) => (
