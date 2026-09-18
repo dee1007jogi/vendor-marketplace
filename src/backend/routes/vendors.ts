@@ -2,6 +2,7 @@ import { Router } from "express";
 import { prisma } from "../prisma";
 import { matchVendorsToRequirement } from "../services/ai.service";
 import { upload, normalizeUploadUrl } from "../lib/upload";
+import { getInitialPlatformState, seededUsers } from "../../db/seededData";
 
 const router = Router();
 
@@ -152,12 +153,12 @@ router.get("/search", async (req, res) => {
       ];
     }
 
-    if (category) {
-      where.category = { equals: String(category) };
+    if (category && category !== "All" && category !== "All Categories") {
+      where.category = { contains: String(category), mode: 'insensitive' };
     }
 
-    if (location && location !== "All") {
-      where.location = { equals: String(location) };
+    if (location && location !== "All" && location !== "All India Delivery" && location !== "All Locations") {
+      where.location = { contains: String(location), mode: 'insensitive' };
     }
 
     if (minBudget || maxBudget) {
@@ -191,6 +192,36 @@ router.get("/search", async (req, res) => {
     }
 
     let vendors = await prisma.vendorProfile.findMany(findArgs);
+
+    // If database has no vendor profiles matching or is empty, use seed fallback
+    if (vendors.length === 0 && !q && (!category || category === "All Categories") && (!location || location === "All India Delivery")) {
+      const fallbackState = getInitialPlatformState();
+      vendors = fallbackState.vendorProfiles.map(v => ({
+        id: v.userId,
+        userId: v.userId,
+        businessName: v.businessName,
+        gstNumber: v.gstNumber || null,
+        panNumber: v.panNumber || null,
+        category: v.category,
+        pricingModel: v.pricingModel,
+        pricingMin: v.pricingMin,
+        responseTime: v.responseTime || "Within 2 hours",
+        availability: v.availability || "immediate",
+        subscriptionPlan: v.subscriptionPlan || "free",
+        location: v.location,
+        verificationStatus: "approved",
+        categoriesJson: JSON.stringify(v.categories || []),
+        servicesJson: JSON.stringify(v.services || []),
+        portfolioJson: JSON.stringify(v.portfolio || []),
+        ratingsJson: JSON.stringify(v.ratings || {}),
+        coordinatesJson: JSON.stringify(v.coordinates || []),
+        leadCredits: 10,
+        isFeatured: true,
+        verificationFeePaid: true,
+        hasSaaSAddons: false,
+        user: { avatar: seededUsers.find(u => u.id === v.userId)?.avatar || null, verified: true }
+      })) as any;
+    }
 
     let processedVendors = vendors.map(v => {
       let ratings = { avg: 4.8, count: 24, quality: 4.9, timeliness: 4.7, communication: 4.8 };

@@ -90,9 +90,13 @@ export default function LoginModal({ isOpen, onClose, onLogin, onOpenRegister, o
   return (
     <div 
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-sky-950/60 backdrop-blur-md overflow-hidden animate-in fade-in duration-200"
+      data-lenis-prevent
+      className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-sky-950/60 backdrop-blur-md overflow-hidden animate-in fade-in duration-200"
     >
-      <div className="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl w-full max-w-md overflow-hidden relative animate-in fade-in zoom-in-95 duration-200 border border-sky-100 flex flex-col max-h-[85vh] sm:max-h-[90vh]">
+      <div 
+        data-lenis-prevent
+        className="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl w-full max-w-md overflow-hidden relative animate-in fade-in zoom-in-95 duration-200 border border-sky-100 flex flex-col max-h-[85vh] sm:max-h-[90vh]"
+      >
         <div className="gold-line-animated absolute top-0 left-0 right-0 h-[3px] z-30"></div>
         
         {/* Sticky Fixed Header with Close Button */}
@@ -111,7 +115,11 @@ export default function LoginModal({ isOpen, onClose, onLogin, onOpenRegister, o
           </button>
         </div>
 
-        <div className="overflow-y-auto flex-1 overscroll-contain custom-scrollbar p-6 sm:p-8">
+        <div 
+          data-lenis-prevent
+          onWheel={(e) => e.stopPropagation()}
+          className="overflow-y-auto flex-1 overscroll-contain custom-scrollbar p-6 sm:p-8"
+        >
           <h2 className="text-2xl font-black text-slate-900 mb-6 text-center">Log in to Bussinest</h2>
 
           {/* Prominent WhatsApp Login */}

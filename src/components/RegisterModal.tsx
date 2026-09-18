@@ -76,9 +76,13 @@ export default function RegisterModal({ isOpen, onClose, onRegister, onOpenLogin
   return (
     <div 
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-sky-950/60 backdrop-blur-md overflow-hidden animate-in fade-in duration-200"
+      data-lenis-prevent
+      className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-sky-950/60 backdrop-blur-md overflow-hidden animate-in fade-in duration-200"
     >
-      <div className="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl w-full max-w-lg relative animate-in fade-in zoom-in-95 duration-200 my-auto border border-sky-100 flex flex-col max-h-[85vh] sm:max-h-[90vh] overflow-hidden">
+      <div 
+        data-lenis-prevent
+        className="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl w-full max-w-lg relative animate-in fade-in zoom-in-95 duration-200 my-auto border border-sky-100 flex flex-col max-h-[85vh] sm:max-h-[90vh] overflow-hidden"
+      >
         <div className="gold-line-animated absolute top-0 left-0 right-0 h-[3px] z-30"></div>
         
         {/* Authoritative Fixed Top Header with Title & Prominent Close Button */}
@@ -102,7 +106,11 @@ export default function RegisterModal({ isOpen, onClose, onRegister, onOpenLogin
         </div>
 
         {/* Scrollable Form Body */}
-        <div className="overflow-y-auto flex-1 overscroll-contain custom-scrollbar">
+        <div 
+          data-lenis-prevent
+          onWheel={(e) => e.stopPropagation()}
+          className="overflow-y-auto flex-1 overscroll-contain custom-scrollbar"
+        >
           {otpPhone ? (
             <OtpVerification phone={otpPhone} role={otpRole} onClose={onClose} />
           ) : !role ? (
