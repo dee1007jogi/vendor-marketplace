@@ -6,157 +6,218 @@ interface PreloaderProps {
   minDuration?: number;
 }
 
-export default function Preloader({ onComplete, minDuration = 1800 }: PreloaderProps) {
+export default function Preloader({ onComplete, minDuration = 2400 }: PreloaderProps) {
   const [isFinished, setIsFinished] = useState(false);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const { innerWidth, innerHeight } = window;
-      const x = (e.clientX / innerWidth - 0.5) * 2;
-      const y = (e.clientY / innerHeight - 0.5) * 2;
-      setMousePos({ x, y });
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-
     const timer = setTimeout(() => {
       setIsFinished(true);
       setTimeout(() => {
         if (onComplete) onComplete();
-      }, 500);
+      }, 600);
     }, minDuration);
 
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      clearTimeout(timer);
-    };
+    return () => clearTimeout(timer);
   }, [minDuration, onComplete]);
-
-  // Interactive 3D Perspective Tilt Values
-  const rotateX = -mousePos.y * 25;
-  const rotateY = mousePos.x * 25;
 
   return (
     <AnimatePresence>
       {!isFinished && (
         <motion.div
-          key="minimal-3d-preloader"
+          key="pastel-btrack-preloader"
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0, scale: 1.05 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden bg-slate-950/95 backdrop-blur-3xl select-none cursor-pointer"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+          exit={{ opacity: 0, scale: 1.03 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="fixed inset-0 z-[99999] flex flex-col items-center justify-center overflow-hidden bg-[#eef5fa] select-none"
         >
-          {/* Top Curtain Split */}
+          {/* Top Shutter Curtain */}
           <motion.div
             initial={{ y: 0 }}
             exit={{ y: "-100%" }}
-            transition={{ duration: 0.55, ease: [0.77, 0, 0.175, 1] }}
-            className="absolute top-0 left-0 right-0 h-1/2 bg-slate-950 border-b border-sky-500/20 z-10"
-          >
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(2,132,199,0.18),transparent_70%)]" />
-          </motion.div>
+            transition={{ duration: 0.65, ease: [0.77, 0, 0.175, 1] }}
+            className="absolute top-0 left-0 right-0 h-1/2 bg-[#eef5fa] border-b border-sky-200/50 z-10"
+          />
 
-          {/* Bottom Curtain Split */}
+          {/* Bottom Shutter Curtain */}
           <motion.div
             initial={{ y: 0 }}
             exit={{ y: "100%" }}
-            transition={{ duration: 0.55, ease: [0.77, 0, 0.175, 1] }}
-            className="absolute bottom-0 left-0 right-0 h-1/2 bg-slate-950 border-t border-sky-500/20 z-10"
-          >
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(2,132,199,0.18),transparent_70%)]" />
-          </motion.div>
-
-          {/* Laser Gold Beam Center Split Line */}
-          <motion.div
-            initial={{ scaleX: 0, opacity: 0 }}
-            animate={{ scaleX: 1, opacity: 1 }}
-            exit={{ scaleX: 2, opacity: 0 }}
-            transition={{ duration: 0.6, ease: "easeInOut" }}
-            className="absolute top-1/2 left-0 right-0 h-[2.5px] bg-gradient-to-r from-transparent via-amber-400 to-transparent z-30 shadow-[0_0_20px_#f59e0b] pointer-events-none -translate-y-1/2"
+            transition={{ duration: 0.65, ease: [0.77, 0, 0.175, 1] }}
+            className="absolute bottom-0 left-0 right-0 h-1/2 bg-[#eef5fa] border-t border-sky-200/50 z-10"
           />
 
-          {/* Interactive 3D Stage Container */}
-          <div className="relative z-20 flex items-center justify-center perspective-[1000px]">
-            <motion.div
-              style={{
-                transformStyle: "preserve-3d",
-                transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
-              }}
-              transition={{ type: "spring", stiffness: 180, damping: 16 }}
-              className="relative w-44 h-44 sm:w-52 sm:h-52 flex items-center justify-center"
-            >
-              {/* Outer 3D Orbiting Gold Ring */}
-              <motion.div
-                animate={{ rotateZ: 360, rotateX: [0, 40, 0] }}
-                transition={{
-                  rotateZ: { duration: isHovered ? 3.5 : 7, repeat: Infinity, ease: "linear" },
-                  rotateX: { duration: 5, repeat: Infinity, ease: "easeInOut" },
-                }}
-                style={{ transformStyle: "preserve-3d" }}
-                className="absolute inset-0 rounded-full border-2 border-amber-400/80 shadow-[0_0_35px_rgba(245,158,11,0.35)] flex items-center justify-between"
-              >
-                <div className="w-3.5 h-3.5 rounded-full bg-amber-400 shadow-[0_0_15px_#f59e0b] -translate-x-1.5" />
-                <div className="w-3.5 h-3.5 rounded-full bg-amber-300 shadow-[0_0_15px_#fbbf24] translate-x-1.5" />
-              </motion.div>
+          {/* Embedded Scoped Styles for B-Track Path Motion */}
+          <style>{`
+            :root {
+              --bg-surface: #eef5fa;
+              --trench-shadow: rgba(130, 160, 185, 0.38);
+              --blue-accent: #5baee8;
+              --blue-glow: rgba(91, 174, 232, 0.38);
+              --glass-base: #86c5f2;
+              --glass-deep: #3b8ec8;
+            }
 
-              {/* Middle Counter-Rotating Sky Blue Ring */}
-              <motion.div
-                animate={{ rotateZ: -360, rotateY: [0, 40, 0] }}
-                transition={{
-                  rotateZ: { duration: isHovered ? 2.8 : 5.5, repeat: Infinity, ease: "linear" },
-                  rotateY: { duration: 4.5, repeat: Infinity, ease: "easeInOut" },
-                }}
-                style={{ transformStyle: "preserve-3d" }}
-                className="absolute inset-4 rounded-full border-2 border-sky-400/90 shadow-[0_0_35px_rgba(56,189,248,0.4)] flex items-center justify-between"
-              >
-                <div className="w-3 h-3 rounded-full bg-sky-400 shadow-[0_0_12px_#38bdf8] -translate-y-1.5" />
-                <div className="w-3 h-3 rounded-full bg-sky-300 shadow-[0_0_12px_#7dd3fc] translate-y-1.5" />
-              </motion.div>
+            .stage-btrack {
+              position: relative;
+              width: 300px;
+              height: 330px;
+            }
+            @media (min-width: 640px) {
+              .stage-btrack {
+                width: 420px;
+                height: 460px;
+              }
+            }
 
-              {/* Inner Concentric Glass Ring */}
-              <motion.div
-                animate={{ rotateZ: 360 }}
-                transition={{ duration: isHovered ? 1.8 : 3.5, repeat: Infinity, ease: "linear" }}
-                style={{ transformStyle: "preserve-3d" }}
-                className="absolute inset-8 rounded-full border border-white/50 backdrop-blur-md"
-              />
+            .orb-rig {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 36px;
+              height: 36px;
+              margin: -18px 0 0 -18px;
+              pointer-events: none;
+              offset-path: path("M 150,70 L 150,410 C 220,410 320,390 320,320 C 320,255 230,240 160,240 C 220,240 300,230 300,150 C 300,70 210,70 150,70");
+              animation: traceB 4.6s cubic-bezier(0.42, 0.05, 0.25, 0.98) infinite;
+            }
 
-              {/* Center Emissive 3D Rotating Prism Core */}
-              <motion.div
-                animate={{
-                  rotateY: [0, 180, 360],
-                  scale: isHovered ? [1.1, 1.25, 1.1] : [0.95, 1.08, 0.95],
-                  translateZ: [0, 25, 0],
-                }}
-                transition={{
-                  rotateY: { duration: 3, repeat: Infinity, ease: "linear" },
-                  scale: { duration: 1.8, repeat: Infinity, ease: "easeInOut" },
-                  translateZ: { duration: 1.8, repeat: Infinity, ease: "easeInOut" },
-                }}
-                style={{ transformStyle: "preserve-3d" }}
-                className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-tr from-sky-500 via-blue-600 to-indigo-600 rounded-2xl border-2 border-white/90 shadow-[0_0_45px_rgba(56,189,248,0.65)] flex items-center justify-center transform rotate-45"
-              >
-                <div className="w-7 h-7 sm:w-9 sm:h-9 bg-amber-400 rounded-xl shadow-[0_0_22px_#f59e0b] transform -rotate-45 animate-pulse" />
-              </motion.div>
+            .glass-orb {
+              width: 100%;
+              height: 100%;
+              border-radius: 50%;
+              background: radial-gradient(
+                circle at 36% 28%,
+                #ffffff 0%,
+                rgba(255, 255, 255, 0.88) 18%,
+                rgba(195, 230, 255, 0.45) 45%,
+                var(--glass-base) 75%,
+                var(--glass-deep) 100%
+              );
+              box-shadow:
+                inset 0 2px 3px rgba(255, 255, 255, 0.95),
+                inset 0 -3px 5px rgba(45, 110, 160, 0.45),
+                0 4px 16px var(--blue-glow),
+                8px 12px 20px rgba(100, 140, 175, 0.28),
+                2px 4px 6px rgba(0, 0, 0, 0.04);
+              position: relative;
+            }
 
-              {/* Interactive Radial Pulse Ring */}
-              <motion.div
-                animate={{
-                  scale: [1, 1.55, 1],
-                  opacity: [0.3, 0.75, 0.3],
-                }}
-                transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute inset-0 rounded-full bg-sky-500/10 border border-sky-400/25 pointer-events-none"
-              />
-            </motion.div>
+            .glass-orb::before {
+              content: "";
+              position: absolute;
+              top: 16%;
+              left: 20%;
+              width: 32%;
+              height: 22%;
+              border-radius: 50%;
+              background: radial-gradient(circle, #ffffff 0%, rgba(255, 255, 255, 0) 80%);
+              transform: rotate(-30deg);
+            }
+
+            .glass-orb::after {
+              content: "";
+              position: absolute;
+              bottom: 12%;
+              right: 18%;
+              width: 25%;
+              height: 20%;
+              border-radius: 50%;
+              background: radial-gradient(circle, rgba(215, 240, 255, 0.85) 0%, transparent 80%);
+            }
+
+            .fluid-trail {
+              stroke-dasharray: 1200;
+              stroke-dashoffset: 1200;
+              animation: fillFluidB 4.6s cubic-bezier(0.42, 0.05, 0.25, 0.98) infinite;
+            }
+
+            @keyframes traceB {
+              0% {
+                offset-distance: 0%;
+                opacity: 0;
+                transform: scale(0.7);
+              }
+              3% {
+                opacity: 1;
+                transform: scale(1);
+              }
+              94% {
+                opacity: 1;
+                transform: scale(1);
+              }
+              98%, 100% {
+                offset-distance: 100%;
+                opacity: 0;
+                transform: scale(0.8);
+              }
+            }
+
+            @keyframes fillFluidB {
+              0% {
+                stroke-dashoffset: 1200;
+                opacity: 0;
+              }
+              4% {
+                opacity: 1;
+              }
+              88% {
+                stroke-dashoffset: 0;
+                opacity: 1;
+              }
+              97%, 100% {
+                stroke-dashoffset: 0;
+                opacity: 0;
+              }
+            }
+          `}</style>
+
+          {/* Center Content Container */}
+          <div className="relative z-20 flex flex-col items-center justify-center gap-6">
+            <div className="stage-btrack">
+              <svg viewBox="0 0 440 480" className="w-full h-full overflow-visible">
+                <defs>
+                  <filter id="recessShadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur in="SourceAlpha" stdDeviation="5" result="blur" />
+                    <feOffset dx="4" dy="6" result="offset" />
+                    <feComponentTransfer in="offset" result="shadow">
+                      <feFuncA type="linear" slope="0.28" />
+                    </feComponentTransfer>
+                    <feMerge>
+                      <feMergeNode in="shadow" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+
+                  <linearGradient id="pastelBlueFluid" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#b6e0ff" stopOpacity="0.15" />
+                    <stop offset="40%" stopColor="#7fc7f8" stopOpacity="0.6" />
+                    <stop offset="85%" stopColor="#4ea2e2" stopOpacity="0.95" />
+                    <stop offset="100%" stopColor="#a4d7fb" stopOpacity="0.9" />
+                  </linearGradient>
+
+                  <path id="bPath" d="M 150,70 L 150,410 C 220,410 320,390 320,320 C 320,255 230,240 160,240 C 220,240 300,230 300,150 C 300,70 210,70 150,70" />
+                </defs>
+
+                <use href="#bPath" fill="none" stroke="#cfdce8" strokeWidth="36" strokeLinecap="round" strokeLinejoin="round" filter="url(#recessShadow)" />
+                <use href="#bPath" fill="none" stroke="#e8f1f7" strokeWidth="28" strokeLinecap="round" strokeLinejoin="round" />
+                <use href="#bPath" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.95" transform="translate(-1, -1)" />
+                <use href="#bPath" className="fluid-trail" fill="none" stroke="url(#pastelBlueFluid)" strokeWidth="20" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+
+              <div className="orb-rig">
+                <div className="glass-orb" />
+              </div>
+            </div>
+
+            <div className="text-xs font-bold uppercase tracking-[0.32em] text-[#8fa5b8] flex items-center gap-2">
+              <span>Initializing Bussinest</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#5baee8] animate-pulse" />
+            </div>
           </div>
         </motion.div>
       )}
     </AnimatePresence>
   );
 }
+
 
