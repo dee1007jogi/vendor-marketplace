@@ -18,16 +18,27 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/admin/v1/analytics/dashboard").then(r => r.json()),
-      fetch("/api/admin/v1/dashboard/recent-users").then(r => r.json())
+      fetch("/api/admin/v1/analytics/dashboard").then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch("/api/admin/v1/dashboard/recent-users").then(r => r.ok ? r.json() : null).catch(() => null)
     ])
       .then(([metricsData, recentUsersData]) => {
-        setMetrics(metricsData.metrics);
-        setRecentUsers(recentUsersData);
+        if (metricsData && metricsData.metrics) {
+          setMetrics(metricsData.metrics);
+        } else if (metricsData) {
+          setMetrics(metricsData);
+        }
+        if (Array.isArray(recentUsersData)) {
+          setRecentUsers(recentUsersData);
+        } else if (recentUsersData && Array.isArray(recentUsersData.users)) {
+          setRecentUsers(recentUsersData.users);
+        } else {
+          setRecentUsers([]);
+        }
         setIsLoading(false);
       })
       .catch(err => {
         console.error("Failed to fetch admin data", err);
+        setRecentUsers([]);
         setIsLoading(false);
       });
   }, []);
@@ -219,31 +230,31 @@ export default function AdminDashboard() {
             <button className="text-xs text-sky-700 font-bold hover:underline cursor-pointer">View All</button>
           </h3>
           <div className="space-y-4">
-            {recentUsers.map((user, i) => (
+            {Array.isArray(recentUsers) && recentUsers.map((user, i) => (
               <div key={i} className="flex justify-between items-center py-2.5 border-b border-sky-50/80 last:border-0">
                 <div className="flex items-center gap-3">
-                  <Animated3DLetterAvatar role={user.role as any} size="sm" />
+                  <Animated3DLetterAvatar role={user?.role as any} size="sm" />
                   <div>
-                    <p className="font-bold text-sm text-slate-900">{user.name}</p>
-                    <p className="text-xs text-slate-500">{user.email}</p>
+                    <p className="font-bold text-sm text-slate-900">{user?.name || "User"}</p>
+                    <p className="text-xs text-slate-500">{user?.email || ""}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 text-right">
                   <div className="text-xs text-slate-400 font-semibold">
-                    {new Date(user.createdAt).toLocaleDateString()}
+                    {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : ""}
                   </div>
                   <div className="w-28 flex justify-end">
-                    {user.role === 'vendor' && user.verificationStatus === 'pending' && (
+                    {user?.role === 'vendor' && user?.verificationStatus === 'pending' && (
                       <span className="bg-amber-100 text-amber-800 border border-amber-200/60 text-[10px] font-extrabold px-2 py-0.5 rounded-lg uppercase tracking-wider">
                         Pending (V)
                       </span>
                     )}
-                    {user.role === 'vendor' && user.verificationStatus !== 'pending' && (
+                    {user?.role === 'vendor' && user?.verificationStatus !== 'pending' && (
                       <span className="bg-emerald-100 text-emerald-800 border border-emerald-200/60 text-[10px] font-extrabold px-2 py-0.5 rounded-lg uppercase tracking-wider">
                         Verified (V)
                       </span>
                     )}
-                    {user.role === 'buyer' && (
+                    {user?.role === 'buyer' && (
                       <span className="bg-sky-100 text-sky-800 border border-sky-200/60 text-[10px] font-extrabold px-2 py-0.5 rounded-lg uppercase tracking-wider">
                         Buyer (B)
                       </span>
@@ -252,7 +263,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
             ))}
-            {recentUsers.length === 0 && (
+            {(!Array.isArray(recentUsers) || recentUsers.length === 0) && (
               <p className="text-sm text-slate-400 text-center py-4 font-semibold">No recent registrations.</p>
             )}
           </div>

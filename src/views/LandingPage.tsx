@@ -23,6 +23,7 @@ import SpotlightCard from "../components/animations/SpotlightCard";
 import ShinyText from "../components/animations/ShinyText";
 import PurpleCyberButton from "../components/ui/PurpleCyberButton";
 import RenewalVoucherHero from "../components/RenewalVoucherHero";
+import Animated3DUpwardArrow from "../components/ui/Animated3DUpwardArrow";
 
 import { 
   useLiveLocation, 
@@ -2193,18 +2194,30 @@ export default function LandingPage() {
       <Layer3DTransition currentTag="04" nextTag="05" nextTitle="50% Renewal Voucher" />
 
       {/* ========================================================================= */}
-      {/* 5. TOP 500 VENDOR PERKS: 50% Renewal Voucher WebGL 3D Hero Card */}
+      {/* 5. TOP 500 VENDOR PERKS: 50% Renewal Voucher WebGL 3D Hero & 3D Upward Arrow */}
       {/* ========================================================================= */}
       <Section3DLayer id="voucher" orbTheme="blue" layerTag="05" layerTitle="50% Renewal Voucher">
-        <div className="py-6 sm:py-8 relative overflow-hidden w-full">
-          <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 relative z-10">
-            <RenewalVoucherHero
-              onClaimSuccess={(code) => {
-                setCopiedVoucher(true);
-                setSimulatedAlert("🔔 Push Notification Triggered: 50% Renewal Voucher is active with code " + code);
-                setTimeout(() => setCopiedVoucher(false), 3000);
-              }}
-            />
+        <div className="py-8 sm:py-12 relative overflow-hidden w-full">
+          <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 relative z-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-8 items-center">
+              
+              {/* Left Side: Renewal Voucher Hero Card */}
+              <div className="lg:col-span-7 xl:col-span-7 w-full">
+                <RenewalVoucherHero
+                  onClaimSuccess={(code) => {
+                    setCopiedVoucher(true);
+                    setSimulatedAlert("🔔 Push Notification Triggered: 50% Renewal Voucher is active with code " + code);
+                    setTimeout(() => setCopiedVoucher(false), 3000);
+                  }}
+                />
+              </div>
+
+              {/* Right Side: 3D Animated Upward Growth Arrow */}
+              <div className="lg:col-span-5 xl:col-span-5 w-full flex items-center justify-center">
+                <Animated3DUpwardArrow />
+              </div>
+
+            </div>
           </div>
         </div>
       </Section3DLayer>
