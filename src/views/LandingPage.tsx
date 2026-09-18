@@ -298,6 +298,7 @@ const TOP_SERVICES_SHOWCASE = [
     moq: "FACTORY ORDERS",
     cardBg: "from-[#081b2c] via-[#0d2a45] to-[#133b5c]",
     borderColor: "border-amber-500/40 shadow-[0_0_25px_rgba(245,158,11,0.15)]",
+    rfqBtnTheme: "bg-gradient-to-b from-[#133b5c] via-[#0d2a45] to-[#081b2c] border-amber-400/50 text-amber-300",
     personImage: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=800&q=85",
     personAlt: "B2B Procurement Manager",
   },
@@ -310,6 +311,7 @@ const TOP_SERVICES_SHOWCASE = [
     moq: "MOQ: 1 Unit",
     cardBg: "from-[#0252bf] via-[#0240a3] to-[#01266f]",
     borderColor: "border-sky-400/40 shadow-[0_0_25px_rgba(56,189,248,0.15)]",
+    rfqBtnTheme: "bg-gradient-to-b from-[#0240a3] via-[#013282] to-[#01225c] border-sky-400/60 text-amber-300",
     personImage: "/uploads/INDUSTRIAL MACHINERY & CNC.png",
     personAlt: "Industrial CNC Engineer",
   },
@@ -322,6 +324,7 @@ const TOP_SERVICES_SHOWCASE = [
     moq: "MOQ: 500Kg/1Ton",
     cardBg: "from-[#3325c7] via-[#2417a8] to-[#140b6e]",
     borderColor: "border-indigo-400/40 shadow-[0_0_25px_rgba(129,140,248,0.15)]",
+    rfqBtnTheme: "bg-gradient-to-b from-[#2417a8] via-[#1a0e8c] to-[#100863] border-indigo-400/60 text-amber-300",
     personImage: "/uploads/STEEL & METALSCHINERY & CNC.png",
     personAlt: "Steel & Metallurgy Specialist",
   },
@@ -334,6 +337,7 @@ const TOP_SERVICES_SHOWCASE = [
     moq: "MOQ: 1,000 Pcs",
     cardBg: "from-[#027a9c] via-[#025a75] to-[#01384a]",
     borderColor: "border-cyan-400/40 shadow-[0_0_25px_rgba(34,211,238,0.15)]",
+    rfqBtnTheme: "bg-gradient-to-b from-[#025a75] via-[#014459] to-[#012e3d] border-cyan-400/60 text-amber-300",
     personImage: "/uploads/PACKAGING & CORRUGATED BOXEs.png",
     personAlt: "Packaging Logistics Specialist",
   },
@@ -346,6 +350,7 @@ const TOP_SERVICES_SHOWCASE = [
     moq: "MOQ: 25 Units",
     cardBg: "from-[#047a55] via-[#035a3f] to-[#013525]",
     borderColor: "border-emerald-400/40 shadow-[0_0_25px_rgba(52,211,153,0.15)]",
+    rfqBtnTheme: "bg-gradient-to-b from-[#035a3f] via-[#02422e] to-[#012b1e] border-emerald-400/60 text-amber-300",
     personImage: "/uploads/ELECTRICALS, SOLAR & POWER.png",
     personAlt: "Solar & Electrical Engineer",
   },
@@ -358,6 +363,7 @@ const TOP_SERVICES_SHOWCASE = [
     moq: "MOQ: 200 Ltr/Kg",
     cardBg: "from-[#087a77] via-[#055c5a] to-[#023837]",
     borderColor: "border-teal-400/40 shadow-[0_0_25px_rgba(45,212,191,0.15)]",
+    rfqBtnTheme: "bg-gradient-to-b from-[#055c5a] via-[#034443] to-[#022c2b] border-teal-400/60 text-amber-300",
     personImage: "/uploads/pharama.png",
     personAlt: "Pharma Research Scientist",
   },
@@ -370,6 +376,7 @@ const TOP_SERVICES_SHOWCASE = [
     moq: "MOQ: 10 Tons",
     cardBg: "from-[#994703] via-[#753402] to-[#481e01]",
     borderColor: "border-amber-500/40 shadow-[0_0_25px_rgba(245,158,11,0.15)]",
+    rfqBtnTheme: "bg-gradient-to-b from-[#753402] via-[#592601] to-[#3b1900] border-amber-400/60 text-amber-300",
     personImage: "/uploads/CONSTRUCTION, CEMENT & TILES.png",
     personAlt: "Construction & Cement Head",
   },
@@ -383,6 +390,7 @@ const TOP_SERVICES_SHOWCASE = [
     moq: "MOQ: 500 Mtrs",
     cardBg: "from-[#701228] via-[#560a1c] to-[#380411]",
     borderColor: "border-rose-600/50 shadow-[0_0_25px_rgba(112,18,40,0.35)]",
+    rfqBtnTheme: "bg-gradient-to-b from-[#701228] via-[#560a1c] to-[#380411] border-rose-400/60 text-amber-300",
     personImage: "/uploads/textile.png",
     personAlt: "Textiles & Garment Director",
   },
@@ -1779,13 +1787,13 @@ export default function LandingPage() {
                           </motion.p>
                         </div>
 
-                        {/* Vertical Instant RFQ Button (Left Side Space - Burgundy Theme) */}
+                        {/* Vertical Instant RFQ Button (Dynamic Box Theme) */}
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedRfqCategory(service.title);
                           }}
-                          className="absolute left-6 sm:left-8 top-[128px] sm:top-[134px] z-30 px-2 py-2.5 rounded-2xl bg-gradient-to-b from-[#701228] via-[#560a1c] to-[#380411] border border-amber-400/50 text-amber-300 shadow-xl shadow-black/60 hover:scale-105 active:scale-95 transition-all duration-200 flex flex-col items-center cursor-pointer group/vrfq"
+                          className={`absolute left-6 sm:left-8 top-[128px] sm:top-[134px] z-30 px-2 py-2.5 rounded-2xl border shadow-xl shadow-black/60 hover:scale-105 active:scale-95 transition-all duration-200 flex flex-col items-center cursor-pointer group/vrfq ${service.rfqBtnTheme || "bg-gradient-to-b from-[#701228] via-[#560a1c] to-[#380411] border-amber-400/50 text-amber-300"}`}
                           title={`Instant RFQ for ${service.title}`}
                         >
                           <Zap size={12} className="text-amber-400 fill-amber-400 mb-1 group-hover/vrfq:scale-125 transition-transform" />
