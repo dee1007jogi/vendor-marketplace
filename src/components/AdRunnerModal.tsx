@@ -1,15 +1,15 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  X, Sparkles, Megaphone, Clock, Calendar, MapPin, 
-  Layers, ShieldCheck, CheckCircle2, ArrowRight, Eye, 
+import {
+  X, Sparkles, Megaphone, Clock, Calendar, MapPin,
+  Layers, ShieldCheck, CheckCircle2, ArrowRight, Eye,
   TrendingUp, Zap, HelpCircle, AlertCircle, Percent,
   Building2, Image as ImageIcon, ExternalLink, ChevronRight, Check
 } from 'lucide-react';
 import { AdPlacementType, AdTimeSlot, AdCampaign, User } from '../types';
-import { 
-  AD_PLACEMENTS, AD_TIME_SLOTS, DURATION_DISCOUNT_TIERS, 
-  calculateAdPrice, addAdCampaign 
+import {
+  AD_PLACEMENTS, AD_TIME_SLOTS, DURATION_DISCOUNT_TIERS,
+  calculateAdPrice, addAdCampaign
 } from '../lib/adEngine';
 
 interface AdRunnerModalProps {
@@ -23,7 +23,7 @@ interface AdRunnerModalProps {
 const PRESET_IMAGES = [
   { label: "Machinery & CNC", url: "/uploads/INDUSTRIAL MACHINERY & CNC.png" },
   { label: "Raw Steel & Metals", url: "/uploads/STEEL & METALSCHINERY & CNC.png" },
-  { label: "Bulk Chemicals & Pharma", url: "/uploads/BULK CHEMICALS & PHARMA.png" },
+  { label: "Bulk Chemicals & Pharma", url: "/uploads/pharama.png" },
   { label: "Construction, Cement & Tiles", url: "/uploads/CONSTRUCTION, CEMENT & TILES.png" },
   { label: "Textiles, Yarns & Uniforms", url: "/uploads/TEXTILES, YARNS & UNIFORMS.png" },
   { label: "Packaging & Corrugated Boxes", url: "/uploads/PACKAGING & CORRUGATED BOXEs.png" },
@@ -75,7 +75,7 @@ export default function AdRunnerModal({
   const [ctaText, setCtaText] = useState<string>("Request Instant Quote");
   const [ctaUrl, setCtaUrl] = useState<string>("/vendors");
   const [bannerImage, setBannerImage] = useState<string>(PRESET_IMAGES[0].url);
-  
+
   // Schedule & Time State
   const [durationDays, setDurationDays] = useState<number>(7);
   const [timeSlot, setTimeSlot] = useState<AdTimeSlot>("prime_b2b");
@@ -150,7 +150,7 @@ export default function AdRunnerModal({
       if (!createdCampaign) {
         const start = new Date(startDate);
         const end = new Date(start.getTime() + durationDays * 24 * 60 * 60 * 1000);
-        
+
         createdCampaign = {
           id: `ad-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
           advertiserId: currentUser?.id || "user-vendor-1",
@@ -266,17 +266,15 @@ export default function AdRunnerModal({
                   <button
                     key={s.step}
                     onClick={() => setCurrentStep(s.step as any)}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
-                      isActive 
-                        ? 'bg-sky-600 text-white shadow-xs' 
-                        : isCompleted 
-                        ? 'bg-emerald-100 text-emerald-800' 
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all cursor-pointer ${isActive
+                      ? 'bg-sky-600 text-white shadow-xs'
+                      : isCompleted
+                        ? 'bg-emerald-100 text-emerald-800'
                         : 'text-slate-500 hover:text-slate-800'
-                    }`}
+                      }`}
                   >
-                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-mono ${
-                      isActive ? 'bg-white text-sky-900' : isCompleted ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-700'
-                    }`}>
+                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-mono ${isActive ? 'bg-white text-sky-900' : isCompleted ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-700'
+                      }`}>
                       {isCompleted ? <Check size={12} /> : s.step}
                     </span>
                     <span>{s.label}</span>
@@ -291,7 +289,7 @@ export default function AdRunnerModal({
 
             {/* SUCCESS STATE OVERLAY */}
             {isSuccess && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="p-10 rounded-3xl bg-emerald-50 border-2 border-emerald-300 text-center space-y-4 my-6"
@@ -332,11 +330,10 @@ export default function AdRunnerModal({
                           <div
                             key={p.type}
                             onClick={() => setPlacement(p.type)}
-                            className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between relative overflow-hidden ${
-                              isSelected 
-                                ? 'bg-sky-50/60 border-sky-600 shadow-md ring-2 ring-sky-600/20' 
-                                : 'bg-white border-slate-200 hover:border-sky-300 hover:shadow-xs'
-                            }`}
+                            className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between relative overflow-hidden ${isSelected
+                              ? 'bg-sky-50/60 border-sky-600 shadow-md ring-2 ring-sky-600/20'
+                              : 'bg-white border-slate-200 hover:border-sky-300 hover:shadow-xs'
+                              }`}
                           >
                             {isSelected && (
                               <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-sky-600 text-white flex items-center justify-center">
@@ -468,9 +465,8 @@ export default function AdRunnerModal({
                               <div
                                 key={idx}
                                 onClick={() => setBannerImage(img.url)}
-                                className={`rounded-xl overflow-hidden border-2 cursor-pointer relative group ${
-                                  bannerImage === img.url ? 'border-sky-600 ring-2 ring-sky-600/30' : 'border-slate-200'
-                                }`}
+                                className={`rounded-xl overflow-hidden border-2 cursor-pointer relative group ${bannerImage === img.url ? 'border-sky-600 ring-2 ring-sky-600/30' : 'border-slate-200'
+                                  }`}
                               >
                                 <img src={img.url} alt={img.label} className="w-full h-14 object-cover" />
                                 <div className="absolute inset-0 bg-sky-950/25 p-1 flex items-end">
@@ -496,7 +492,7 @@ export default function AdRunnerModal({
 
                       {/* Mockup Frame based on placement */}
                       <div className="p-4 rounded-3xl bg-gradient-to-br from-sky-50 via-white to-sky-50/60 border-2 border-sky-200 shadow-inner flex flex-col justify-center min-h-[300px] relative overflow-hidden">
-                        
+
                         {/* 1. POPUP MODAL PREVIEW */}
                         {placement === "popup_modal" && (
                           <div className="bg-white border-2 border-amber-400/80 rounded-2xl p-4 text-slate-900 shadow-xl relative overflow-hidden">
@@ -610,16 +606,14 @@ export default function AdRunnerModal({
                           <button
                             key={t.days}
                             onClick={() => setDurationDays(t.days)}
-                            className={`p-3 rounded-2xl border-2 text-center transition-all cursor-pointer ${
-                              durationDays === t.days 
-                                ? 'bg-sky-50 border-sky-600 text-sky-950 ring-2 ring-sky-600/20 shadow-xs' 
-                                : 'bg-white border-slate-200 hover:border-slate-300 text-slate-700'
-                            }`}
+                            className={`p-3 rounded-2xl border-2 text-center transition-all cursor-pointer ${durationDays === t.days
+                              ? 'bg-sky-50 border-sky-600 text-sky-950 ring-2 ring-sky-600/20 shadow-xs'
+                              : 'bg-white border-slate-200 hover:border-slate-300 text-slate-700'
+                              }`}
                           >
                             <span className="block font-black text-sm">{t.label}</span>
-                            <span className={`block text-[11px] font-mono font-bold mt-0.5 ${
-                              t.days >= 15 ? 'text-amber-700' : 'text-emerald-700'
-                            }`}>
+                            <span className={`block text-[11px] font-mono font-bold mt-0.5 ${t.days >= 15 ? 'text-amber-700' : 'text-emerald-700'
+                              }`}>
                               {t.discount}
                             </span>
                           </button>
@@ -639,11 +633,10 @@ export default function AdRunnerModal({
                             <div
                               key={slot.id}
                               onClick={() => setTimeSlot(slot.id)}
-                              className={`p-4 rounded-2xl border-2 cursor-pointer transition-all ${
-                                isSelected 
-                                  ? 'bg-amber-50/60 border-amber-500 shadow-sm ring-2 ring-amber-500/20' 
-                                  : 'bg-white border-slate-200 hover:border-slate-300'
-                              }`}
+                              className={`p-4 rounded-2xl border-2 cursor-pointer transition-all ${isSelected
+                                ? 'bg-amber-50/60 border-amber-500 shadow-sm ring-2 ring-amber-500/20'
+                                : 'bg-white border-slate-200 hover:border-slate-300'
+                                }`}
                             >
                               <div className="flex items-center justify-between mb-1">
                                 <h4 className="font-bold text-slate-900 text-sm">{slot.name}</h4>
@@ -702,8 +695,8 @@ export default function AdRunnerModal({
                           ))}
                         </select>
                         <p className="text-[11px] text-slate-500">
-                          {targetCategory.includes("All") 
-                            ? "✓ Broad pan-marketplace delivery (No category surcharge)" 
+                          {targetCategory.includes("All")
+                            ? "✓ Broad pan-marketplace delivery (No category surcharge)"
                             : "⚡ High-intent targeting (+₹150/day precision delivery)"}
                         </p>
                       </div>
@@ -723,8 +716,8 @@ export default function AdRunnerModal({
                           ))}
                         </select>
                         <p className="text-[11px] text-slate-500">
-                          {targetLocation.includes("All") 
-                            ? "✓ Pan-India reach (No geo surcharge)" 
+                          {targetLocation.includes("All")
+                            ? "✓ Pan-India reach (No geo surcharge)"
                             : "🎯 Regional cluster priority (+₹200/day localized delivery)"}
                         </p>
                       </div>
@@ -744,11 +737,10 @@ export default function AdRunnerModal({
                           <div
                             key={seg.id}
                             onClick={() => setTargetAudience(seg.id as any)}
-                            className={`p-3.5 rounded-2xl border-2 cursor-pointer transition-all ${
-                              targetAudience === seg.id 
-                                ? 'bg-sky-50 border-sky-600 shadow-xs' 
-                                : 'bg-white border-slate-200 hover:border-slate-300'
-                            }`}
+                            className={`p-3.5 rounded-2xl border-2 cursor-pointer transition-all ${targetAudience === seg.id
+                              ? 'bg-sky-50 border-sky-600 shadow-xs'
+                              : 'bg-white border-slate-200 hover:border-slate-300'
+                              }`}
                           >
                             <h4 className="font-bold text-slate-900 text-xs mb-1">{seg.title}</h4>
                             <p className="text-[11px] text-slate-500">{seg.desc}</p>

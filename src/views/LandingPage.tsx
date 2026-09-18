@@ -358,7 +358,7 @@ const TOP_SERVICES_SHOWCASE = [
     moq: "MOQ: 200 Ltr/Kg",
     cardBg: "from-[#087a77] via-[#055c5a] to-[#023837]",
     borderColor: "border-teal-400/40 shadow-[0_0_25px_rgba(45,212,191,0.15)]",
-    personImage: "/uploads/BULK CHEMICALS & PHARMA.png",
+    personImage: "/uploads/pharama.png",
     personAlt: "Pharma Research Scientist",
   },
   {
@@ -1785,9 +1785,9 @@ export default function LandingPage() {
                       {/* Person / Industry Image with 4-Side All-Edge Vignette Mask Overlay */}
                       <motion.div
                         key={`img-${service.id}-${serviceSlideIndex}`}
-                        initial={{ opacity: 0, scale: 0.88, x: 15 }}
-                        animate={{ opacity: 1, scale: 1, x: 0 }}
-                        transition={{ duration: 0.45, delay: 0.08, ease: "easeOut" }}
+                        initial={{ opacity: 0, scale: 0.9, y: 120 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        transition={{ duration: 1.2, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
                         className="absolute bottom-1 right-1 w-[56%] h-[65%] pointer-events-none overflow-hidden flex items-end justify-end z-10"
                       >
                         <img 
