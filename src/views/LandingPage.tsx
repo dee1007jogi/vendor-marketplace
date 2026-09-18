@@ -39,7 +39,7 @@ import steelImg from "../assets/categories/steel.png";
 import packagingImg from "../assets/categories/packaging.png";
 import solarImg from "../assets/categories/contarct.png";
 import pharmaImg from "../assets/categories/pharama.png";
-import constructionImg from "../assets/categories/construction.png";
+import constructionImg from "../assets/categories/cement.png";
 import textileImg from "../assets/categories/textile.png";
 
 // Section definition for Smooth Scroll & Interactive Navigator HUD
