@@ -1785,7 +1785,7 @@ export default function LandingPage() {
                             e.stopPropagation();
                             setSelectedRfqCategory(service.title);
                           }}
-                          className="absolute left-3.5 sm:left-4 top-[128px] sm:top-[134px] z-30 px-2 py-2.5 rounded-2xl bg-gradient-to-b from-[#701228] via-[#560a1c] to-[#380411] border border-amber-400/50 text-amber-300 shadow-xl shadow-black/60 hover:scale-105 active:scale-95 transition-all duration-200 flex flex-col items-center cursor-pointer group/vrfq"
+                          className="absolute left-6 sm:left-8 top-[128px] sm:top-[134px] z-30 px-2 py-2.5 rounded-2xl bg-gradient-to-b from-[#701228] via-[#560a1c] to-[#380411] border border-amber-400/50 text-amber-300 shadow-xl shadow-black/60 hover:scale-105 active:scale-95 transition-all duration-200 flex flex-col items-center cursor-pointer group/vrfq"
                           title={`Instant RFQ for ${service.title}`}
                         >
                           <Zap size={12} className="text-amber-400 fill-amber-400 mb-1 group-hover/vrfq:scale-125 transition-transform" />
