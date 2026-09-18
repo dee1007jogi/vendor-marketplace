@@ -1785,11 +1785,11 @@ export default function LandingPage() {
                             e.stopPropagation();
                             setSelectedRfqCategory(service.title);
                           }}
-                          className="absolute left-3.5 sm:left-4 top-[106px] sm:top-[112px] z-30 px-2 py-2.5 rounded-2xl bg-gradient-to-b from-[#701228] via-[#560a1c] to-[#380411] border border-amber-400/50 text-amber-300 shadow-xl shadow-black/50 hover:scale-105 active:scale-95 transition-all duration-200 flex flex-col items-center cursor-pointer group/vrfq"
+                          className="absolute left-4 sm:left-5 top-[98px] sm:top-[104px] z-30 px-2.5 py-3 rounded-2xl bg-gradient-to-b from-[#701228] via-[#560a1c] to-[#380411] border border-amber-400/50 text-amber-300 shadow-xl shadow-black/60 hover:scale-105 active:scale-95 transition-all duration-200 flex flex-col items-center cursor-pointer group/vrfq"
                           title={`Instant RFQ for ${service.title}`}
                         >
-                          <Zap size={13} className="text-amber-400 fill-amber-400 mb-1 group-hover/vrfq:scale-125 transition-transform" />
-                          <div className="flex flex-col items-center text-[9px] sm:text-[9.5px] font-black uppercase font-mono tracking-tighter text-white leading-tight">
+                          <Zap size={14} className="text-amber-400 fill-amber-400 mb-1.5 group-hover/vrfq:scale-125 transition-transform" />
+                          <div className="flex flex-col items-center text-[9.5px] sm:text-[10px] font-black uppercase font-mono tracking-tighter text-white leading-tight">
                             <span>I</span>
                             <span>N</span>
                             <span>S</span>
@@ -1841,16 +1841,10 @@ export default function LandingPage() {
                           className="relative z-20 mt-auto"
                         >
                           <div className="w-full h-[1px] bg-white/20 mb-3" />
-                          <div className="flex items-center justify-between">
-                            {/* Left Circular Arrow Button */}
+                          <div className="flex items-center justify-end">
+                            {/* Circle Arrow Button placed on Bottom Right */}
                             <div className="w-9 h-9 rounded-full border border-white/40 bg-white/10 backdrop-blur-md flex items-center justify-center text-white group-hover:bg-white group-hover:text-slate-950 transition-all duration-300 shadow-md">
                               <ChevronRight size={18} className="group-hover:translate-x-0.5 transition-transform" />
-                            </div>
-
-                            {/* Right Glass Pill Explore Indicator */}
-                            <div className="px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/30 text-white/90 text-[10.5px] font-extrabold uppercase tracking-wider group-hover:bg-white group-hover:text-slate-950 transition-all duration-300 shadow-sm flex items-center gap-1">
-                              <span>Explore</span>
-                              <ChevronRight size={13} />
                             </div>
                           </div>
                         </motion.div>
