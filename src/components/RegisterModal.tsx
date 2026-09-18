@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, Building2, User, Mail, Phone, Lock, ChevronRight, Briefcase, Upload, CheckCircle2, AlertTriangle } from "lucide-react";
+import { X, Building2, User, Mail, Phone, Lock, ChevronRight, Briefcase, Upload, CheckCircle2, AlertTriangle, ChevronLeft } from "lucide-react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -51,31 +51,42 @@ export default function RegisterModal({ isOpen, onClose, onRegister, onOpenLogin
   const [otpPhone, setOtpPhone] = useState("");
   const [otpRole, setOtpRole] = useState("");
 
+  const handleClose = () => {
+    setRole("");
+    setOtpPhone("");
+    setOtpRole("");
+    onClose();
+  };
+
   const handleRegisterSuccess = (phone: string, r: string) => {
     setOtpPhone(phone);
     setOtpRole(r);
   };
 
-  // Close on Escape key press & Lock Body Scroll when Modal is Open
-  React.useEffect(() => {
+  // Close on Escape key press, Lock Body Scroll, & Reset State when Modal Closes
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") handleClose();
     };
     if (isOpen) {
       window.addEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "hidden";
+    } else {
+      setRole("");
+      setOtpPhone("");
+      setOtpRole("");
     }
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "unset";
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
   return (
     <div 
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}
       data-lenis-prevent
       className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-sky-950/60 backdrop-blur-md overflow-hidden animate-in fade-in duration-200"
     >
@@ -87,17 +98,30 @@ export default function RegisterModal({ isOpen, onClose, onRegister, onOpenLogin
         
         {/* Authoritative Fixed Top Header with Title & Prominent Close Button */}
         <div className="bg-white/95 backdrop-blur-md px-6 py-4 border-b border-sky-100 flex items-center justify-between z-40 shrink-0">
-          <div>
-            <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-              {otpPhone ? "Verify Mobile Number" : role === "BUYER" ? "Create Buyer Account" : role === "VENDOR" ? "Vendor Registration" : "Join Bussinest"}
-            </h2>
-            <p className="text-xs text-slate-500 font-medium mt-0.5">
-              {otpPhone ? "Enter 6-digit OTP code" : role === "BUYER" ? "Post RFQs & source from verified suppliers" : role === "VENDOR" ? "Offer services & receive qualified leads" : "Choose account type to get started"}
-            </p>
+          <div className="flex items-center gap-3">
+            {role && !otpPhone && (
+              <button 
+                type="button" 
+                onClick={() => setRole("")} 
+                className="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-colors cursor-pointer flex items-center gap-1 text-xs font-bold"
+                title="Back to Buyer/Vendor selection"
+              >
+                <ChevronLeft size={18} />
+                <span className="hidden sm:inline">Back</span>
+              </button>
+            )}
+            <div>
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                {otpPhone ? "Verify Mobile Number" : role === "BUYER" ? "Create Buyer Account" : role === "VENDOR" ? "Vendor Registration" : "Join Bussinest"}
+              </h2>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                {otpPhone ? "Enter 6-digit OTP code" : role === "BUYER" ? "Post RFQs & source from verified suppliers" : role === "VENDOR" ? "Offer services & receive qualified leads" : "Choose account type to get started"}
+              </p>
+            </div>
           </div>
           <button 
             type="button"
-            onClick={onClose} 
+            onClick={handleClose} 
             className="p-2.5 text-slate-500 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-full transition-colors cursor-pointer flex items-center justify-center shrink-0 ml-4 shadow-xs"
             title="Close modal (Esc)"
           >
