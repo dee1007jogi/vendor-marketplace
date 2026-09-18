@@ -33,6 +33,15 @@ import {
   KNOWN_INDUSTRIAL_HUBS
 } from "../lib/geoService";
 
+// Bundled Category Images (guarantees images are hashed and bundled into /assets/ for live deployment)
+import machineryImg from "../assets/categories/machinery.png";
+import steelImg from "../assets/categories/steel.png";
+import packagingImg from "../assets/categories/packaging.png";
+import solarImg from "../assets/categories/contarct.png";
+import pharmaImg from "../assets/categories/pharama.png";
+import constructionImg from "../assets/categories/construction.png";
+import textileImg from "../assets/categories/textile.png";
+
 // Section definition for Smooth Scroll & Interactive Navigator HUD
 export const LANDING_SECTIONS = [
   { id: "hero", label: "Search & Hero Console", shortName: "Hero", icon: Search, tag: "01" },
@@ -312,7 +321,7 @@ const TOP_SERVICES_SHOWCASE = [
     cardBg: "from-[#0252bf] via-[#0240a3] to-[#01266f]",
     borderColor: "border-sky-400/40 shadow-[0_0_25px_rgba(56,189,248,0.15)]",
     rfqBtnTheme: "bg-gradient-to-b from-[#0240a3] via-[#013282] to-[#01225c] border-sky-400/60 text-amber-300",
-    personImage: "/uploads/INDUSTRIAL MACHINERY & CNC.png",
+    personImage: machineryImg,
     personAlt: "Industrial CNC Engineer",
   },
   {
@@ -325,7 +334,7 @@ const TOP_SERVICES_SHOWCASE = [
     cardBg: "from-[#3325c7] via-[#2417a8] to-[#140b6e]",
     borderColor: "border-indigo-400/40 shadow-[0_0_25px_rgba(129,140,248,0.15)]",
     rfqBtnTheme: "bg-gradient-to-b from-[#2417a8] via-[#1a0e8c] to-[#100863] border-indigo-400/60 text-amber-300",
-    personImage: "/uploads/STEEL & METALSCHINERY & CNC.png",
+    personImage: steelImg,
     personAlt: "Steel & Metallurgy Specialist",
   },
   {
@@ -338,7 +347,7 @@ const TOP_SERVICES_SHOWCASE = [
     cardBg: "from-[#027a9c] via-[#025a75] to-[#01384a]",
     borderColor: "border-cyan-400/40 shadow-[0_0_25px_rgba(34,211,238,0.15)]",
     rfqBtnTheme: "bg-gradient-to-b from-[#025a75] via-[#014459] to-[#012e3d] border-cyan-400/60 text-amber-300",
-    personImage: "/uploads/PACKAGING & CORRUGATED BOXEs.png",
+    personImage: packagingImg,
     personAlt: "Packaging Logistics Specialist",
   },
   {
@@ -351,7 +360,7 @@ const TOP_SERVICES_SHOWCASE = [
     cardBg: "from-[#047a55] via-[#035a3f] to-[#013525]",
     borderColor: "border-emerald-400/40 shadow-[0_0_25px_rgba(52,211,153,0.15)]",
     rfqBtnTheme: "bg-gradient-to-b from-[#035a3f] via-[#02422e] to-[#012b1e] border-emerald-400/60 text-amber-300",
-    personImage: "/uploads/ELECTRICALS, SOLAR & POWER.png",
+    personImage: solarImg,
     personAlt: "Solar & Electrical Engineer",
   },
   {
@@ -364,7 +373,7 @@ const TOP_SERVICES_SHOWCASE = [
     cardBg: "from-[#087a77] via-[#055c5a] to-[#023837]",
     borderColor: "border-teal-400/40 shadow-[0_0_25px_rgba(45,212,191,0.15)]",
     rfqBtnTheme: "bg-gradient-to-b from-[#055c5a] via-[#034443] to-[#022c2b] border-teal-400/60 text-amber-300",
-    personImage: "/uploads/pharama.png",
+    personImage: pharmaImg,
     personAlt: "Pharma Research Scientist",
   },
   {
@@ -377,7 +386,7 @@ const TOP_SERVICES_SHOWCASE = [
     cardBg: "from-[#994703] via-[#753402] to-[#481e01]",
     borderColor: "border-amber-500/40 shadow-[0_0_25px_rgba(245,158,11,0.15)]",
     rfqBtnTheme: "bg-gradient-to-b from-[#753402] via-[#592601] to-[#3b1900] border-amber-400/60 text-amber-300",
-    personImage: "/uploads/CONSTRUCTION, CEMENT & TILES.png",
+    personImage: constructionImg,
     personAlt: "Construction & Cement Head",
   },
   {
@@ -391,7 +400,7 @@ const TOP_SERVICES_SHOWCASE = [
     cardBg: "from-[#701228] via-[#560a1c] to-[#380411]",
     borderColor: "border-rose-600/50 shadow-[0_0_25px_rgba(112,18,40,0.35)]",
     rfqBtnTheme: "bg-gradient-to-b from-[#701228] via-[#560a1c] to-[#380411] border-rose-400/60 text-amber-300",
-    personImage: "/uploads/textile.png",
+    personImage: textileImg,
     personAlt: "Textiles & Garment Director",
   },
 ];
