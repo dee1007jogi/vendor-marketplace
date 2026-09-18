@@ -310,7 +310,7 @@ const TOP_SERVICES_SHOWCASE = [
     moq: "MOQ: 1 Unit",
     cardBg: "from-[#0252bf] via-[#0240a3] to-[#01266f]",
     borderColor: "border-sky-400/40 shadow-[0_0_25px_rgba(56,189,248,0.15)]",
-    personImage: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=85",
+    personImage: "/uploads/INDUSTRIAL MACHINERY & CNC.png",
     personAlt: "Industrial CNC Engineer",
   },
   {
@@ -322,7 +322,7 @@ const TOP_SERVICES_SHOWCASE = [
     moq: "MOQ: 500Kg/1Ton",
     cardBg: "from-[#3325c7] via-[#2417a8] to-[#140b6e]",
     borderColor: "border-indigo-400/40 shadow-[0_0_25px_rgba(129,140,248,0.15)]",
-    personImage: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=85",
+    personImage: "/uploads/STEEL & METALSCHINERY & CNC.png",
     personAlt: "Steel & Metallurgy Specialist",
   },
   {
@@ -334,7 +334,7 @@ const TOP_SERVICES_SHOWCASE = [
     moq: "MOQ: 1,000 Pcs",
     cardBg: "from-[#027a9c] via-[#025a75] to-[#01384a]",
     borderColor: "border-cyan-400/40 shadow-[0_0_25px_rgba(34,211,238,0.15)]",
-    personImage: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=85",
+    personImage: "/uploads/PACKAGING & CORRUGATED BOXEs.png",
     personAlt: "Packaging Logistics Specialist",
   },
   {
@@ -346,7 +346,7 @@ const TOP_SERVICES_SHOWCASE = [
     moq: "MOQ: 25 Units",
     cardBg: "from-[#047a55] via-[#035a3f] to-[#013525]",
     borderColor: "border-emerald-400/40 shadow-[0_0_25px_rgba(52,211,153,0.15)]",
-    personImage: "https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?auto=format&fit=crop&w=800&q=85",
+    personImage: "/uploads/ELECTRICALS, SOLAR & POWER.png",
     personAlt: "Solar & Electrical Engineer",
   },
   {
@@ -358,7 +358,7 @@ const TOP_SERVICES_SHOWCASE = [
     moq: "MOQ: 200 Ltr/Kg",
     cardBg: "from-[#087a77] via-[#055c5a] to-[#023837]",
     borderColor: "border-teal-400/40 shadow-[0_0_25px_rgba(45,212,191,0.15)]",
-    personImage: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=85",
+    personImage: "/uploads/BULK CHEMICALS & PHARMA.png",
     personAlt: "Pharma Research Scientist",
   },
   {
@@ -370,19 +370,19 @@ const TOP_SERVICES_SHOWCASE = [
     moq: "MOQ: 10 Tons",
     cardBg: "from-[#994703] via-[#753402] to-[#481e01]",
     borderColor: "border-amber-500/40 shadow-[0_0_25px_rgba(245,158,11,0.15)]",
-    personImage: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=800&q=85",
+    personImage: "/uploads/CONSTRUCTION, CEMENT & TILES.png",
     personAlt: "Construction & Cement Head",
   },
   {
     id: "textiles-garments",
     categorySlug: "textiles",
-    title: "Textiles, Yarns & Uniforms",
+    title: "TEXTILES, YARNS & UNIFORMS",
     subtitle: "Export Quality",
     badge: "MILL EXPORT",
     badgeColor: "bg-rose-400/30 text-rose-100",
     moq: "MOQ: 500 Mtrs",
     cardBg: "from-[#be123c] via-[#9f1239] to-[#881337]",
-    personImage: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=85",
+    personImage: "/uploads/TEXTILES, YARNS & UNIFORMS.png",
     personAlt: "Textiles & Garment Director",
   },
 ];

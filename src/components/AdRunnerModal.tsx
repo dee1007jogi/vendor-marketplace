@@ -21,12 +21,13 @@ interface AdRunnerModalProps {
 }
 
 const PRESET_IMAGES = [
-  { label: "Machinery & CNC", url: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1000&q=80" },
-  { label: "Textiles & Weaving", url: "https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?auto=format&fit=crop&w=1000&q=80" },
-  { label: "Raw Steel & Metals", url: "https://images.unsplash.com/photo-1535813547-99c456a41d4a?auto=format&fit=crop&w=1000&q=80" },
-  { label: "Chemicals & Polymers", url: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1000&q=80" },
-  { label: "Electronics & PCB", url: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1000&q=80" },
-  { label: "Logistics & Freight", url: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1000&q=80" },
+  { label: "Machinery & CNC", url: "/uploads/INDUSTRIAL MACHINERY & CNC.png" },
+  { label: "Raw Steel & Metals", url: "/uploads/STEEL & METALSCHINERY & CNC.png" },
+  { label: "Bulk Chemicals & Pharma", url: "/uploads/BULK CHEMICALS & PHARMA.png" },
+  { label: "Construction, Cement & Tiles", url: "/uploads/CONSTRUCTION, CEMENT & TILES.png" },
+  { label: "Textiles, Yarns & Uniforms", url: "/uploads/TEXTILES, YARNS & UNIFORMS.png" },
+  { label: "Packaging & Corrugated Boxes", url: "/uploads/PACKAGING & CORRUGATED BOXEs.png" },
+  { label: "Electricals, Solar & Power", url: "/uploads/ELECTRICALS, SOLAR & POWER.png" },
 ];
 
 const POPULAR_CATEGORIES = [
