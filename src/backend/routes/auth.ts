@@ -124,7 +124,7 @@ router.post("/register/vendor", upload.fields([
     const step2 = JSON.parse(req.body.step2 || "{}");
 
     const { businessName, contactPersonName, email, phone, password } = step1;
-    const { serviceCategories, serviceAreas } = step2;
+    const { serviceCategories, serviceAreas, gstNumber, panNumber } = step2;
 
     const existing = await prisma.user.findFirst({
       where: { OR: [{ email }, { phone }] }
@@ -151,6 +151,8 @@ router.post("/register/vendor", upload.fields([
       data: {
         userId: user.id,
         businessName: businessName,
+        gstNumber: gstNumber || null,
+        panNumber: panNumber || null,
         category: (serviceCategories && serviceCategories[0]) || "Other",
         location: (serviceAreas && serviceAreas[0]) || "Remote",
         categoriesJson: JSON.stringify(serviceCategories || []),
@@ -172,6 +174,10 @@ router.post("/register/vendor", upload.fields([
     await prisma.verificationQueue.create({
       data: {
         userId: user.id,
+        businessName: businessName || null,
+        registrationNumber: gstNumber || panNumber || null,
+        gstNumber: gstNumber || null,
+        panNumber: panNumber || null,
         panFileUrl: panFile ? normalizeUploadUrl(panFile.filename ? `/uploads/${panFile.filename}` : panFile.path) : null,
         panFileName: panFile?.originalname || null,
         gstFileUrl: gstFile ? normalizeUploadUrl(gstFile.filename ? `/uploads/${gstFile.filename}` : gstFile.path) : null,
@@ -184,26 +190,30 @@ router.post("/register/vendor", upload.fields([
       }
     });
 
-    // Notify Admin of new registration
-    const adminUser = await prisma.user.findFirst({ where: { role: 'admin' } });
-    if (adminUser) {
-      await notificationService.dispatch(
-        "admin_new_registration",
-        adminUser.id,
-        { role: "vendor", name: businessName, email, userId: user.id }
-      );
-      
-      const io = req.app.get("io");
-      if (io) {
-        io.to("admin:notifications").emit("vendor:pending", {
-          vendorId: user.id,
-          businessName: businessName,
-          registeredAt: new Date(),
-          actionUrl: `/admin/users/${user.id}`
-        });
-        const pendingCount = await prisma.vendorProfile.count({ where: { verificationStatus: 'pending' } });
-        io.to("admin:notifications").emit("admin:badge:verificationQueue", pendingCount);
+    // Notify Admin of new registration (non-blocking)
+    try {
+      const adminUser = await prisma.user.findFirst({ where: { role: 'admin' } });
+      if (adminUser) {
+        await notificationService.dispatch(
+          "admin_new_registration",
+          adminUser.id,
+          { role: "vendor", name: businessName, email, userId: user.id }
+        );
+        
+        const io = req.app.get("io");
+        if (io) {
+          io.to("admin:notifications").emit("vendor:pending", {
+            vendorId: user.id,
+            businessName: businessName,
+            registeredAt: new Date(),
+            actionUrl: `/admin/users/${user.id}`
+          });
+          const pendingCount = await prisma.vendorProfile.count({ where: { verificationStatus: 'pending' } });
+          io.to("admin:notifications").emit("admin:badge:verificationQueue", pendingCount);
+        }
       }
+    } catch (notifErr) {
+      console.error("Admin notification dispatch warning during vendor registration:", notifErr);
     }
 
     const token = generateToken(user);
@@ -215,9 +225,9 @@ router.post("/register/vendor", upload.fields([
       user, 
       token 
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Vendor Registration Error", error);
-    res.status(500).json({ error: "Registration failed" });
+    res.status(500).json({ error: error?.message || "Registration failed" });
   }
 });
 
