@@ -1779,6 +1779,31 @@ export default function LandingPage() {
                           </motion.p>
                         </div>
 
+                        {/* Vertical Instant RFQ Button (Left Side Space - Burgundy Theme) */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedRfqCategory(service.title);
+                          }}
+                          className="absolute left-3.5 sm:left-4 top-[106px] sm:top-[112px] z-30 px-2 py-2.5 rounded-2xl bg-gradient-to-b from-[#701228] via-[#560a1c] to-[#380411] border border-amber-400/50 text-amber-300 shadow-xl shadow-black/50 hover:scale-105 active:scale-95 transition-all duration-200 flex flex-col items-center cursor-pointer group/vrfq"
+                          title={`Instant RFQ for ${service.title}`}
+                        >
+                          <Zap size={13} className="text-amber-400 fill-amber-400 mb-1 group-hover/vrfq:scale-125 transition-transform" />
+                          <div className="flex flex-col items-center text-[9px] sm:text-[9.5px] font-black uppercase font-mono tracking-tighter text-white leading-tight">
+                            <span>I</span>
+                            <span>N</span>
+                            <span>S</span>
+                            <span>T</span>
+                            <span>A</span>
+                            <span>N</span>
+                            <span>T</span>
+                            <span className="h-1.5" />
+                            <span className="text-amber-300 font-extrabold">R</span>
+                            <span className="text-amber-300 font-extrabold">F</span>
+                            <span className="text-amber-300 font-extrabold">Q</span>
+                          </div>
+                        </button>
+
                         {/* Person / Industry Image with 4-Side All-Edge Vignette Mask Overlay */}
                         <motion.div
                           key={`img-${service.id}-${serviceSlideIndex}`}
@@ -1822,17 +1847,11 @@ export default function LandingPage() {
                               <ChevronRight size={18} className="group-hover:translate-x-0.5 transition-transform" />
                             </div>
 
-                            {/* Right Glass Pill Button - Reduced font size */}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedRfqCategory(service.title);
-                              }}
-                              className="px-3.5 py-2 rounded-full bg-gradient-to-r from-slate-100 via-white to-slate-200 text-slate-950 font-extrabold text-[10.5px] uppercase tracking-wider shadow-md hover:shadow-xl hover:scale-105 border border-white/80 transition-all duration-200 flex items-center gap-1 cursor-pointer"
-                            >
-                              <Zap size={13} className="text-amber-500 fill-amber-500" />
-                              <span>INSTANT RFQ</span>
-                            </button>
+                            {/* Right Glass Pill Explore Indicator */}
+                            <div className="px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/30 text-white/90 text-[10.5px] font-extrabold uppercase tracking-wider group-hover:bg-white group-hover:text-slate-950 transition-all duration-300 shadow-sm flex items-center gap-1">
+                              <span>Explore</span>
+                              <ChevronRight size={13} />
+                            </div>
                           </div>
                         </motion.div>
                       </div>
