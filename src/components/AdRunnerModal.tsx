@@ -207,7 +207,7 @@ export default function AdRunnerModal({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-sky-950/25 backdrop-blur-sm overflow-y-auto">
+      <div className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-6 bg-sky-950/25 backdrop-blur-sm overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}

@@ -88,7 +88,7 @@ export default function ForgotPasswordModal({ isOpen, onClose, onRequestReset, o
   return (
     <div 
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-sky-950/60 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200"
+      className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-sky-950/60 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200"
     >
       <div className="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl w-full max-w-md overflow-hidden relative animate-in fade-in zoom-in-95 duration-200 border border-sky-100 flex flex-col max-h-[90vh]">
         <div className="gold-line-animated absolute top-0 left-0 right-0 h-[3px] z-30"></div>

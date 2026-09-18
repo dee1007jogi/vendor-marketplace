@@ -648,8 +648,14 @@ export default function VendorDiscovery() {
       <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-6 sm:py-8 flex flex-col md:flex-row gap-6 lg:gap-8 flex-1 relative z-0">
         
         {/* SIDEBAR FILTERS (Neomorphic & Soft Pastel UI Aesthetic) */}
-        <div className={`fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-md md:bg-transparent md:backdrop-blur-none md:static md:w-80 lg:w-[340px] md:block md:z-10 flex-shrink-0 ${showMobileFilters ? "flex flex-col justify-end md:block" : "hidden"}`}>
-          <div className="bg-[#f0f4f8] md:bg-[#f0f4f8] rounded-t-3xl md:rounded-3xl max-h-[85vh] md:h-[calc(100vh-170px)] md:max-h-[calc(100vh-170px)] md:sticky md:top-36 md:self-start md:z-10 flex flex-col w-full overflow-hidden shadow-xl border border-white/80 p-4">
+        <div 
+          data-lenis-prevent
+          className={`fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-md md:bg-transparent md:backdrop-blur-none md:static md:w-80 lg:w-[340px] md:block md:z-10 flex-shrink-0 ${showMobileFilters ? "flex flex-col justify-end md:block" : "hidden"}`}
+        >
+          <div 
+            data-lenis-prevent
+            className="bg-[#f0f4f8] md:bg-[#f0f4f8] rounded-t-3xl md:rounded-3xl max-h-[85vh] md:h-[calc(100vh-170px)] md:max-h-[calc(100vh-170px)] md:sticky md:top-36 md:self-start md:z-10 flex flex-col w-full overflow-hidden shadow-xl border border-white/80 p-4"
+          >
             
             {/* Sidebar Top Header */}
             <div className="p-2 border-b border-slate-200/60 flex justify-between items-center mb-3 shrink-0">
@@ -674,7 +680,11 @@ export default function VendorDiscovery() {
             </div>
             
             {/* Scrollable Filter Cards */}
-            <div className="space-y-4 overflow-y-auto flex-1 min-h-0 pb-6 pr-1.5 custom-scrollbar touch-pan-y overscroll-contain">
+            <div 
+              data-lenis-prevent
+              onWheel={(e) => e.stopPropagation()}
+              className="space-y-4 overflow-y-auto flex-1 min-h-0 pb-6 pr-1.5 custom-scrollbar touch-pan-y overscroll-contain"
+            >
 
               {/* 1. Availability & Operating Hours (Neomorphic Toggle Switches) */}
               <div className="bg-[#f0f4f8] rounded-2xl p-4 shadow-[4px_4px_10px_rgba(163,177,198,0.3),-4px_-4px_10px_rgba(255,255,255,0.9)] border border-white/80">
@@ -736,7 +746,11 @@ export default function VendorDiscovery() {
                   <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 </div>
 
-                <div className="space-y-2.5 max-h-48 overflow-y-auto pr-1 custom-scrollbar touch-pan-y overscroll-contain">
+                <div 
+                  data-lenis-prevent
+                  onWheel={(e) => e.stopPropagation()}
+                  className="space-y-2.5 max-h-48 overflow-y-auto pr-1 custom-scrollbar touch-pan-y overscroll-contain"
+                >
                   {(filteredCategories.length > 0 ? filteredCategories : [
                     { name: "Web & Software Dev", count: 18 },
                     { name: "Mobile App MVP", count: 14 },

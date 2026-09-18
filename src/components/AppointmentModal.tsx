@@ -49,6 +49,21 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
   const [isBooked, setIsBooked] = useState(false);
   const [bookingId, setBookingId] = useState("");
 
+  // Lock body scroll and close on Escape key press
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") resetAndClose();
+    };
+    if (isOpen) {
+      window.addEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const handleBook = (e: React.FormEvent) => {
@@ -73,7 +88,10 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/50 backdrop-blur-md overflow-y-auto">
+      <div 
+        onClick={(e) => { if (e.target === e.currentTarget) resetAndClose(); }}
+        className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-md overflow-y-auto"
+      >
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}

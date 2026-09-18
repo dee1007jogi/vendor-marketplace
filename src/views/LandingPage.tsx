@@ -3250,7 +3250,7 @@ export default function LandingPage() {
       {/* CEO-to-Vendor Concierge Modal */}
       <AnimatePresence>
         {showCeoModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-sky-950/40 backdrop-blur-md">
+          <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-sky-950/40 backdrop-blur-md">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -3328,7 +3328,7 @@ export default function LandingPage() {
       {/* Quick Bulk RFQ Modal */}
       <AnimatePresence>
         {selectedRfqCategory && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-sky-950/40 backdrop-blur-md">
+          <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-sky-950/40 backdrop-blur-md">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -3400,7 +3400,7 @@ export default function LandingPage() {
       {/* Verified Case Study Full Detail Modal */}
       <AnimatePresence>
         {selectedCaseStudy && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-sky-950/40 backdrop-blur-md">
+          <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-sky-950/40 backdrop-blur-md">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
